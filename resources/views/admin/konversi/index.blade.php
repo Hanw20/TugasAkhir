@@ -105,7 +105,7 @@
     </div>
 </div>
 @endsection
-
+<!-- OKEY -->
 <!-- ================= JAVASCRIPT AJAX ================= -->
 @push('scripts')
 <script>
