@@ -4,8 +4,49 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "8fac62fa000557439a1027c0c1519c98",
+    "content-hash": "91b3f49796a209bb6c655df110c870d9",
     "packages": [
+        {
+            "name": "bardiz12/ahp",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/bardiz12/AHPDss.git",
+                "reference": "c692e69a2c04e8e77674b322de5001e37812c35f"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/bardiz12/AHPDss/zipball/c692e69a2c04e8e77674b322de5001e37812c35f",
+                "reference": "c692e69a2c04e8e77674b322de5001e37812c35f",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.0"
+            },
+            "default-branch": true,
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "Bardiz12\\AHPDss": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Bardizba Z",
+                    "email": "moch.bardizba@gmail.com"
+                }
+            ],
+            "description": "an Analytical Hierarchy Process (AHP) Decision Support System Library",
+            "support": {
+                "issues": "https://github.com/bardiz12/AHPDss/issues",
+                "source": "https://github.com/bardiz12/AHPDss/tree/master"
+            },
+            "time": "2019-04-29T14:00:22+00:00"
+        },
         {
             "name": "brick/math",
             "version": "0.12.3",
@@ -8272,7 +8313,9 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {},
+    "stability-flags": {
+        "bardiz12/ahp": 20
+    },
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {

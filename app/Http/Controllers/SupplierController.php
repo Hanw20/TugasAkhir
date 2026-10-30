@@ -34,8 +34,9 @@ class SupplierController extends Controller
 
     public function show(string $id)
     {
-        $supplier = Supplier::with(['riwayatPenilaian.kriteria'])->findOrFail($id);
-        return view('admin.supplier.show', compact('supplier'));
+        $supplier = Supplier::with(['riwayatPenilaian.kriteria', 'produk.satuanDasar'])->findOrFail($id);
+        $semuaProduk = \App\Models\Produk::orderBy('nama_produk', 'asc')->get();
+        return view('admin.supplier.show', compact('supplier', 'semuaProduk'));
     }
 
     public function edit(string $id)
@@ -95,5 +96,27 @@ class SupplierController extends Controller
         ]);
 
         return back()->with('success', 'Evaluasi pelayanan supplier berhasil dicatat!');
+    }
+
+    public function attachProduk(Request $request, string $id)
+    {
+        $request->validate([
+            'produk_id' => 'required|exists:produk,id'
+        ]);
+
+        $supplier = Supplier::findOrFail($id);
+
+        // syncWithoutDetaching agar jika sudah ada tidak error / tidak duplikat
+        $supplier->produk()->syncWithoutDetaching([$request->produk_id]);
+
+        return back()->with('success', 'Produk berhasil ditambahkan ke daftar pasokan supplier ini!');
+    }
+
+    public function detachProduk(string $id, string $produk_id)
+    {
+        $supplier = Supplier::findOrFail($id);
+        $supplier->produk()->detach($produk_id);
+
+        return back()->with('success', 'Produk berhasil dihapus dari daftar pasokan supplier ini!');
     }
 }

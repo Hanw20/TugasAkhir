@@ -29,6 +29,8 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::resource('satuan', App\Http\Controllers\SatuanProdukController::class);
     Route::resource('supplier', App\Http\Controllers\SupplierController::class);
     Route::post('supplier/{id}/nilai', [App\Http\Controllers\SupplierController::class, 'storePenilaian'])->name('supplier.nilai.store');
+    Route::post('supplier/{id}/produk', [App\Http\Controllers\SupplierController::class, 'attachProduk'])->name('supplier.produk.attach');
+    Route::delete('supplier/{id}/produk/{produk_id}', [App\Http\Controllers\SupplierController::class, 'detachProduk'])->name('supplier.produk.detach');
     Route::resource('customer', App\Http\Controllers\CustomerController::class);
     Route::resource('produk', App\Http\Controllers\ProdukController::class);
     Route::resource('konversi', App\Http\Controllers\KonversiController::class);
@@ -47,10 +49,6 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::get('pembayaran-hutang', [App\Http\Controllers\PembayaranHutangController::class, 'index'])->name('pembayaran-hutang.index');
     Route::post('pembayaran-hutang', [App\Http\Controllers\PembayaranHutangController::class, 'store'])->name('pembayaran-hutang.store');
 
-    // --- MODUL PENJUALAN (Sementara Dummy agar tidak error) ---
-    Route::get('pos', function () {
-        return view('admin.dashboard'); // Nanti kita ganti ke view POS
-    })->name('pos.index');
 
     // ================= PENJUALAN =================
     Route::resource('penjualan', App\Http\Controllers\PenjualanController::class);
@@ -64,14 +62,18 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     // Alur Pelunasan Piutang Customer (Tempo/Bon)
     Route::get('piutang-customer', [App\Http\Controllers\PembayaranPiutangController::class, 'index'])->name('piutang-customer.index');
     Route::post('piutang-customer', [App\Http\Controllers\PembayaranPiutangController::class, 'store'])->name('piutang-customer.store');
-    // --- MODUL INVENTORI & STOK (Sementara Dummy agar tidak error) ---
-    Route::get('stok-opname', function () {
-        return view('admin.dashboard');
-    })->name('stok-opname.index');
+    // Modul Stok Opname
+    Route::resource('stok-opname', App\Http\Controllers\StokOpnameController::class);
 
-    Route::get('eksekusi-konversi', function () {
-        return view('admin.dashboard');
-    })->name('eksekusi-konversi.index');
+    // Modul Konversi Produk (Transaksi Repacking Stok)
+    Route::resource('konversi-produk', App\Http\Controllers\KonversiProdukController::class);
+
+    // Sesi Perhitungan AHP (Perbandingan Berpasangan Kriteria)
+    Route::get('sesi-perhitungan-ahp', [App\Http\Controllers\SesiPerhitunganAhpController::class, 'index'])->name('sesi-perhitungan-ahp.index');
+    Route::post('sesi-perhitungan-ahp', [App\Http\Controllers\SesiPerhitunganAhpController::class, 'store'])->name('sesi-perhitungan-ahp.store');
+    Route::delete('sesi-perhitungan-ahp/{id}', [App\Http\Controllers\SesiPerhitunganAhpController::class, 'destroy'])->name('sesi-perhitungan-ahp.destroy');
+    // Rekomendasi Supplier (Metode SAW per Produk)
+    Route::get('rekomendasi-supplier', [App\Http\Controllers\RekomendasiSupplierController::class, 'index'])->name('rekomendasi-supplier.index');
 });
 
 // ========================================================

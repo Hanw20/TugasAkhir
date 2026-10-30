@@ -240,13 +240,30 @@
                             </li>
 
                             <li class="nav-item">
-                                <a href="{{ route('admin.eksekusi-konversi.index') }}"
-                                    class="nav-link {{ request()->routeIs('admin.eksekusi-konversi*') ? 'active' : '' }}">
+                                <a href="{{ route('admin.konversi-produk.index') }}"
+                                    class="nav-link {{ request()->routeIs('admin.konversi-produk*') ? 'active' : '' }}">
                                     <i class="nav-icon bi bi-arrow-repeat"></i>
-                                    <p>Konversi Stok Fisik</p>
+                                    <p>Konversi Produk</p>
                                 </a>
                             </li>
 
+                            <!-- ================= HEADER: SPK REKOMENDASI ================= -->
+                            <li class="nav-header">SISTEM KEPUTUSAN (SPK)</li>
+
+                            <li class="nav-item">
+                                <a href="{{ route('admin.sesi-perhitungan-ahp.index') }}"
+                                    class="nav-link {{ request()->routeIs('admin.sesi-perhitungan-ahp*') ? 'active' : '' }}">
+                                    <i class="nav-icon bi bi-diagram-3"></i>
+                                    <p>Bobot AHP</p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="{{ route('admin.rekomendasi-supplier.index') }}"
+                                    class="nav-link {{ request()->routeIs('admin.rekomendasi-supplier*') ? 'active' : '' }}">
+                                    <i class="nav-icon bi bi-trophy"></i>
+                                    <p>Rekomendasi SAW</p>
+                                </a>
+                            </li>
                         @endif
 
                         {{-- ========================================== --}}
@@ -281,14 +298,6 @@
                             </li>
 
                             <li class="nav-item">
-                                <a href="{{ route('admin.penjualan.index') }}"
-                                    class="nav-link {{ request()->routeIs('admin.penjualan*') ? 'active' : '' }}">
-                                    <i class="nav-icon bi bi-receipt"></i>
-                                    <p>Pengiriman Penjualan</p>
-                                </a>
-                            </li>
-
-                            <li class="nav-item">
                                 <a href="{{ route('admin.customer.index') }}"
                                     class="nav-link {{ request()->routeIs('admin.customer*') ? 'active' : '' }}">
                                     <i class="nav-icon bi bi-people"></i>
@@ -297,6 +306,7 @@
                             </li>
 
                         @endif
+
 
                     </ul>
                 </nav>

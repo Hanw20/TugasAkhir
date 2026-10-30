@@ -8,9 +8,15 @@ class SesiPerhitunganAhp extends Model
 {
     protected $table = 'sesi_perhitungan_ahp';
 
-    protected $fillable = ['nama_sesi', 'tanggal_hitung', 'user_id'];
+    protected $fillable = [
+        'nama_sesi',
+        'tanggal_hitung',
+        'user_id',
+    ];
 
-    protected $casts = ['tanggal_hitung' => 'datetime'];
+    protected $casts = [
+        'tanggal_hitung' => 'datetime',
+    ];
 
     public function user()
     {
@@ -19,6 +25,6 @@ class SesiPerhitunganAhp extends Model
 
     public function perbandingan()
     {
-        return $this->hasMany(PerbandinganKriteriaAhp::class);
+        return $this->hasMany(PerbandinganKriteriaAhp::class, 'sesi_perhitungan_ahp_id');
     }
 }

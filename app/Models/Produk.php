@@ -9,26 +9,39 @@ class Produk extends Model
     protected $table = 'produk';
 
     protected $fillable = [
-        'kode_produk', 'nama_produk', 'kategori_produk_id', 'merek_id',
-        'satuan_dasar_id', 'metode_jual', 'harga_beli', 'harga_beli_terakhir',
-        'harga_jual', 'stok', 'stok_minimum',
-        'stok_onorder_supplier', 'stok_onorder_customer',
+        'kode_produk',
+        'nama_produk',
+        'kategori_produk_id',
+        'merek_id',
+        'satuan_dasar_id',
+        'metode_jual',
+        'harga_beli',
+        'harga_beli_terakhir',
+        'harga_jual',
+        'stok',
+        'stok_minimum',
+        'stok_onorder_supplier',
+        'stok_onorder_customer',
     ];
 
     protected $casts = [
-        'harga_beli'             => 'decimal:2',
-        'harga_beli_terakhir'    => 'decimal:2',
-        'harga_jual'             => 'decimal:2',
-        'stok'                   => 'decimal:3',
-        'stok_minimum'           => 'decimal:3',
-        'stok_onorder_supplier'  => 'decimal:3',
-        'stok_onorder_customer'  => 'decimal:3',
+        'harga_beli' => 'decimal:2',
+        'harga_beli_terakhir' => 'decimal:2',
+        'harga_jual' => 'decimal:2',
+        'stok' => 'decimal:3',
+        'stok_minimum' => 'decimal:3',
+        'stok_onorder_supplier' => 'decimal:3',
+        'stok_onorder_customer' => 'decimal:3',
     ];
 
     // Accessor: apakah stok menipis?
     public function getStokMenipisAttribute(): bool
     {
         return $this->stok <= $this->stok_minimum;
+    }
+    public function satuan()
+    {
+        return $this->belongsTo(SatuanProduk::class, 'satuan_dasar_id');
     }
 
     // Relasi ke master
@@ -79,7 +92,7 @@ class Produk extends Model
     {
         return $this->hasMany(DetailStokOpname::class);
     }
-        // Menghitung Harga Beli Rata-Rata secara riil dari histori transaksi penerimaan
+    // Menghitung Harga Beli Rata-Rata secara riil dari histori transaksi penerimaan
     public function getHargaBeliRataRataAttribute()
     {
         // Ambil semua detail pembelian untuk produk ini yang sudah ada penerimaan fisiknya
