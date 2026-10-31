@@ -64,6 +64,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::post('piutang-customer', [App\Http\Controllers\PembayaranPiutangController::class, 'store'])->name('piutang-customer.store');
     // Modul Stok Opname
     Route::resource('stok-opname', App\Http\Controllers\StokOpnameController::class);
+    Route::post('stok-opname/{id}/reconcile', [App\Http\Controllers\StokOpnameController::class, 'reconcile'])->name('stok-opname.reconcile');
 
     // Modul Konversi Produk (Transaksi Repacking Stok)
     Route::resource('konversi-produk', App\Http\Controllers\KonversiProdukController::class);

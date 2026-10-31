@@ -8,7 +8,7 @@ class StokOpname extends Model
 {
     protected $table = 'stok_opname';
 
-    protected $fillable = ['tanggal', 'user_id', 'catatan'];
+    protected $fillable = ['tanggal', 'user_id', 'catatan', 'status'];
 
     protected $casts = ['tanggal' => 'datetime'];
 

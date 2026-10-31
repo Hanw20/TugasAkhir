@@ -26,6 +26,12 @@
                             @endforeach
                         </select>
                     </div>
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <label class="form-label fw-bold mb-0">Pilih Sesi Pembobotan Kriteria AHP</label>
+                        <a href="{{ route('admin.sesi-perhitungan-ahp.index') }}" class="btn btn-sm btn-outline-success py-0 px-2 fw-semibold">
+                            <i class="bi bi-plus-circle me-1"></i>Buat Sesi Baru
+                        </a>
+                    </div>
                     <div class="col-md-5">
                         <label class="form-label fw-bold">Pilih Sesi Pembobotan Kriteria AHP</label>
                         <select name="sesi_id" class="form-select">

@@ -44,13 +44,14 @@ class StokOpnameController extends Controller
 
         DB::beginTransaction();
         try {
-            // Ubah format tanggal dari form browser ke format standar MySQL
             $tanggal = \Carbon\Carbon::parse($request->tanggal)->format('Y-m-d H:i:s');
 
+            // Buat sesi opname dengan status default: menunggu_persetujuan
             $opname = StokOpname::create([
                 'tanggal' => $tanggal,
                 'user_id' => Auth::id() ?? 1,
                 'catatan' => $request->catatan,
+                'status' => 'menunggu_persetujuan',
             ]);
 
             foreach ($request->items as $item) {
@@ -59,7 +60,7 @@ class StokOpnameController extends Controller
                 $stokFisik = (float) $item['stok_fisik'];
                 $selisih = $stokFisik - $stokSistem;
 
-                // Catat detail opname
+                // Catat detail opname (stok master produk BELUM diubah di sini)
                 DetailStokOpname::create([
                     'stok_opname_id' => $opname->id,
                     'produk_id' => $prod->id,
@@ -67,13 +68,11 @@ class StokOpnameController extends Controller
                     'stok_fisik' => $stokFisik,
                     'selisih' => $selisih,
                 ]);
-
-                // Update stok produk di master produk agar sinkron dengan gudang
-                $prod->update(['stok' => $stokFisik]);
             }
 
             DB::commit();
-            return redirect()->route('admin.stok-opname.index')->with('success', 'Stok Opname berhasil dicatat dan stok gudang telah disinkronkan!');
+            return redirect()->route('admin.stok-opname.show', $opname->id)
+                ->with('success', 'Hasil hitung fisik stok opname berhasil dicatat! Menunggu persetujuan pemilik untuk disesuaikan ke stok sistem.');
         } catch (\Exception $e) {
             DB::rollBack();
             return back()->with('error', 'Gagal memproses stok opname: ' . $e->getMessage());
@@ -87,5 +86,39 @@ class StokOpnameController extends Controller
     {
         $opname = StokOpname::with(['user', 'detailStokOpname.produk.satuanDasar'])->findOrFail($id);
         return view('admin.stok_opname.show', compact('opname'));
+    }
+
+    /**
+     * Eksekusi persetujuan penyesuaian (Reconcile) stok sistem ke fisik nyata.
+     */
+    public function reconcile(string $id)
+    {
+        $opname = StokOpname::with('detailStokOpname')->findOrFail($id);
+
+        if ($opname->status === 'disesuaikan') {
+            return back()->with('info', 'Sesi stok opname ini sudah pernah disetujui dan disesuaikan sebelumnya.');
+        }
+
+        DB::beginTransaction();
+        try {
+            // Update stok fisik ke master produk
+            foreach ($opname->detailStokOpname as $detail) {
+                $prod = Produk::findOrFail($detail->produk_id);
+                $prod->update([
+                    'stok' => $detail->stok_fisik
+                ]);
+            }
+
+            // Ubah status sesi opname menjadi 'disesuaikan'
+            $opname->update([
+                'status' => 'disesuaikan'
+            ]);
+
+            DB::commit();
+            return back()->with('success', 'Stok master produk berhasil disesuaikan dengan kondisi fisik gudang!');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->with('error', 'Gagal menyesuaikan stok: ' . $e->getMessage());
+        }
     }
 }
