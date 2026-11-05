@@ -32,7 +32,8 @@
                                     <td class="text-center">{{ $idx + 1 }}</td>
                                     <td class="fw-bold">{{ \Carbon\Carbon::parse($row->tanggal)->format('d/m/Y H:i') }}</td>
                                     <td>{{ $row->user->name ?? '-' }}</td>
-                                    <td><span class="badge bg-info text-dark">{{ $row->detailStokOpname->count() }}
+                                    <td><span
+                                            class="badge bg-info text-dark">{{ $row->detailStokOpname ? $row->detailStokOpname->count() : 0 }}
                                             Produk</span></td>
                                     <td>
                                         @if(($row->status ?? 'menunggu_persetujuan') === 'disesuaikan')

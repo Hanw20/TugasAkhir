@@ -152,16 +152,17 @@
                                 </a>
                             </li>
 
-                            <!-- ================= HEADER: PEMBELIAN ================= -->
-                            <li class="nav-header">PEMBELIAN</li>
+                            <!-- ================= HEADER: TRANSAKSI ================= -->
+                            <li class="nav-header">TRANSAKSI</li>
 
+                            <!-- Submenu Pembelian -->
                             <li
                                 class="nav-item has-treeview {{ request()->routeIs('admin.pembelian*', 'admin.pembayaran-hutang*') ? 'menu-open' : '' }}">
                                 <a href="#"
                                     class="nav-link {{ request()->routeIs('admin.pembelian*', 'admin.pembayaran-hutang*') ? 'active' : '' }}">
                                     <i class="nav-icon bi bi-cart-plus"></i>
                                     <p>
-                                        Menu Pembelian
+                                        Pembelian
                                         <i class="nav-arrow bi bi-chevron-right"></i>
                                     </p>
                                 </a>
@@ -190,16 +191,14 @@
                                 </ul>
                             </li>
 
-                            <!-- ================= HEADER: PENJUALAN ================= -->
-                            <li class="nav-header">PENJUALAN</li>
-
+                            <!-- Submenu Penjualan -->
                             <li
                                 class="nav-item has-treeview {{ request()->routeIs('admin.penjualan*', 'admin.piutang-customer*') ? 'menu-open' : '' }}">
                                 <a href="#"
                                     class="nav-link {{ request()->routeIs('admin.penjualan*', 'admin.piutang-customer*') ? 'active' : '' }}">
                                     <i class="nav-icon bi bi-cash-coin"></i>
                                     <p>
-                                        Menu Penjualan
+                                        Penjualan
                                         <i class="nav-arrow bi bi-chevron-right"></i>
                                     </p>
                                 </a>

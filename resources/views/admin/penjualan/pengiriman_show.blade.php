@@ -82,33 +82,11 @@
                         </tbody>
                     </table>
                 </div>
-
-                <!-- Tanda Tangan Cetak Surat Jalan -->
-                <div class="row mt-5 text-center d-none d-print-flex">
-                    <div class="col-4">
-                        <p>Petugas Gudang,</p>
-                        <br><br><br>
-                        <p>( {{ $pengiriman->user->name ?? '....................' }} )</p>
-                    </div>
-                    <div class="col-4">
-                        <p>Supir / Pengirim,</p>
-                        <br><br><br>
-                        <p>( ................................ )</p>
-                    </div>
-                    <div class="col-4">
-                        <p>Penerima di Proyek,</p>
-                        <br><br><br>
-                        <p>( {{ $pengiriman->penjualan->customer->nama_customer ?? '....................' }} )</p>
-                    </div>
-                </div>
             </div>
             <div class="card-footer d-flex justify-content-between">
                 <a href="{{ route('admin.penjualan.pengiriman.index') }}" class="btn btn-secondary">
                     <i class="bi bi-arrow-left"></i> Kembali ke Riwayat Pengiriman
                 </a>
-                <button type="button" class="btn btn-primary" onclick="window.print()">
-                    <i class="bi bi-printer"></i> Cetak Surat Jalan
-                </button>
             </div>
         </div>
     </div>

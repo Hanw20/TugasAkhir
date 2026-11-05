@@ -87,9 +87,7 @@
                 <a href="{{ route('admin.pembelian.penerimaan.index') }}" class="btn btn-secondary">
                     <i class="bi bi-arrow-left"></i> Kembali ke Riwayat Penerimaan
                 </a>
-                <button type="button" class="btn btn-primary" onclick="window.print()">
-                    <i class="bi bi-printer"></i> Cetak Bukti Penerimaan
-                </button>
+    
             </div>
         </div>
     </div>

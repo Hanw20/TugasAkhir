@@ -43,15 +43,20 @@ class PenerimaanPembelianController extends Controller
     // Simpan Checklist Barang Masuk & Update Stok Produk Nyata
     public function store(Request $request, string $id)
     {
-        $request->validate([
+                $request->validate([
             'tanggal_terima' => 'required|date',
             'detail_id' => 'required|array',
             'qty_diterima' => 'required|array',
-            'nilai_kualitas' => 'required|numeric|min:1|max:5', // Validasi input kualitas
+            'nilai_kualitas' => 'required|array', // Sekarang array per baris produk!
             'catatan' => 'nullable|string|max:255',
         ]);
 
         $pembelian = Pembelian::with('detailPembelian')->findOrFail($id);
+
+        // Ambil Kriteria Kualitas (K2) untuk SAW
+        $kriteriaKualitas = \App\Models\KriteriaAhp::where('kode_kriteria', 'K2')
+            ->orWhere('nama_kriteria', 'like', '%Kualitas%')
+            ->first();
 
         DB::beginTransaction();
         try {
@@ -63,9 +68,7 @@ class PenerimaanPembelianController extends Controller
                 'catatan' => $request->catatan,
             ]);
 
-            $firstDetailPenerimaanId = null;
-
-            // 2. Simpan Detail Penerimaan & Tambah Stok Produk
+            // 2. Simpan Detail Penerimaan, Penilaian Kualitas Per Produk, & Tambah Stok
             foreach ($request->detail_id as $index => $detailId) {
                 $qtyDiterima = (float) $request->qty_diterima[$index];
 
@@ -76,11 +79,19 @@ class PenerimaanPembelianController extends Controller
                         'qty_diterima' => $qtyDiterima,
                     ]);
 
-                    if (!$firstDetailPenerimaanId) {
-                        $firstDetailPenerimaanId = $detailPenerimaan->id;
+                    // Simpan Penilaian Kualitas Fisik Produk ke Tabel riwayat_penilaian_supplier
+                    if ($kriteriaKualitas) {
+                        \App\Models\RiwayatPenilaianSupplier::create([
+                            'supplier_id' => $pembelian->supplier_id,
+                            'detail_penerimaan_pembelian_id' => $detailPenerimaan->id, // Tepat per produk!
+                            'kriteria_ahp_id' => $kriteriaKualitas->id,
+                            'nilai' => $request->nilai_kualitas[$index] ?? 5,
+                            'tanggal_penilaian' => $request->tanggal_terima,
+                            'keterangan' => 'Penilaian fisik produk pada faktur #' . $pembelian->no_faktur,
+                        ]);
                     }
 
-                    // Tambah Stok Fisik Produk & Hitung Moving Average
+                    // Tambah Stok Fisik Produk & Kurangi stok_onorder_supplier
                     $detailPembelian = DetailPembelian::find($detailId);
                     if ($detailPembelian && $detailPembelian->produk) {
                         $produk = $detailPembelian->produk;
@@ -92,14 +103,13 @@ class PenerimaanPembelianController extends Controller
                         $hargaBeliFaktur = (float) $detailPembelian->harga_satuan;
 
                         $totalStokBaru = $stokLama + $qtyBaru;
-                        if ($totalStokBaru > 0) {
-                            $hargaRataBaru = (($stokLama * $hargaRataLama) + ($qtyBaru * $hargaBeliFaktur)) / $totalStokBaru;
-                        } else {
-                            $hargaRataBaru = $hargaBeliFaktur;
-                        }
+                        $hargaRataBaru = ($totalStokBaru > 0) 
+                            ? (($stokLama * $hargaRataLama) + ($qtyBaru * $hargaBeliFaktur)) / $totalStokBaru 
+                            : $hargaBeliFaktur;
 
                         $produk->update([
                             'stok' => $totalStokBaru,
+                            'stok_onorder_supplier' => max(0, (float)$produk->stok_onorder_supplier - $qtyBaru),
                             'harga_beli' => round($hargaRataBaru, 2),
                             'harga_beli_terakhir' => $hargaBeliFaktur,
                         ]);
@@ -107,24 +117,7 @@ class PenerimaanPembelianController extends Controller
                 }
             }
 
-            // 👇 2B. SIMPAN PENILAIAN KRITERIA KUALITAS (K2) KE TABEL riwayat_penilaian_supplier 👇
-            // Cari ID Kriteria Kualitas (kode K2)
-            $kriteriaKualitas = \App\Models\KriteriaAhp::where('kode_kriteria', 'K2')
-                ->orWhere('nama_kriteria', 'like', '%Kualitas%')
-                ->first();
-
-            if ($kriteriaKualitas) {
-                \App\Models\RiwayatPenilaianSupplier::create([
-                    'supplier_id' => $pembelian->supplier_id,
-                    'detail_penerimaan_pembelian_id' => $firstDetailPenerimaanId,
-                    'kriteria_ahp_id' => $kriteriaKualitas->id,
-                    'nilai' => $request->nilai_kualitas,
-                    'tanggal_penilaian' => $request->tanggal_terima,
-                    'keterangan' => 'Penilaian fisik penerimaan faktur #' . $pembelian->no_faktur . ': ' . ($request->catatan ?? 'Kondisi barang dicek gudang'),
-                ]);
-            }
-
-            // 3. Cek Status Akumulasi Pembelian
+                   // 3. Update Status Akumulasi Penerimaan Faktur Pembelian
             $pembelian->refresh();
             $semuaLengkap = true;
             $adaYangDiterima = false;
@@ -152,7 +145,7 @@ class PenerimaanPembelianController extends Controller
 
             DB::commit();
             return redirect()->route('admin.pembelian.show', $pembelian->id)
-                ->with('success', 'Barang berhasil diceklis dan skor kualitas fisik telah disimpan!');
+                ->with('success', 'Penerimaan barang dan penilaian kualitas produk berhasil disimpan!');
 
         } catch (\Exception $e) {
             DB::rollBack();

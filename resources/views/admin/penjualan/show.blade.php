@@ -92,15 +92,11 @@
                         <i class="bi bi-arrow-left"></i> Kembali ke Riwayat
                     </a>
                     <div>
-                        @if($penjualan->status_pengiriman !== 'terkirim')
-                            <a href="{{ route('admin.penjualan.kirim.create', $penjualan->id) }}"
-                                class="btn btn-primary me-2 fw-bold">
+                       @if($penjualan->status_pengiriman !== 'seluruh')
+                            <a href="{{ route('admin.penjualan.kirim.create', $penjualan->id) }}" class="btn btn-primary me-2 fw-bold">
                                 <i class="bi bi-truck"></i> Kirim Barang
                             </a>
                         @endif
-                        <button type="button" class="btn btn-success" onclick="window.print()">
-                            <i class="bi bi-printer"></i> Cetak Nota Struk
-                        </button>
                     </div>
                 </div>
             </div>

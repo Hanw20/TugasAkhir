@@ -32,7 +32,7 @@ class PengirimanPenjualanController extends Controller
     {
         $penjualan = Penjualan::with(['customer', 'detailPenjualan.produk.satuanDasar'])->findOrFail($id);
 
-        if ($penjualan->status_pengiriman === 'terkirim') {
+        if ($penjualan->status_pengiriman === 'seluruh') {
             return redirect()->route('admin.penjualan.show', $id)
                 ->with('error', 'Semua barang pada nota ini sudah dikirimkan!');
         }
@@ -106,12 +106,12 @@ class PengirimanPenjualanController extends Controller
 
             if ($semuaLengkap) {
                 $penjualan->update([
-                    'status_pengiriman' => 'terkirim',
+                    'status_pengiriman' => 'seluruh',
                     'status' => 'selesai'
                 ]);
             } elseif ($adaYangDikirim) {
                 $penjualan->update([
-                    'status_pengiriman' => 'sebagian',
+                    'status_pengiriman' => 'dikirim_sebagian',
                     'status' => 'proses'
                 ]);
             }

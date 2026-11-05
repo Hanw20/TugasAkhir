@@ -40,32 +40,34 @@
     </div>
 </div>
 
-<!-- ================= BOOTSTRAP MODAL ================= -->
-<div class="modal fade" id="modal-form" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
+<!-- ================= BOOTSTRAP 5 MODAL KATEGORI ================= -->
+<div class="modal fade" id="modal-form" tabindex="-1" aria-labelledby="modal-title" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content shadow border-0">
             <form id="form-kategori" method="POST">
                 @csrf
-                <!-- Input hidden ini penting untuk mengakali PUT/POST di Laravel -->
                 <input type="hidden" name="_method" id="method" value="POST">
                 <input type="hidden" id="kategori_id">
                 
-                <div class="modal-header">
-                    <h5 class="modal-title" id="modal-title">Tambah Kategori</h5>
-                    <!-- Ganti data-bs-dismiss menjadi data-dismiss jika Bootstrap 4 (bawaan AdminLTE) -->
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
+                <div class="modal-header bg-primary text-white py-3">
+                    <h5 class="modal-title fs-5 fw-bold" id="modal-title">
+                        <i class="bi bi-tag me-2"></i> Tambah Kategori
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body">
-                    <div class="form-group">
-                        <label>Nama Kategori</label>
-                        <input type="text" name="nama_kategori" id="nama_kategori" class="form-control" required>
+                <div class="modal-body p-4">
+                    <div class="mb-0">
+                        <label for="nama_kategori" class="form-label fw-semibold">Nama Kategori <span class="text-danger">*</span></label>
+                        <input type="text" name="nama_kategori" id="nama_kategori" class="form-control" placeholder="Contoh: Semen, Besi, Cat, Keramik" required>
                     </div>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
-                    <button type="submit" class="btn btn-primary">Simpan</button>
+                <div class="modal-footer bg-light py-2">
+                    <button type="button" class="btn btn-secondary px-3" data-bs-dismiss="modal">
+                        <i class="bi bi-x-circle me-1"></i> Batal
+                    </button>
+                    <button type="submit" class="btn btn-primary px-4 fw-bold">
+                        <i class="bi bi-save me-1"></i> Simpan
+                    </button>
                 </div>
             </form>
         </div>

@@ -70,32 +70,39 @@ class SupplierController extends Controller
     public function storePenilaian(Request $request, string $id)
     {
         $request->validate([
-            'nilai_pelayanan' => 'required|numeric|min:1|max:5',
+            'nilai_respon' => 'required|numeric|min:1|max:5',
+            'nilai_garansi' => 'required|numeric|min:1|max:5',
             'tanggal_penilaian' => 'required|date',
             'keterangan' => 'nullable|string|max:255',
         ]);
 
         $supplier = Supplier::findOrFail($id);
+        $k3 = \App\Models\KriteriaAhp::where('kode_kriteria', 'K3')->first();
+        $k4 = \App\Models\KriteriaAhp::where('kode_kriteria', 'K4')->first();
 
-        // Cari Kriteria Pelayanan (kode K3)
-        $kriteriaPelayanan = \App\Models\KriteriaAhp::where('kode_kriteria', 'K3')
-            ->orWhere('nama_kriteria', 'like', '%Pelayanan%')
-            ->first();
-
-        if (!$kriteriaPelayanan) {
-            return back()->with('error', 'Kriteria Pelayanan (K3) belum ditemukan di database.');
+        // Simpan Nilai Kecepatan Respon (K3)
+        if ($k3) {
+            \App\Models\RiwayatPenilaianSupplier::create([
+                'supplier_id' => $supplier->id,
+                'kriteria_ahp_id' => $k3->id,
+                'nilai' => $request->nilai_respon,
+                'tanggal_penilaian' => $request->tanggal_penilaian,
+                'keterangan' => 'Evaluasi Kecepatan Respon: ' . ($request->keterangan ?? '-'),
+            ]);
         }
 
-        \App\Models\RiwayatPenilaianSupplier::create([
-            'supplier_id' => $supplier->id,
-            'detail_penerimaan_pembelian_id' => null, // null karena penilaian pelayanan mandiri dari owner
-            'kriteria_ahp_id' => $kriteriaPelayanan->id,
-            'nilai' => $request->nilai_pelayanan,
-            'tanggal_penilaian' => $request->tanggal_penilaian,
-            'keterangan' => $request->keterangan ?? 'Evaluasi pelayanan supplier oleh Admin',
-        ]);
+        // Simpan Nilai Garansi (K4)
+        if ($k4) {
+            \App\Models\RiwayatPenilaianSupplier::create([
+                'supplier_id' => $supplier->id,
+                'kriteria_ahp_id' => $k4->id,
+                'nilai' => $request->nilai_garansi,
+                'tanggal_penilaian' => $request->tanggal_penilaian,
+                'keterangan' => 'Evaluasi Kebijakan Garansi: ' . ($request->keterangan ?? '-'),
+            ]);
+        }
 
-        return back()->with('success', 'Evaluasi pelayanan supplier berhasil dicatat!');
+        return back()->with('success', 'Evaluasi Kecepatan Respon & Garansi supplier berhasil dicatat!');
     }
 
     public function attachProduk(Request $request, string $id)

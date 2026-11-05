@@ -12,14 +12,21 @@ use Illuminate\Support\Facades\Auth;
 
 class PembelianController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        // Ambil riwayat pembelian beserta supplier dan user pembuatnya
-        $pembelian = Pembelian::with(['supplier', 'user'])
-            ->orderBy('id', 'desc')
-            ->get();
+        // Default filter: bulan dan tahun saat ini jika user belum memilih
+        $bulan = $request->get('bulan', date('m'));
+        $tahun = $request->get('tahun', date('Y'));
 
-        return view('admin.pembelian.index', compact('pembelian'));
+        $query = Pembelian::with(['supplier', 'user'])
+            ->whereMonth('tanggal', $bulan)
+            ->whereYear('tanggal', $tahun)
+            ->orderBy('id', 'desc');
+
+        $pembelian = $query->get();
+        $totalAkumulasi = $pembelian->sum('total');
+
+        return view('admin.pembelian.index', compact('pembelian', 'bulan', 'tahun', 'totalAkumulasi'));
     }
 
     public function create()
@@ -27,25 +34,25 @@ class PembelianController extends Controller
         // Ambil data supplier dan produk untuk form pembelian
         $suppliers = Supplier::orderBy('nama_supplier')->get();
         $produks = Produk::with('satuanDasar')->orderBy('nama_produk')->get();
-        
+
         // Buat nomor faktur otomatis, misal: PB-20261013-0001
         $today = date('Ymd');
         $countToday = Pembelian::whereDate('created_at', today())->count() + 1;
         $noFakturOtomatis = 'PB-' . $today . '-' . str_pad($countToday, 4, '0', STR_PAD_LEFT);
 
-        
+
 
         return view('admin.pembelian.create', compact('suppliers', 'produks', 'noFakturOtomatis'));
     }
 
-        public function store(Request $request)
+    public function store(Request $request)
     {
         $request->validate([
-            'no_faktur'    => 'required|string|unique:pembelian,no_faktur',
-            'supplier_id'  => 'required|integer',
-            'tanggal'      => 'required|date',
-            'produk_id'    => 'required|array|min:1',
-            'qty'          => 'required|array|min:1',
+            'no_faktur' => 'required|string|unique:pembelian,no_faktur',
+            'supplier_id' => 'required|integer',
+            'tanggal' => 'required|date',
+            'produk_id' => 'required|array|min:1',
+            'qty' => 'required|array|min:1',
             'harga_satuan' => 'required|array|min:1',
         ]);
 
@@ -60,14 +67,15 @@ class PembelianController extends Controller
 
             // 1. Simpan Header Pembelian (Status default: belum_diterima)
             $pembelian = Pembelian::create([
-                'no_faktur'          => $request->no_faktur,
-                'supplier_id'        => $request->supplier_id,
-                'user_id'            => Auth::id() ?? 1,
-                'tanggal'            => $request->tanggal,
-                'total'              => $total,
-                'status'             => 'proses',
-                'status_penerimaan'  => 'belum_diterima',
-                'status_pembayaran'  => 'belum_dibayar',
+                'no_faktur' => $request->no_faktur,
+                'supplier_id' => $request->supplier_id,
+                'user_id' => Auth::id() ?? 1,
+                'tanggal' => $request->tanggal,
+                'tanggal_jatuh_tempo' => $request->tanggal_jatuh_tempo,
+                'total' => $total,
+                'status' => 'proses',
+                'status_penerimaan' => 'belum_diterima',
+                'status_pembayaran' => 'belum_dibayar',
             ]);
 
             // 2. Simpan Detail Produk (Stok TIDAK bertambah di sini)
@@ -78,10 +86,10 @@ class PembelianController extends Controller
 
                 DetailPembelian::create([
                     'pembelian_id' => $pembelian->id,
-                    'produk_id'    => $prodId,
-                    'qty'          => $qty,
+                    'produk_id' => $prodId,
+                    'qty' => $qty,
                     'harga_satuan' => $harga,
-                    'subtotal'     => $subtotal,
+                    'subtotal' => $subtotal,
                 ]);
                 $produk = Produk::find($prodId);
                 if ($produk) {
@@ -90,6 +98,8 @@ class PembelianController extends Controller
                     ]);
                 }
             }
+
+           
 
             DB::commit();
             return redirect()->route('admin.pembelian.index')
@@ -107,7 +117,13 @@ class PembelianController extends Controller
         return view('admin.pembelian.show', compact('pembelian'));
     }
 
-    public function edit(string $id) {}
-    public function update(Request $request, string $id) {}
-    public function destroy(string $id) {}
+    public function edit(string $id)
+    {
+    }
+    public function update(Request $request, string $id)
+    {
+    }
+    public function destroy(string $id)
+    {
+    }
 }

@@ -63,17 +63,18 @@ class RekomendasiSupplierController extends Controller
                 foreach ($supplierList as $sup) {
                     $k1_harga = $this->getHargaTerakhir($sup->id, $selectedProduk);
                     $k2_kualitas = $this->getNilaiKualitas($sup->id);
-                    $k3_pelayanan = $this->getNilaiPelayanan($sup->id);
-                    $k4_pengiriman = $this->getWaktuPengiriman($sup->id);
-                    $k5_tempo = $this->getTempoPembayaran($sup->id);
+                    $k3_respon = $this->getNilaiRespon($sup->id);
+                    $k4_garansi = $this->getNilaiGaransi($sup->id);
+                    $k5_pengiriman = $this->getWaktuPengiriman($sup->id);
+                    $k6_tempo = $this->getTempoPembayaran($sup->id);
 
-                    $alternatif[$sup->id] = $sup;
                     $matriksKeputusan[$sup->id] = [
                         'K1' => (float) $k1_harga,
                         'K2' => (float) $k2_kualitas,
-                        'K3' => (float) $k3_pelayanan,
-                        'K4' => (float) $k4_pengiriman,
-                        'K5' => (float) $k5_tempo,
+                        'K3' => (float) $k3_respon,
+                        'K4' => (float) $k4_garansi,
+                        'K5' => (float) $k5_pengiriman,
+                        'K6' => (float) $k6_tempo,
                     ];
                 }
 
@@ -235,16 +236,6 @@ class RekomendasiSupplierController extends Controller
         return $avg ? round($avg, 2) : 3.5;
     }
 
-    private function getNilaiPelayanan($supplierId)
-    {
-        $avg = RiwayatPenilaianSupplier::where('supplier_id', $supplierId)
-            ->whereHas('kriteria', function ($q) {
-                $q->where('kode_kriteria', 'K3')->orWhere('nama_kriteria', 'like', '%Pelayanan%');
-            })->avg('nilai');
-
-        return $avg ? round($avg, 2) : 3.5;
-    }
-
     private function getWaktuPengiriman($supplierId)
     {
         $pembelian = \App\Models\Pembelian::where('supplier_id', $supplierId)
@@ -290,5 +281,24 @@ class RekomendasiSupplierController extends Controller
         }
 
         return 14.0;
+    }
+        private function getNilaiRespon($supplierId)
+    {
+        $avg = RiwayatPenilaianSupplier::where('supplier_id', $supplierId)
+            ->whereHas('kriteria', function ($q) {
+                $q->where('kode_kriteria', 'K3');
+            })->avg('nilai');
+
+        return $avg ? round($avg, 2) : 3.5;
+    }
+
+    private function getNilaiGaransi($supplierId)
+    {
+        $avg = RiwayatPenilaianSupplier::where('supplier_id', $supplierId)
+            ->whereHas('kriteria', function ($q) {
+                $q->where('kode_kriteria', 'K4');
+            })->avg('nilai');
+
+        return $avg ? round($avg, 2) : 3.5;
     }
 }

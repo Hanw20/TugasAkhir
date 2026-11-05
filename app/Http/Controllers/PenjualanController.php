@@ -12,14 +12,21 @@ use Illuminate\Support\Facades\Auth;
 
 class PenjualanController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        // Ambil riwayat faktur penjualan / laporan penjualan
-        $penjualan = Penjualan::with(['customer', 'user'])
-            ->orderBy('id', 'desc')
-            ->get();
+        // Default filter: bulan dan tahun saat ini jika user belum memilih
+        $bulan = $request->get('bulan', date('m'));
+        $tahun = $request->get('tahun', date('Y'));
 
-        return view('admin.penjualan.index', compact('penjualan'));
+        $query = Penjualan::with(['customer', 'user'])
+            ->whereMonth('tanggal', $bulan)
+            ->whereYear('tanggal', $tahun)
+            ->orderBy('id', 'desc');
+
+        $penjualan = $query->get();
+        $totalAkumulasi = $penjualan->sum('total');
+
+        return view('admin.penjualan.index', compact('penjualan', 'bulan', 'tahun', 'totalAkumulasi'));
     }
 
     public function create()
@@ -56,7 +63,7 @@ class PenjualanController extends Controller
                 $total += $subtotal;
             }
 
-            $statusPengiriman = ($request->metode_pengiriman === 'langsung') ? 'terkirim' : 'belum_dikirim';
+            $statusPengiriman = ($request->metode_pengiriman === 'langsung') ? 'seluruh' : 'belum_dikirim';
             $statusPembayaran = ($request->metode_pembayaran === 'lunas') ? 'lunas' : 'belum_dibayar';
 
             // 1. Simpan Header Penjualan
@@ -68,7 +75,7 @@ class PenjualanController extends Controller
                 'total' => $total,
                 'ongkos_kirim' => 0,
                 'diskon' => 0,
-                'status' => ($statusPengiriman === 'terkirim') ? 'selesai' : 'proses',
+                'status' => ($statusPengiriman === 'seluruh') ? 'selesai' : 'proses',
                 'status_pengiriman' => $statusPengiriman,
                 'status_pembayaran' => $statusPembayaran,
             ]);
@@ -96,9 +103,12 @@ class PenjualanController extends Controller
                     'subtotal' => $subtotal,
                 ]);
 
-                // Jika barang langsung dibawa pulang oleh pembeli, kurangi stok dan catat pengiriman otomatis
+                // Jika langsung dibawa pembeli, potong stok fisik
                 if ($request->metode_pengiriman === 'langsung') {
                     $produk->decrement('stok', $qty);
+                } else {
+                    // Jika dikirim nanti, tambahkan ke stok on order customer
+                    $produk->increment('stok_onorder_customer', $qty);
                 }
             }
 
