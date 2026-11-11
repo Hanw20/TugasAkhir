@@ -12,7 +12,7 @@ class DetailPenerimaanPembelian extends Model
         'penerimaan_pembelian_id', 'detail_pembelian_id', 'qty_diterima',
     ];
 
-    protected $casts = ['qty_diterima' => 'decimal:3'];
+    protected $casts = ['qty_diterima' => 'float'];
 
     public function penerimaanPembelian()
     {

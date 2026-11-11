@@ -13,9 +13,9 @@ class DetailStokOpname extends Model
     ];
 
     protected $casts = [
-        'stok_sistem' => 'decimal:3',
-        'stok_fisik'  => 'decimal:3',
-        'selisih'     => 'decimal:3',
+        'stok_sistem' => 'float',
+        'stok_fisik'  => 'float',
+        'selisih'     => 'float',
     ];
 
     public function stokOpname()

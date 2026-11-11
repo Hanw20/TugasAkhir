@@ -12,7 +12,7 @@ class DetailPengirimanPenjualan extends Model
         'pengiriman_penjualan_id', 'detail_penjualan_id', 'qty_dikirim',
     ];
 
-    protected $casts = ['qty_dikirim' => 'decimal:3'];
+    protected $casts = ['qty_dikirim' => 'float'];
 
     public function pengirimanPenjualan()
     {

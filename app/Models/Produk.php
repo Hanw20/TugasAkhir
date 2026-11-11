@@ -28,10 +28,10 @@ class Produk extends Model
         'harga_beli' => 'decimal:2',
         'harga_beli_terakhir' => 'decimal:2',
         'harga_jual' => 'decimal:2',
-        'stok' => 'decimal:3',
-        'stok_minimum' => 'decimal:3',
-        'stok_onorder_supplier' => 'decimal:3',
-        'stok_onorder_customer' => 'decimal:3',
+        'stok' => 'float',
+        'stok_minimum' => 'float',
+        'stok_onorder_supplier' => 'float',
+        'stok_onorder_customer' => 'float',
     ];
 
     // Accessor: apakah stok menipis?

@@ -13,7 +13,7 @@ class DetailPembelian extends Model
     ];
 
     protected $casts = [
-        'qty'          => 'decimal:3',
+        'qty'          => 'float',
         'harga_satuan' => 'decimal:2',
         'subtotal'     => 'decimal:2',
     ];
