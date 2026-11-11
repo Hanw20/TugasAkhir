@@ -6,9 +6,9 @@
 @section('content')
 <div class="row">
     <div class="col-12">
-        <div class="card">
-            <div class="card-header bg-primary text-white">
-                <h5 class="card-title mb-0"><i class="bi bi-truck me-2"></i> Daftar Log Surat Jalan Pengiriman</h5>
+        <div class="card shadow-sm border-0" style="border-radius: 10px; overflow: hidden;">
+            <div class="card-header text-white" style="background-color: #264653;">
+                <h5 class="card-title mb-0 fw-bold"><i class="bi bi-truck me-2"></i> Daftar Log Surat Jalan Pengiriman</h5>
             </div>
             <div class="card-body table-responsive">
                 <table class="table table-bordered table-striped align-middle">
@@ -27,13 +27,13 @@
                         @forelse($pengiriman as $index => $row)
                         <tr>
                             <td class="text-center">{{ $index + 1 }}</td>
-                            <td><span class="badge bg-secondary fs-6">{{ $row->penjualan->no_nota ?? '-' }}</span></td>
+                            <td><span class="badge" style="background-color: #F1F5F9; color: #475569;">{{ $row->penjualan->no_nota ?? '-' }}</span></td>
                             <td>{{ $row->tanggal_kirim ? $row->tanggal_kirim->format('d/m/Y H:i') : '-' }} WIB</td>
                             <td><strong>{{ $row->penjualan->customer->nama_customer ?? '-' }}</strong></td>
                             <td>{{ $row->user->name ?? '-' }}</td>
                             <td>{{ $row->catatan ?? '-' }}</td>
                             <td class="text-center">
-                                <a href="{{ route('admin.penjualan.pengiriman.show', $row->id) }}" class="btn btn-sm btn-info text-white fw-bold">
+                                <a href="{{ route('admin.penjualan.pengiriman.show', $row->id) }}" class="btn btn-sm text-decoration-none" style="background-color: #E0F2FE; color: #0369A1; font-weight: 500;">
                                     <i class="bi bi-eye"></i> Detail Surat Jalan
                                 </a>
                             </td>

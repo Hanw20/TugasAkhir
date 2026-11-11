@@ -1,104 +1,137 @@
 @extends('layouts.adminlte')
 
-@section('title', 'Rekomendasi Supplier (SAW)')
-@section('page_title', 'Rekomendasi Supplier Terbaik (Metode SAW)')
+@section('title', 'Rekomendasi Supplier Terbaik')
+@section('page_title', 'Rekomendasi Supplier Terbaik')
 
 @section('content')
-    <div class="container-fluid">
+<div class="container-fluid px-3">
+    <!-- Judul Halaman -->
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+            <h4 class="mb-0 fw-bold" style="color: #264653;">Rekomendasi Supplier Terbaik</h4>
+            <p class="text-muted small mb-0">Penentuan supplier optimal menggunakan integrasi pembobotan AHP dan perankingan SAW</p>
+        </div>
+        @if ($selectedProduk)
+            <a href="{{ route('admin.rekomendasi-supplier.show', ['id' => $selectedProduk->id, 'sesi_id' => $sesiDipilih->id ?? '']) }}" 
+               class="btn btn-sm btn-outline-secondary shadow-sm" style="border-radius: 6px;">
+                <i class="bi bi-calculator me-1 text-primary"></i> Lihat Rincian Perhitungan Matematis &rarr;
+            </a>
+        @endif
+    </div>
 
-        <!-- CARD 1: PILIH PRODUK & PILIH SESI BOBOT AHP -->
-        <div class="card card-outline card-primary shadow-sm mb-4">
-            <div class="card-header">
-                <h5 class="card-title fw-bold m-0"><i class="bi bi-search me-2"></i>Parameter Rekomendasi Pengadaan Supplier
-                </h5>
-            </div>
-            <div class="card-body">
-                <form action="{{ route('admin.rekomendasi-supplier.index') }}" method="GET" class="row g-3 align-items-end">
+    <!-- 1. CARD PARAMETER REKOMENDASI SUPPLIER -->
+    <div class="card shadow-sm border-0 mb-4" style="border-radius: 8px;">
+        <div class="card-header py-2 text-white" style="background-color: #264653; border-top-left-radius: 8px; border-top-right-radius: 8px;">
+            <h6 class="mb-0 fw-semibold"><i class="bi bi-sliders me-2"></i>Parameter Rekomendasi Supplier</h6>
+        </div>
+        <div class="card-body p-3">
+            <form method="GET" action="{{ route('admin.rekomendasi-supplier.index') }}">
+                <div class="row g-3 align-items-end">
                     <div class="col-md-5">
-                        <label class="form-label fw-bold">Pilih Produk yang Ingin Direstock</label>
-                        <select name="produk_id" class="form-select" required>
-                            <option value="">-- Pilih Produk --</option>
-                            @foreach($daftarProduk as $p)
-                                <option value="{{ $p->id }}" {{ (isset($selectedProduk) && $selectedProduk->id == $p->id) ? 'selected' : '' }}>
-                                    [{{ $p->kode_produk }}] {{ $p->nama_produk }} (Stok: {{ $p->stok }}
-                                    {{ $p->satuanDasar->nama_satuan ?? '' }})
+                        <label class="form-label small fw-semibold text-muted mb-1">Pilih Produk yang Ingin Direstock</label>
+                        <select name="produk_id" class="form-select form-select-sm" required onchange="this.form.submit()">
+                            <option value="">-- Pilih Produk untuk Dianalisis --</option>
+                            @foreach ($daftarProduk as $p)
+                                <option value="{{ $p->id }}" {{ request('produk_id') == $p->id ? 'selected' : '' }}>
+                                    [{{ $p->kode_produk }}] {{ $p->nama_produk }}
                                 </option>
                             @endforeach
                         </select>
                     </div>
-                    <div class="col-md-5">
-                        <label class="form-label fw-bold">Pilih Sesi Pembobotan Kriteria AHP</label>
-                        <select name="sesi_id" class="form-select">
-                            @foreach($daftarSesiAhp as $s)
-                                <option value="{{ $s->id }}" {{ (isset($sesiDipilih) && $sesiDipilih->id == $s->id) ? 'selected' : '' }}>
+                    <div class="col-md-4">
+                        <label class="form-label small fw-semibold text-muted mb-1">Pilih Sesi Pembobotan Kriteria AHP</label>
+                        <select name="sesi_id" class="form-select form-select-sm" onchange="this.form.submit()">
+                            @foreach ($daftarSesiAhp as $s)
+                                <option value="{{ $s->id }}" {{ ($sesiDipilih && $sesiDipilih->id == $s->id) ? 'selected' : '' }}>
                                     {{ $s->nama_sesi }} ({{ \Carbon\Carbon::parse($s->tanggal_hitung)->format('d/m/Y') }})
                                 </option>
                             @endforeach
                         </select>
-                         <a href="{{ route('admin.sesi-perhitungan-ahp.index') }}" class="btn btn-sm btn-outline-success py-0 px-2 fw-semibold">
-                            <i class="bi bi-plus-circle me-1"></i>Buat Sesi Baru
-                        </a>
                     </div>
-                    <div class="col-md-2">
-                        <button type="submit" class="btn btn-primary w-100 fw-bold">
-                            <i class="bi bi-funnel-fill me-1"></i> Analisis
+                    <div class="col-md-3 d-flex gap-2">
+                        <a href="{{ route('admin.sesi-perhitungan-ahp.index') }}" class="btn btn-sm btn-outline-success w-50">
+                            <i class="bi bi-plus-circle me-1"></i> Sesi Baru
+                        </a>
+                        <button type="submit" class="btn btn-sm text-white w-50" style="background-color: #2A9D8F;">
+                            <i class="bi bi-funnel me-1"></i> Analisis
                         </button>
                     </div>
-                </form>
-            </div>
+                </div>
+            </form>
         </div>
+    </div>
 
-        @if($selectedProduk)
-            <!-- INFORMASI PRODUK TERPILIH & BOBOT AHP -->
-            <div class="row mb-4">
+    @if ($selectedProduk)
+        @if (count($ranking) > 0)
+            <!-- 2. BARIS TENGAH: PRODUK DIANALISIS & DAFTAR REKOMENDASI UTAMA -->
+            <div class="row g-3 mb-4">
+                <!-- Kolom Kiri: Produk yang Dianalisis -->
                 <div class="col-md-5">
-                    <div class="card shadow-sm h-100">
-                        <div class="card-header bg-info text-white">
-                            <h6 class="card-title fw-bold m-0"><i class="bi bi-box-seam me-2"></i>Produk yang Dianalisis</h6>
+                    <div class="card shadow-sm border-0 h-100" style="border-radius: 8px;">
+                        <div class="card-header py-2 text-white" style="background-color: #264653; border-top-left-radius: 8px; border-top-right-radius: 8px;">
+                            <h6 class="mb-0 fw-semibold"><i class="bi bi-box-seam me-2"></i>Produk yang Dianalisis</h6>
                         </div>
-                        <div class="card-body">
-                            <h5 class="fw-bold text-primary">{{ $selectedProduk->nama_produk }}</h5>
-                            <p class="text-muted mb-2">Kode: <code>{{ $selectedProduk->kode_produk }}</code> | Kategori:
-                                {{ $selectedProduk->kategori->nama_kategori ?? '-' }}</p>
-                            <div class="d-flex justify-content-between border-top pt-2">
-                                <span>Stok Fisik Gudang:</span>
-                                <span class="badge bg-secondary fs-6">{{ $selectedProduk->stok }}
-                                    {{ $selectedProduk->satuan->nama_satuan ?? '' }}</span>
+                        <div class="card-body d-flex flex-column justify-content-between p-3" style="background-color: #F8FBF9;">
+                            <div>
+                                <h5 class="fw-bold mb-2" style="color: #2A9D8F;">{{ $selectedProduk->nama_produk }}</h5>
+                                <div class="text-muted small mb-1">
+                                    <strong>Kode:</strong> {{ $selectedProduk->kode_produk }}
+                                </div>
+                                <div class="text-muted small mb-3">
+                                    <strong>Kategori:</strong> {{ $selectedProduk->kategori->nama_kategori ?? '-' }}
+                                </div>
+                            </div>
+                            <div class="pt-3 border-top d-flex justify-content-between align-items-center">
+                                <span class="text-muted small fw-semibold">Stok Fisik Gudang:</span>
+                                <span class="badge px-3 py-2 text-white" style="background-color: #2A9D8F; font-size: 0.85rem; border-radius: 20px;">
+                                    {{ $selectedProduk->stok }} {{ $selectedProduk->satuanDasar->nama_satuan ?? 'Unit' }}
+                                </span>
                             </div>
                         </div>
                     </div>
                 </div>
 
+                <!-- Kolom Kanan: Daftar Rekomendasi Supplier Utama -->
                 <div class="col-md-7">
-                    <div class="card shadow-sm h-100">
-                        <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
-                            <h6 class="card-title fw-bold m-0"><i class="bi bi-sliders me-2"></i>Bobot Kriteria (Sumber: AHP)
-                            </h6>
-                            <a href="{{ route('admin.sesi-perhitungan-ahp.index') }}" class="btn btn-xs btn-outline-light">
-                                <i class="bi bi-pencil-square"></i> Ubah Bobot AHP
-                            </a>
+                    <div class="card shadow-sm border-0 h-100" style="border-radius: 8px;">
+                        <div class="card-header py-2 text-white d-flex justify-content-between align-items-center" style="background-color: #264653; border-top-left-radius: 8px; border-top-right-radius: 8px;">
+                            <h6 class="mb-0 fw-semibold"><i class="bi bi-trophy me-2"></i>Hasil Rekomendasi Utama (AHP-SAW)</h6>
+                            <span class="badge bg-light text-dark small" style="font-size: 0.75rem;">Metode Utama</span>
                         </div>
-                        <div class="card-body p-0">
-                            <table class="table table-sm table-bordered m-0 text-center align-middle">
-                                <thead class="table-light">
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle mb-0">
+                                <thead style="background-color: #F4F6F5;">
                                     <tr>
-                                        @foreach($kriteriaList as $k)
-                                            <th>
-                                                <div>{{ $k->nama_kriteria }}</div>
-                                                <small
-                                                    class="badge {{ $k->jenis_kriteria == 'benefit' ? 'bg-success' : 'bg-danger' }}">
-                                                    {{ strtoupper($k->jenis_kriteria) }}
-                                                </small>
-                                            </th>
-                                        @endforeach
+                                        <th class="text-center" style="width: 100px;">Rangking</th>
+                                        <th>Kode & Nama Supplier</th>
+                                        <th>Nomor Telepon</th>
+                                        <th class="text-center" style="width: 130px;">Aksi</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr class="fw-bold font-monospace text-primary">
-                                        @foreach($kriteriaList as $k)
-                                            <td>{{ number_format($bobotAHP[$k->kode_kriteria] ?? 0.2, 4) }}</td>
-                                        @endforeach
-                                    </tr>
+                                    @foreach ($ranking as $index => $item)
+                                        <tr class="{{ $index == 0 ? 'table-success bg-opacity-25' : '' }}">
+                                            <td class="text-center">
+                                                <span class="badge px-2 py-1" style="{{ $index == 0 ? 'background-color: #D1FAE5; color: #065F46;' : ($index == 1 ? 'background-color: #E0F2FE; color: #0369A1;' : 'background-color: #F1F5F9; color: #475569;') }} font-size: 0.85rem;">
+                                                    <i class="bi bi-trophy-fill me-1"></i>#{{ $index + 1 }}
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <div class="fw-bold text-dark">{{ $item['supplier']->nama_supplier }}</div>
+                                                <small class="text-muted">({{ $item['supplier']->kode_supplier ?? 'SUP-'.str_pad($item['supplier']->id, 3, '0', STR_PAD_LEFT) }})</small>
+                                            </td>
+                                            <td>
+                                                <i class="bi bi-telephone text-muted me-1"></i>
+                                                {{ $item['supplier']->telepon ?? '-' }}
+                                            </td>
+                                            <td class="text-center">
+                                                <a href="{{ route('admin.pembelian.create', ['supplier_id' => $item['supplier']->id, 'produk_id' => $selectedProduk->id]) }}" 
+                                                   class="btn btn-sm shadow-sm py-1 px-2" style="{{ $index == 0 ? 'background-color: #2A9D8F; color: #ffffff;' : 'background-color: #E0F2FE; color: #0369A1;' }} font-size: 0.8rem; border-radius: 6px; font-weight: 500;">
+                                                    <i class="bi bi-cart-plus me-1"></i> Buat PO
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    @endforeach
                                 </tbody>
                             </table>
                         </div>
@@ -106,142 +139,87 @@
                 </div>
             </div>
 
-            @if(count($ranking) > 0)
-                <!-- TABEL HASIL PERANGKINGAN (HASIL UTAMA SPK) -->
-                <div class="card card-outline card-success shadow-sm mb-4">
-                    <div class="card-header">
-                        <h5 class="card-title fw-bold text-success m-0">
-                            <i class="bi bi-trophy-fill me-2 text-warning"></i> Hasil Rekomendasi Supplier Terbaik (Metode SAW)
-                        </h5>
-                    </div>
-                    <div class="card-body p-0">
-                        <div class="table-responsive">
-                            <table class="table table-hover table-striped align-middle m-0">
-                                <thead class="table-light">
-                                    <tr>
-                                        <th style="width: 80px;" class="text-center">Ranking</th>
-                                        <th>Kode & Nama Supplier</th>
-                                        <th>Kontak / Telp</th>
-                                        <th class="text-end" style="width: 180px;">Skor Preferensi (V<sub>i</sub>)</th>
-                                        <th class="text-center" style="width: 150px;">Keputusan</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach($ranking as $index => $r)
-                                        <tr class="{{ $index == 0 ? 'table-success fw-bold' : '' }}">
-                                            <td class="text-center">
-                                                @if($index == 0)
-                                                    <span class="badge bg-warning text-dark fs-6"><i class="bi bi-trophy-fill me-1"></i>
-                                                        1</span>
-                                                @elseif($index == 1)
-                                                    <span class="badge bg-secondary fs-6">2</span>
-                                                @elseif($index == 2)
-                                                    <span class="badge bg-brown fs-6 text-dark" style="background:#cd7f32;">3</span>
-                                                @else
-                                                    <span class="badge bg-light text-dark">{{ $index + 1 }}</span>
-                                                @endif
-                                            </td>
-                                            <td>
-                                                <span
-                                                    class="badge bg-secondary font-monospace">{{ $r['supplier']->kode_supplier }}</span>
-                                                <span class="ms-1">{{ $r['supplier']->nama_supplier }}</span>
-                                            </td>
-                                            <td>{{ $r['supplier']->nomor_telepon ?? '-' }}</td>
-                                            <td class="text-end font-monospace fs-5 text-primary">
-                                                {{ number_format($r['skor_preferensi'], 4) }}
-                                            </td>
-                                            <td class="text-center">
-                                                @if($index == 0)
-                                                    <span class="badge bg-success"><i class="bi bi-check-circle me-1"></i> Paling
-                                                        Direkomendasikan</span>
-                                                @else
-                                                    <span class="badge bg-light text-muted">Alternatif</span>
-                                                @endif
-                                            </td>
-                                        </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
+            <!-- 3. BAGIAN BAWAH: TABEL KOMPARASI 3 METODE BERDAMPINGAN -->
+            <div class="card shadow-sm border-0 mb-4" style="border-radius: 8px;">
+                <div class="card-header py-2 text-white" style="background-color: #264653; border-top-left-radius: 8px; border-top-right-radius: 8px;">
+                    <h6 class="mb-0 fw-semibold"><i class="bi bi-arrow-left-right me-2"></i>Komparasi Hasil Rekomendasi Antar Metode SPK</h6>
                 </div>
-
-                <!-- DETAIL PERHITUNGAN TRANSPARAN (MATRIKS KEPUTUSAN & NORMALISASI) -->
-                <div class="card card-outline card-secondary shadow-sm mb-4">
-                    <div class="card-header">
-                        <h6 class="card-title fw-bold m-0"><i class="bi bi-table me-2"></i>Detail Transparansi Perhitungan SAW</h6>
-                    </div>
-                    <div class="card-body">
-                        <!-- 1. Matriks Keputusan -->
-                        <h6 class="fw-bold text-muted mb-2">1. Matriks Keputusan Awal (X)</h6>
-                        <div class="table-responsive mb-4">
-                            <table class="table table-sm table-bordered align-middle text-center">
-                                <thead class="table-light">
-                                    <tr>
-                                        <th>Supplier</th>
-                                        <th>K1 - Harga (Rp)</th>
-                                        <th>K2 - Kualitas (1-5)</th>
-                                        <th>K3 - Pelayanan (1-5)</th>
-                                        <th>K4 - Pengiriman (Hari)</th>
-                                        <th>K5 - Tempo (Hari)</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach($ranking as $r)
-                                        <tr>
-                                            <td class="text-start fw-bold">{{ $r['supplier']->nama_supplier }}</td>
-                                            <td class="text-end font-monospace">Rp
-                                                {{ number_format($r['nilai_keputusan']['K1'], 0, ',', '.') }}</td>
-                                            <td>{{ $r['nilai_keputusan']['K2'] }}</td>
-                                            <td>{{ $r['nilai_keputusan']['K3'] }}</td>
-                                            <td>{{ $r['nilai_keputusan']['K4'] }} Hari</td>
-                                            <td>{{ $r['nilai_keputusan']['K5'] }} Hari</td>
-                                        </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
-                        </div>
-
-                        <!-- 2. Matriks Normalisasi -->
-                        <h6 class="fw-bold text-muted mb-2">2. Matriks Normalisasi (R)</h6>
-                        <div class="table-responsive">
-                            <table class="table table-sm table-bordered align-middle text-center">
-                                <thead class="table-light">
-                                    <tr>
-                                        <th>Supplier</th>
-                                        <th>R1 (Harga)</th>
-                                        <th>R2 (Kualitas)</th>
-                                        <th>R3 (Pelayanan)</th>
-                                        <th>R4 (Pengiriman)</th>
-                                        <th>R5 (Tempo)</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach($ranking as $r)
-                                        <tr>
-                                            <td class="text-start fw-bold">{{ $r['supplier']->nama_supplier }}</td>
-                                            <td class="font-monospace">{{ number_format($r['nilai_normalisasi']['K1'], 4) }}</td>
-                                            <td class="font-monospace">{{ number_format($r['nilai_normalisasi']['K2'], 4) }}</td>
-                                            <td class="font-monospace">{{ number_format($r['nilai_normalisasi']['K3'], 4) }}</td>
-                                            <td class="font-monospace">{{ number_format($r['nilai_normalisasi']['K4'], 4) }}</td>
-                                            <td class="font-monospace">{{ number_format($r['nilai_normalisasi']['K5'], 4) }}</td>
-                                        </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover align-middle mb-0 text-center">
+                        <thead style="background-color: #F4F6F5;">
+                            <tr>
+                                <th style="width: 100px;">Peringkat</th>
+                                <th style="background-color: #E8F5E9; color: #2E7D32;">
+                                    AHP-SAW (Metode Utama)
+                                </th>
+                                <th style="background-color: #E3F2FD; color: #1565C0;">
+                                    SAW (Tunggal / Equal Weight)
+                                </th>
+                                <th style="background-color: #FFF3E0; color: #E65100;">
+                                    AHP (Tunggal)
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @php
+                                $maxRows = max(count($ranking), count($rankingSawMurni), count($rankingAhpMurni));
+                            @endphp
+                            @for ($i = 0; $i < $maxRows; $i++)
+                                <tr>
+                                    <td class="fw-bold">
+                                        <span class="badge {{ $i == 0 ? 'bg-success' : 'bg-light text-muted border' }}">
+                                            <i class="bi bi-trophy-fill me-1"></i>#{{ $i + 1 }}
+                                        </span>
+                                    </td>
+                                    <!-- AHP-SAW -->
+                                    <td class="text-start" style="background-color: #F9FFF9;">
+                                        @if (isset($ranking[$i]))
+                                            <div class="fw-bold text-dark">{{ $ranking[$i]['supplier']->nama_supplier }}</div>
+                                            <small class="text-muted">({{ $ranking[$i]['supplier']->kode_supplier ?? 'SUP-'.str_pad($ranking[$i]['supplier']->id, 3, '0', STR_PAD_LEFT) }})</small>
+                                            <span class="badge bg-success float-end mt-1">{{ number_format($ranking[$i]['skor_preferensi'], 4) }}</span>
+                                        @else
+                                            <span class="text-muted">-</span>
+                                        @endif
+                                    </td>
+                                    <!-- SAW TUNGGAL -->
+                                    <td class="text-start" style="background-color: #F8FBFF;">
+                                        @if (isset($rankingSawMurni[$i]))
+                                            <div class="fw-bold text-dark">{{ $rankingSawMurni[$i]['supplier']->nama_supplier }}</div>
+                                            <small class="text-muted">({{ $rankingSawMurni[$i]['supplier']->kode_supplier ?? 'SUP-'.str_pad($rankingSawMurni[$i]['supplier']->id, 3, '0', STR_PAD_LEFT) }})</small>
+                                            <span class="badge float-end mt-1" style="background-color: #E0F2FE; color: #0369A1;">{{ number_format($rankingSawMurni[$i]['skor_preferensi'], 4) }}</span>
+                                        @else
+                                            <span class="text-muted">-</span>
+                                        @endif
+                                    </td>
+                                    <!-- AHP TUNGGAL -->
+                                    <td class="text-start" style="background-color: #FFFAF5;">
+                                        @if (isset($rankingAhpMurni[$i]))
+                                            <div class="fw-bold text-dark">{{ $rankingAhpMurni[$i]['supplier']->nama_supplier }}</div>
+                                            <small class="text-muted">({{ $rankingAhpMurni[$i]['supplier']->kode_supplier ?? 'SUP-'.str_pad($rankingAhpMurni[$i]['supplier']->id, 3, '0', STR_PAD_LEFT) }})</small>
+                                            <span class="badge bg-warning text-dark float-end mt-1">{{ number_format($rankingAhpMurni[$i]['skor_preferensi'], 4) }}</span>
+                                        @else
+                                            <span class="text-muted">-</span>
+                                        @endif
+                                    </td>
+                                </tr>
+                            @endfor
+                        </tbody>
+                    </table>
                 </div>
-
-            @else
-                <div class="alert alert-warning">
-                    <i class="bi bi-exclamation-triangle-fill me-2"></i>
-                    Belum ada supplier yang dihubungkan ke produk <b>{{ $selectedProduk->nama_produk }}</b>. Silakan buka menu
-                    <b>Supplier &rarr; Detail Supplier</b> untuk menghubungkan produk ini ke supplier yang memasoknya.
-                </div>
-            @endif
-
+            </div>
+        @else
+            <div class="card shadow-sm border-0 p-5 text-center my-4" style="border-radius: 8px;">
+                <i class="bi bi-info-circle text-muted fs-1 mb-3"></i>
+                <h5 class="fw-bold text-muted">Belum Ada Supplier Terhubung</h5>
+                <p class="text-muted small">Hubungkan produk ini dengan minimal 2 supplier pada menu Master Supplier untuk memulai kalkulasi.</p>
+            </div>
         @endif
-
-    </div>
+    @else
+        <div class="card shadow-sm border-0 p-5 text-center my-4" style="border-radius: 8px;">
+            <i class="bi bi-boxes text-muted fs-1 mb-3"></i>
+            <h5 class="fw-bold text-muted">Silakan Pilih Produk Terlebih Dahulu</h5>
+            <p class="text-muted small">Pilih salah satu produk bahan bangunan pada parameter di atas untuk melihat rekomendasi supplier terbaik.</p>
+        </div>
+    @endif
+</div>
 @endsection

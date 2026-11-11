@@ -7,8 +7,8 @@
     <div class="row">
         <!-- 1. CARD INFORMASI LENGKAP PRODUK (FULL WIDTH DI ATAS) -->
         <div class="col-12 mb-4">
-            <div class="card shadow-sm border-0">
-                <div class="card-header bg-info text-white">
+            <div class="card shadow-sm border-0" style="border-radius: 10px; overflow: hidden;">
+                <div class="card-header text-white" style="background-color: #264653;">
                     <h5 class="card-title mb-0 fw-bold"><i class="bi bi-box-seam me-2"></i> Informasi Lengkap Produk</h5>
                 </div>
                 <div class="card-body p-0">
@@ -17,7 +17,7 @@
                             <tbody>
                                 <tr>
                                     <th width="20%" class="ps-3">Kode Produk</th>
-                                    <td><span class="badge bg-secondary font-monospace fs-6">{{ $produk->kode_produk }}</span></td>
+                                    <td><span class="badge" style="background-color: #E0F2FE; color: #0369A1; font-family: monospace; font-size: 0.9rem;">{{ $produk->kode_produk }}</span></td>
                                 </tr>
                                 <tr>
                                     <th class="ps-3">Nama Produk</th>
@@ -43,7 +43,7 @@
                                     <th class="ps-3">Harga Beli Terakhir</th>
                                     <td>
                                         @if($produk->harga_beli_terakhir)
-                                            <strong class="text-primary fs-6">Rp {{ number_format($produk->harga_beli_terakhir, 0, ',', '.') }}</strong>
+                                            <strong class="fs-6" style="color: #2A9D8F;">Rp {{ number_format($produk->harga_beli_terakhir, 0, ',', '.') }}</strong>
                                         @else
                                             <span class="text-muted">Rp {{ number_format($produk->harga_beli, 0, ',', '.') }} <em>(Belum ada update pembelian)</em></span>
                                         @endif
@@ -51,16 +51,16 @@
                                 </tr>
                                 <tr>
                                     <th class="ps-3">Harga Jual (Konsumen)</th>
-                                    <td><strong class="text-success fs-6">Rp {{ number_format($produk->harga_jual, 0, ',', '.') }}</strong></td>
+                                    <td><strong class="fs-6" style="color: #264653;">Rp {{ number_format($produk->harga_jual, 0, ',', '.') }}</strong></td>
                                 </tr>
                                 <tr>
                                     <th class="ps-3">Stok Saat Ini</th>
                                     <td>
                                         <strong class="fs-6">{{ (float) $produk->stok }} {{ $produk->satuanDasar->nama_satuan ?? '' }}</strong>
                                         @if($produk->stok <= $produk->stok_minimum)
-                                            <span class="badge bg-danger ms-2">Stok Menipis!</span>
+                                            <span class="badge ms-2" style="background-color: #FEE2E2; color: #B91C1C;">Stok Menipis!</span>
                                         @else
-                                            <span class="badge bg-success ms-2">Stok Aman</span>
+                                            <span class="badge ms-2" style="background-color: #D1FAE5; color: #065F46;">Stok Aman</span>
                                         @endif
                                     </td>
                                 </tr>
@@ -73,8 +73,8 @@
                     </div>
                 </div>
                 <div class="card-footer bg-light py-2">
-                    <a href="{{ route('admin.produk.index') }}" class="btn btn-secondary btn-sm">
-                        <i class="bi bi-arrow-left me-1"></i> Kembali ke Daftar Produk
+                    <a href="{{ route('admin.produk.index') }}" class="btn btn-sm" style="background-color: #E2E8F0; color: #334155; font-weight: 500;">
+                        <i class="bi bi-arrow-left me-1"></i> Kembali Ke Daftar Produk
                     </a>
                 </div>
             </div>
@@ -82,8 +82,8 @@
 
         <!-- 2. CARD TRACKING RIWAYAT PEMBELIAN (FULL WIDTH DI BAWAH) -->
         <div class="col-12">
-            <div class="card card-outline card-primary shadow-sm">
-                <div class="card-header bg-secondary text-white">
+            <div class="card shadow-sm border-0" style="border-radius: 10px; overflow: hidden;">
+                <div class="card-header text-white" style="background-color: #264653;">
                     <h5 class="card-title fw-bold m-0"><i class="bi bi-clock-history me-2"></i> Tracking Riwayat Pembelian Produk</h5>
                 </div>
                 <div class="card-body p-0">
@@ -127,8 +127,8 @@
                                         </td>
                                         <td class="text-center">
                                             @if($dp->pembelian)
-                                                <a href="{{ route('admin.pembelian.show', $dp->pembelian->id) }}" class="btn btn-sm btn-info text-white">
-                                                    <i class="bi bi-eye"></i> Faktur
+                                                <a href="{{ route('admin.pembelian.show', $dp->pembelian->id) }}" class="btn btn-sm text-decoration-none" style="background-color: #E0F2FE; color: #0369A1; font-weight: 500;">
+                                                    Faktur
                                                 </a>
                                             @endif
                                         </td>

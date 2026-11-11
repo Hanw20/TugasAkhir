@@ -5,8 +5,8 @@
 
 @section('content')
 <div class="container-fluid">
-    <div class="card card-outline card-primary shadow-sm">
-        <div class="card-header">
+    <div class="card shadow-sm border-0" style="border-radius: 10px; overflow: hidden;">
+        <div class="card-header text-white" style="background-color: #264653;">
             <h5 class="card-title fw-bold m-0"><i class="bi bi-arrow-left-right me-2"></i>Proses Pemecahan / Repacking Barang</h5>
         </div>
         <div class="card-body">
@@ -33,8 +33,8 @@
                 <div class="row g-3 align-items-center mb-4">
                     <!-- Produk Asal -->
                     <div class="col-md-5">
-                        <div class="p-3 border rounded bg-danger-subtle border-danger">
-                            <h6 class="fw-bold text-danger mb-2"><i class="bi bi-box-arrow-up-right me-1"></i> Produk Asal (Stok Berkurang)</h6>
+                        <div class="p-3 border rounded" style="background-color: #FEF2F2; border-color: #FECACA !important;">
+                            <h6 class="fw-bold mb-2" style="color: #DC2626;"><i class="bi bi-box-arrow-up-right me-1"></i> Produk Asal (Stok Berkurang)</h6>
                             <div class="mb-3">
                                 <label class="form-label small fw-bold">Pilih Produk Asal</label>
                                 <select name="produk_asal_id" class="form-select" required onchange="cekStokAsal(this)">
@@ -55,14 +55,14 @@
 
                     <!-- Tanda Panah -->
                     <div class="col-md-2 text-center">
-                        <i class="bi bi-arrow-right fs-1 text-primary d-none d-md-inline"></i>
+                        <i class="bi bi-arrow-right fs-1 d-none d-md-inline" style="color: #2A9D8F;"></i>
                         <div class="small fw-bold text-muted mt-1" id="labelFaktor">Faktor: -</div>
                     </div>
 
                     <!-- Produk Tujuan -->
                     <div class="col-md-5">
-                        <div class="p-3 border rounded bg-success-subtle border-success">
-                            <h6 class="fw-bold text-success mb-2"><i class="bi bi-box-arrow-in-down-left me-1"></i> Produk Hasil (Stok Bertambah)</h6>
+                        <div class="p-3 border rounded" style="background-color: #F0FDF4; border-color: #BBF7D0 !important;">
+                            <h6 class="fw-bold mb-2" style="color: #16A34A;"><i class="bi bi-box-arrow-in-down-left me-1"></i> Produk Hasil (Stok Bertambah)</h6>
                             <div class="mb-3">
                                 <label class="form-label small fw-bold">Pilih Produk Tujuan</label>
                                 <select name="produk_tujuan_id" class="form-select" required>
@@ -89,7 +89,7 @@
 
                 <div class="d-flex justify-content-between">
                     <a href="{{ route('admin.konversi-produk.index') }}" class="btn btn-secondary">Batal</a>
-                    <button type="submit" class="btn btn-primary fw-bold px-4">
+                    <button type="submit" class="btn text-white fw-bold px-4 shadow-sm" style="background-color: #2A9D8F;">
                         <i class="bi bi-check2-circle me-1"></i> Proses Konversi Produk
                     </button>
                 </div>

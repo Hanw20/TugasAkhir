@@ -7,9 +7,9 @@
 <div class="row">
     <!-- Tabel Tagihan Piutang yang Belum Lunas -->
     <div class="col-12 mb-4">
-        <div class="card">
-            <div class="card-header bg-danger text-white">
-                <h5 class="card-title mb-0"><i class="bi bi-exclamation-octagon me-2"></i> Daftar Nota Penjualan Belum Lunas (Piutang Customer)</h5>
+        <div class="card shadow-sm border-0" style="border-radius: 10px; overflow: hidden;">
+            <div class="card-header text-white" style="background-color: #264653;">
+                <h5 class="card-title mb-0 fw-bold"><i class="bi bi-exclamation-octagon me-2"></i> Daftar Nota Penjualan Belum Lunas (Piutang Customer)</h5>
             </div>
             <div class="card-body table-responsive">
                 <table class="table table-bordered table-striped align-middle">
@@ -29,14 +29,14 @@
                         @forelse($notaPiutang as $index => $f)
                         <tr>
                             <td class="text-center">{{ $index + 1 }}</td>
-                            <td><span class="badge bg-secondary fs-6">{{ $f->no_nota }}</span></td>
+                            <td><span class="badge" style="background-color: #F1F5F9; color: #475569;">{{ $f->no_nota }}</span></td>
                             <td><strong>{{ $f->customer->nama_customer ?? '-' }}</strong></td>
                             <td>{{ $f->tanggal ? $f->tanggal->format('d/m/Y') : '-' }}</td>
                             <td>Rp {{ number_format($f->total, 0, ',', '.') }}</td>
                             <td class="text-success">Rp {{ number_format($f->total_dibayar, 0, ',', '.') }}</td>
-                            <td class="text-danger fw-bold">Rp {{ number_format($f->sisa_piutang, 0, ',', '.') }}</td>
+                            <td class="fw-bold" style="color: #E76F51;">Rp {{ number_format($f->sisa_piutang, 0, ',', '.') }}</td>
                             <td class="text-center">
-                                <button type="button" class="btn btn-sm btn-success fw-bold" 
+                                <button type="button" class="btn btn-sm fw-bold shadow-sm" style="background-color: #2A9D8F; color: #ffffff;"
                                         data-bs-toggle="modal" data-bs-target="#modalBayarPiutang"
                                         onclick="bukaModalPiutang({{ $f->id }}, '{{ $f->no_nota }}', {{ (int)$f->sisa_piutang }})">
                                     <i class="bi bi-cash-stack"></i> Terima Bayar
@@ -46,8 +46,8 @@
                         @empty
                         <tr>
                             <td colspan="8" class="text-center text-success py-4">
-                                <i class="bi bi-check-circle fs-3 d-block mb-1"></i>
-                                <strong>Semua piutang pelanggan sudah lunas!</strong>
+                                <i class="bi bi-check-circle fs-3 d-block mb-1" style="color: #2A9D8F;"></i>
+                                <strong style="color: #264653;">Semua piutang pelanggan sudah lunas!</strong>
                             </td>
                         </tr>
                         @endforelse
@@ -59,9 +59,9 @@
 
     <!-- Tabel Riwayat Pembayaran Piutang -->
     <div class="col-12">
-        <div class="card">
-            <div class="card-header bg-secondary text-white">
-                <h5 class="card-title mb-0"><i class="bi bi-clock-history me-2"></i> Riwayat Penerimaan Cicilan Piutang Customer</h5>
+        <div class="card shadow-sm border-0" style="border-radius: 10px; overflow: hidden;">
+            <div class="card-header text-white" style="background-color: #2A9D8F;">
+                <h5 class="card-title mb-0 fw-bold"><i class="bi bi-clock-history me-2"></i> Riwayat Penerimaan Cicilan Piutang Customer</h5>
             </div>
             <div class="card-body table-responsive">
                 <table class="table table-bordered table-striped align-middle">

@@ -5,10 +5,10 @@
 
 @section('content')
 <div class="container-fluid">
-    <div class="card card-outline card-primary shadow-sm">
-        <div class="card-header d-flex justify-content-between align-items-center">
-            <h5 class="card-title fw-bold m-0"><i class="bi bi-arrow-repeat me-2"></i>Daftar Riwayat Konversi Kemasan</h5>
-            <a href="{{ route('admin.konversi-produk.create') }}" class="btn btn-primary btn-sm fw-bold">
+    <div class="card shadow-sm border-0" style="border-radius: 10px;">
+        <div class="card-header py-2 text-white d-flex justify-content-between align-items-center" style="background-color: #264653; border-top-left-radius: 10px; border-top-right-radius: 10px;">
+            <h6 class="card-title fw-bold m-0 text-white"><i class="bi bi-arrow-repeat me-2"></i>Daftar Riwayat Konversi Kemasan</h6>
+            <a href="{{ route('admin.konversi-produk.create') }}" class="btn btn-sm text-white shadow-sm" style="background-color: #2A9D8F; border-radius: 6px;">
                 <i class="bi bi-plus-circle me-1"></i> Konversi Produk Baru
             </a>
         </div>

@@ -6,10 +6,10 @@
 @section('content')
     <div class="container-fluid">
         <!-- CARD INFORMASI SESI OPNAME -->
-        <div class="card card-outline card-info shadow-sm mb-4">
-            <div class="card-header d-flex justify-content-between align-items-center">
+        <div class="card shadow-sm border-0 mb-4" style="border-radius: 10px; overflow: hidden;">
+            <div class="card-header d-flex justify-content-between align-items-center text-white" style="background-color: #264653;">
                 <h5 class="card-title fw-bold m-0"><i class="bi bi-info-circle me-2"></i>Informasi Opname</h5>
-                <a href="{{ route('admin.stok-opname.index') }}" class="btn btn-secondary btn-sm">
+                <a href="{{ route('admin.stok-opname.index') }}" class="btn btn-sm text-white" style="background-color: rgba(255,255,255,0.2);">
                     <i class="bi bi-arrow-left me-1"></i> Kembali
                 </a>
             </div>
@@ -30,9 +30,9 @@
                     <div class="col-md-3">
                         <p class="mb-1 text-muted">Status Penyesuaian:</p>
                         @if(($opname->status ?? 'menunggu_persetujuan') === 'disesuaikan')
-                            <span class="badge bg-success fs-6"><i class="bi bi-check-circle me-1"></i> Disesuaikan ke Gudang</span>
+                            <span class="badge fs-6" style="background-color: #D1FAE5; color: #065F46;"><i class="bi bi-check-circle me-1"></i> Disesuaikan ke Gudang</span>
                         @else
-                            <span class="badge bg-warning text-dark fs-6"><i class="bi bi-hourglass-split me-1"></i> Menunggu Persetujuan</span>
+                            <span class="badge fs-6" style="background-color: #FEF3C7; color: #B45309;"><i class="bi bi-hourglass-split me-1"></i> Menunggu Persetujuan</span>
                         @endif
                     </div>
                 </div>
@@ -40,8 +40,8 @@
         </div>
 
         <!-- CARD RINCIAN SELISIH & TOMBOL PERSETUJUAN -->
-        <div class="card card-outline card-primary shadow-sm mb-4">
-            <div class="card-header">
+        <div class="card shadow-sm border-0 mb-4" style="border-radius: 10px; overflow: hidden;">
+            <div class="card-header text-white" style="background-color: #264653;">
                 <h6 class="card-title fw-bold m-0"><i class="bi bi-box-seam me-2"></i>Rincian Selisih Fisik vs Komputer</h6>
             </div>
             <div class="card-body p-0">

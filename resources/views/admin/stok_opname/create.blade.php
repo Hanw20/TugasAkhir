@@ -7,8 +7,8 @@
 <div class="container-fluid">
     <form action="{{ route('admin.stok-opname.store') }}" method="POST">
         @csrf
-        <div class="card card-outline card-primary shadow-sm mb-4">
-            <div class="card-header">
+        <div class="card shadow-sm border-0 mb-4" style="border-radius: 10px; overflow: hidden;">
+            <div class="card-header text-white" style="background-color: #264653;">
                 <h5 class="card-title fw-bold m-0"><i class="bi bi-pencil-square me-2"></i>Informasi Pemeriksaan</h5>
             </div>
             <div class="card-body">
@@ -25,10 +25,10 @@
             </div>
         </div>
 
-        <div class="card card-outline card-success shadow-sm mb-4">
-            <div class="card-header d-flex justify-content-between align-items-center">
+        <div class="card shadow-sm border-0 mb-4" style="border-radius: 10px; overflow: hidden;">
+            <div class="card-header d-flex justify-content-between align-items-center text-white" style="background-color: #264653;">
                 <h5 class="card-title fw-bold m-0"><i class="bi bi-boxes me-2"></i>Daftar Item yang Dihitung Fisik</h5>
-                <button type="button" class="btn btn-sm btn-success fw-bold" id="btnTambahBarang">
+                <button type="button" class="btn btn-sm fw-bold shadow-sm" style="background-color: #2A9D8F; color: #ffffff;" id="btnTambahBarang">
                     <i class="bi bi-plus-circle me-1"></i> Tambah Baris Produk
                 </button>
             </div>
@@ -63,16 +63,16 @@
                                     <input type="number" step="any" min="0" name="items[0][stok_fisik]" class="form-control text-center fw-bold" placeholder="Jumlah fisik" required>
                                 </td>
                                 <td class="text-center">
-                                    <button type="button" class="btn btn-sm btn-outline-danger" onclick="hapusBaris(this)"><i class="bi bi-trash"></i></button>
+                                    <button type="button" class="btn btn-sm" style="background-color: #FEE2E2; color: #B91C1C;" onclick="hapusBaris(this)"><i class="bi bi-trash"></i></button>
                                 </td>
                             </tr>
                         </tbody>
                     </table>
                 </div>
             </div>
-            <div class="card-footer d-flex justify-content-between">
+            <div class="card-footer d-flex justify-content-between bg-white py-3">
                 <a href="{{ route('admin.stok-opname.index') }}" class="btn btn-secondary">Batal</a>
-                <button type="submit" class="btn btn-success fw-bold px-4">
+                <button type="submit" class="btn text-white fw-bold px-4 shadow-sm" style="background-color: #2A9D8F;">
                     <i class="bi bi-check2-circle me-1"></i> Simpan & Perbarui Stok Gudang
                 </button>
             </div>

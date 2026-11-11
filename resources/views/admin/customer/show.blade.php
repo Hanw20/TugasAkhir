@@ -7,8 +7,8 @@
     <div class="row">
         <!-- 1. CARD PROFIL CUSTOMER (FULL WIDTH DI ATAS) -->
         <div class="col-12 mb-4">
-            <div class="card shadow-sm border-0">
-                <div class="card-header bg-info text-white">
+            <div class="card shadow-sm border-0" style="border-radius: 10px; overflow: hidden;">
+                <div class="card-header text-white" style="background-color: #264653;">
                     <h5 class="card-title mb-0 fw-bold"><i class="bi bi-person-badge me-2"></i> Profil Pelanggan</h5>
                 </div>
                 <div class="card-body p-0">
@@ -30,7 +30,7 @@
                                 <tr>
                                     <th class="ps-3">Total Transaksi</th>
                                     <td>
-                                        <span class="badge bg-primary fs-6">
+                                        <span class="badge" style="background-color: #E0F2FE; color: #0369A1; font-size: 0.85rem;">
                                             {{ $customer->penjualan->count() }} Kali Belanja
                                         </span>
                                     </td>
@@ -40,7 +40,7 @@
                     </div>
                 </div>
                 <div class="card-footer bg-light py-2">
-                    <a href="{{ route('admin.customer.index') }}" class="btn btn-secondary btn-sm">
+                    <a href="{{ route('admin.customer.index') }}" class="btn btn-sm" style="background-color: #E2E8F0; color: #334155; font-weight: 500;">
                         <i class="bi bi-arrow-left me-1"></i> Kembali ke Daftar Customer
                     </a>
                 </div>
@@ -49,8 +49,8 @@
 
         <!-- 2. CARD RIWAYAT TRANSAKSI BELANJA (FULL WIDTH DI BAWAH) -->
         <div class="col-12">
-            <div class="card card-outline card-primary shadow-sm">
-                <div class="card-header bg-secondary text-white">
+            <div class="card shadow-sm border-0" style="border-radius: 10px; overflow: hidden;">
+                <div class="card-header text-white" style="background-color: #264653;">
                     <h5 class="card-title fw-bold m-0"><i class="bi bi-receipt me-2"></i> Riwayat Transaksi Belanja
                         Pelanggan</h5>
                 </div>
@@ -72,33 +72,33 @@
                                     <tr>
                                         <td class="text-center">{{ $index + 1 }}</td>
                                         <!-- FIX no_nota: sebelumnya salah no_faktur -->
-                                        <td><span class="badge bg-secondary font-monospace fs-6">{{ $pj->no_nota }}</span></td>
+                                        <td><span class="badge" style="background-color: #F1F5F9; color: #475569; font-family: monospace;">{{ $pj->no_nota }}</span></td>
                                         <td>{{ $pj->tanggal ? $pj->tanggal->format('d/m/Y') : '-' }}</td>
                                         <!-- FIX total: sebelumnya salah total_akhir -->
-                                        <td class="text-end fw-bold text-success fs-6">Rp
+                                        <td class="text-end fw-bold text-dark fs-6">Rp
                                             {{ number_format($pj->total, 0, ',', '.') }}</td>
                                         <td class="text-center">
                                             <!-- Status Pengiriman Barang -->
                                             @if($pj->status_pengiriman === 'seluruh')
-                                                <span class="badge bg-info text-dark">Terkirim / Ambil</span>
+                                                <span class="badge" style="background-color: #E0F2FE; color: #0369A1;">Terkirim / Ambil</span>
                                             @elseif($pj->status_pengiriman === 'dikirim_sebagian')
-                                                <span class="badge bg-warning text-dark">Kirim Sebagian</span>
+                                                <span class="badge" style="background-color: #FEF3C7; color: #B45309;">Kirim Sebagian</span>
                                             @else
-                                                <span class="badge bg-secondary">Belum Dikirim</span>
+                                                <span class="badge" style="background-color: #F1F5F9; color: #475569;">Belum Dikirim</span>
                                             @endif
 
                                             <br>
 
                                             <!-- Status Pembayaran -->
                                             @if($pj->status_pembayaran === 'lunas')
-                                                <span class="badge bg-success mt-1">Lunas</span>
+                                                <span class="badge mt-1" style="background-color: #D1FAE5; color: #065F46;">Lunas</span>
                                             @else
-                                                <span class="badge bg-danger mt-1">Tempo (Piutang)</span>
+                                                <span class="badge mt-1" style="background-color: #FEE2E2; color: #B91C1C;">Tempo (Piutang)</span>
                                             @endif
                                         </td>
                                         <td class="text-center">
                                             <a href="{{ route('admin.penjualan.show', $pj->id) }}"
-                                                class="btn btn-sm btn-info text-white">
+                                                class="btn btn-sm text-decoration-none" style="background-color: #E0F2FE; color: #0369A1; font-weight: 500;">
                                                 <i class="bi bi-eye"></i> Nota
                                             </a>
                                         </td>

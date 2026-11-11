@@ -14,34 +14,34 @@
             @endif
 
             <div class="d-flex justify-content-between align-items-center mb-3">
-                <a href="{{ route('admin.pembelian.create') }}" class="btn btn-primary">
+                <a href="{{ route('admin.pembelian.create') }}" class="btn text-white shadow-sm" style="background-color: #2A9D8F; border-radius: 8px; font-weight: 500; padding: 7px 16px;">
                     <i class="bi bi-plus-circle me-1"></i> Transaksi Pembelian Baru
                 </a>
 
                 <!-- Form Filter Periode Bulan -->
                 <form method="GET" action="{{ route('admin.pembelian.index') }}" class="d-flex align-items-center gap-2">
-                    <label class="mb-0 fw-bold me-1">Filter:</label>
-                    <select name="bulan" class="form-select form-select-sm" style="width: 140px;">
+                    <label class="mb-0 fw-semibold text-muted me-1">Filter:</label>
+                    <select name="bulan" class="form-select form-select-sm" style="width: 140px; border-radius: 6px;">
                         @for($m = 1; $m <= 12; $m++)
                             <option value="{{ sprintf('%02d', $m) }}" {{ $bulan == sprintf('%02d', $m) ? 'selected' : '' }}>
                                 {{ DateTime::createFromFormat('!m', $m)->format('F') }}
                             </option>
                         @endfor
                     </select>
-                    <select name="tahun" class="form-select form-select-sm" style="width: 100px;">
+                    <select name="tahun" class="form-select form-select-sm" style="width: 100px; border-radius: 6px;">
                         @for($y = date('Y') - 2; $y <= date('Y') + 1; $y++)
                             <option value="{{ $y }}" {{ $tahun == $y ? 'selected' : '' }}>{{ $y }}</option>
                         @endfor
                     </select>
-                    <button type="submit" class="btn btn-sm btn-secondary">
+                    <button type="submit" class="btn btn-sm btn-secondary" style="border-radius: 6px;">
                         <i class="bi bi-filter"></i> Terapkan
                     </button>
                 </form>
             </div>
 
-            <div class="card">
-                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-                    <h5 class="card-title mb-0"><i class="bi bi-receipt me-2"></i> Riwayat Faktur Pembelian</h5>
+            <div class="card shadow-sm border-0" style="border-radius: 10px;">
+                <div class="card-header py-2 text-white d-flex justify-content-between align-items-center" style="background-color: #264653; border-top-left-radius: 10px; border-top-right-radius: 10px;">
+                    <h6 class="card-title fw-bold m-0 text-white"><i class="bi bi-receipt me-2"></i> Riwayat Faktur Pembelian</h6>
                     <span class="badge bg-light text-dark">Periode:
                         {{ DateTime::createFromFormat('!m', (int) $bulan)->format('F') }} {{ $tahun }}</span>
                 </div>
@@ -95,7 +95,7 @@
                                     </td>
                                     <td class="text-center">
                                         <a href="{{ route('admin.pembelian.show', $row->id) }}"
-                                            class="btn btn-sm btn-info text-white">
+                                            class="btn btn-sm" style="background-color: #E0F2FE; color: #0369A1; border-radius: 6px; font-weight: 500; font-size: 0.8rem; padding: 4px 10px;">
                                             <i class="bi bi-eye"></i> Detail
                                         </a>
                                     </td>

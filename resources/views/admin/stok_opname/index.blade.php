@@ -5,10 +5,10 @@
 
 @section('content')
     <div class="container-fluid">
-        <div class="card card-outline card-primary shadow-sm">
-            <div class="card-header d-flex justify-content-between align-items-center">
-                <h5 class="card-title fw-bold m-0"><i class="bi bi-clipboard-check me-2"></i>Daftar Riwayat Stok Opname</h5>
-                <a href="{{ route('admin.stok-opname.create') }}" class="btn btn-primary btn-sm fw-bold">
+        <div class="card shadow-sm border-0" style="border-radius: 10px;">
+            <div class="card-header py-2 text-white d-flex justify-content-between align-items-center" style="background-color: #264653; border-top-left-radius: 10px; border-top-right-radius: 10px;">
+                <h6 class="card-title fw-bold m-0 text-white"><i class="bi bi-clipboard-check me-2"></i>Daftar Riwayat Stok Opname</h6>
+                <a href="{{ route('admin.stok-opname.create') }}" class="btn btn-sm text-white shadow-sm" style="background-color: #2A9D8F; border-radius: 6px;">
                     <i class="bi bi-plus-circle me-1"></i> Input Stok Opname Baru
                 </a>
             </div>
@@ -33,21 +33,21 @@
                                     <td class="fw-bold">{{ \Carbon\Carbon::parse($row->tanggal)->format('d/m/Y H:i') }}</td>
                                     <td>{{ $row->user->name ?? '-' }}</td>
                                     <td><span
-                                            class="badge bg-info text-dark">{{ $row->detailStokOpname ? $row->detailStokOpname->count() : 0 }}
+                                            class="badge" style="background-color: #E0F2FE; color: #0369A1;">{{ $row->detailStokOpname ? $row->detailStokOpname->count() : 0 }}
                                             Produk</span></td>
                                     <td>
                                         @if(($row->status ?? 'menunggu_persetujuan') === 'disesuaikan')
-                                            <span class="badge bg-success"><i class="bi bi-check-circle me-1"></i>
+                                            <span class="badge" style="background-color: #D1FAE5; color: #065F46;"><i class="bi bi-check-circle me-1"></i>
                                                 Disesuaikan</span>
                                         @else
-                                            <span class="badge bg-warning text-dark"><i class="bi bi-hourglass-split me-1"></i>
+                                            <span class="badge" style="background-color: #FEF3C7; color: #B45309;"><i class="bi bi-hourglass-split me-1"></i>
                                                 Menunggu Persetujuan</span>
                                         @endif
                                     </td>
                                     <td><small class="text-muted">{{ $row->catatan ?? '-' }}</small></td>
                                     <td class="text-center">
                                         <a href="{{ route('admin.stok-opname.show', $row->id) }}"
-                                            class="btn btn-sm btn-outline-info">
+                                            class="btn btn-sm" style="background-color: #E0F2FE; color: #0369A1; border-radius: 6px; font-weight: 500; font-size: 0.8rem; padding: 4px 10px;">
                                             <i class="bi bi-eye"></i> Detail
                                         </a>
                                     </td>

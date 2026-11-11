@@ -6,29 +6,30 @@
 @section('content')
     <div class="row">
         <div class="col-12">
-            <button class="btn btn-primary mb-3" onclick="tambahData()">
-                <i class="fas fa-plus"></i> Tambah Satuan
+            <button class="btn mb-3 text-white shadow-sm" style="background-color: #2A9D8F; border-radius: 8px; font-weight: 500; padding: 7px 16px;" onclick="tambahData()">
+                Tambah Satuan
             </button>
 
             <div class="card">
                 <div class="card-body">
-                    <table class="table table-bordered table-striped">
+                    <table class="table table-bordered table-striped align-middle">
                         <thead>
                             <tr>
-                                <th width="5%">No</th>
+                                <th width="5%" class="text-center">No</th>
                                 <th>Nama Satuan</th>
-                                <th width="15%">Aksi</th>
+                                <th width="140px">Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
                             @foreach($data as $index => $row)
                                 <tr>
-                                    <td>{{ $index + 1 }}</td>
+                                    <td class="text-center">{{ $index + 1 }}</td>
                                     <td>{{ $row->nama_satuan }}</td>
                                     <td>
-                                        <button onclick="editData({{ $row->id }})" class="btn btn-sm btn-warning">Edit</button>
-                                        <button onclick="deleteData({{ $row->id }})"
-                                            class="btn btn-sm btn-danger">Hapus</button>
+                                        <div class="d-flex gap-1">
+                                            <button onclick="editData({{ $row->id }})" class="btn btn-sm" style="background-color: #FEF3C7; color: #B45309; border-radius: 6px; font-weight: 500; font-size: 0.8rem; padding: 4px 10px;">Edit</button>
+                                            <button onclick="deleteData({{ $row->id }})" class="btn btn-sm" style="background-color: #FEE2E2; color: #B91C1C; border-radius: 6px; font-weight: 500; font-size: 0.8rem; padding: 4px 10px;">Hapus</button>
+                                        </div>
                                     </td>
                                 </tr>
                             @endforeach
@@ -42,20 +43,23 @@
     <!-- ================= BOOTSTRAP 5 MODAL SATUAN ================= -->
     <div class="modal fade" id="modal-form" tabindex="-1" aria-labelledby="modal-title" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content shadow border-0">
+            <div class="modal-content shadow border-0" style="border-radius: 12px; overflow: hidden;">
                 <form id="form-satuan" method="POST">
                     @csrf
                     <input type="hidden" name="_method" id="method" value="POST">
                     <input type="hidden" id="satuan_id">
 
-                    <div class="modal-header bg-primary text-white py-3">
-                        <h5 class="modal-title fs-5 fw-bold" id="modal-title">
-                            <i class="bi bi-box-seam me-2"></i> Tambah Satuan
-                        </h5>
-                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                    <div class="modal-header py-3 border-0">
+                        <div>
+                            <h5 class="modal-title fs-5 fw-bold" id="modal-title" style="color: #264653;">
+                                Tambah Satuan
+                            </h5>
+                            <small class="text-muted">Isi nama unit satuan barang (dasar atau eceran)</small>
+                        </div>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"
                             aria-label="Close"></button>
                     </div>
-                    <div class="modal-body p-4">
+                    <div class="modal-body px-4 pt-1 pb-3">
                         <div class="mb-0">
                             <label for="nama_satuan" class="form-label fw-semibold">Nama Satuan <span
                                     class="text-danger">*</span></label>
@@ -63,12 +67,12 @@
                                 placeholder="Contoh: Pcs, Kg, Sak, Dus, Batang" required>
                         </div>
                     </div>
-                    <div class="modal-footer bg-light py-2">
-                        <button type="button" class="btn btn-secondary px-3" data-bs-dismiss="modal">
+                    <div class="modal-footer border-0 px-4 pb-4">
+                        <button type="button" class="btn btn-sm" style="background-color: #E2E8F0; color: #334155; font-weight: 500; padding: 6px 16px; border-radius: 6px;" data-bs-dismiss="modal">
                             <i class="bi bi-x-circle me-1"></i> Batal
                         </button>
-                        <button type="submit" class="btn btn-primary px-4 fw-bold">
-                            <i class="bi bi-save me-1"></i> Simpan
+                        <button type="submit" class="btn btn-sm text-white fw-bold shadow-sm" style="background-color: #2A9D8F; padding: 6px 18px; border-radius: 6px;">
+                            <i class="bi bi-download me-1"></i> Simpan
                         </button>
                     </div>
                 </form>

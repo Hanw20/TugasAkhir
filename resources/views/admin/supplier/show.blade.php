@@ -7,8 +7,8 @@
     <div class="row">
         <!-- CARD INFORMASI SUPPLIER (FULL WIDTH) -->
         <div class="col-12 mb-4">
-            <div class="card shadow-sm border-0">
-                <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
+            <div class="card shadow-sm border-0" style="border-radius: 10px; overflow: hidden;">
+                <div class="card-header text-white d-flex justify-content-between align-items-center" style="background-color: #264653;">
                     <h5 class="card-title mb-0 fw-bold"><i class="bi bi-truck me-2"></i> Informasi Supplier</h5>
                 </div>
                 <div class="card-body p-0">
@@ -17,7 +17,7 @@
                             <tbody>
                                 <tr>
                                     <th width="20%" class="ps-3">Kode Supplier</th>
-                                    <td><span class="badge bg-secondary font-monospace fs-6">{{ $supplier->kode_supplier }}</span></td>
+                                    <td><span class="badge" style="background-color: #E0F2FE; color: #0369A1; font-family: monospace; font-size: 0.9rem;">{{ $supplier->kode_supplier }}</span></td>
                                 </tr>
                                 <tr>
                                     <th class="ps-3">Nama Supplier / PT</th>
@@ -40,12 +40,12 @@
                     </div>
                 </div>
                 <div class="card-footer d-flex justify-content-between bg-light py-2">
-                    <a href="{{ route('admin.supplier.index') }}" class="btn btn-secondary btn-sm">
-                        <i class="bi bi-arrow-left me-1"></i> Kembali ke Daftar Supplier
+                    <a href="{{ route('admin.supplier.index') }}" class="btn btn-sm" style="background-color: #E2E8F0; color: #334155; font-weight: 500;">
+                        <i class="bi bi-arrow-left me-1"></i> Kembali Ke Daftar Supplier
                     </a>
-                     <button type="button" class="btn btn-warning text-dark btn-sm fw-bold shadow-sm" data-bs-toggle="modal"
+                     <button type="button" class="btn btn-sm text-white fw-bold shadow-sm" style="background-color: #2A9D8F;" data-bs-toggle="modal"
                         data-bs-target="#modalBeriNilai">
-                        <i class="bi bi-star-fill me-1 text-dark"></i> + Beri Nilai Kinerja (K3 & K4)
+                        <i class="bi bi-star-fill me-1"></i> Beri Penilaian Supplier
                     </button>
                 </div>
             </div>
@@ -53,10 +53,10 @@
 
         <!-- CARD DAFTAR PRODUK YANG DIPASOK (FULL WIDTH) -->
         <div class="col-12">
-            <div class="card card-outline card-success shadow-sm">
-                <div class="card-header d-flex justify-content-between align-items-center">
+            <div class="card shadow-sm border-0" style="border-radius: 10px; overflow: hidden;">
+                <div class="card-header d-flex justify-content-between align-items-center text-white" style="background-color: #264653;">
                     <h5 class="card-title fw-bold m-0"><i class="bi bi-box-seam me-2"></i> Daftar Produk yang Dipasok</h5>
-                    <button type="button" class="btn btn-sm btn-success fw-bold" data-bs-toggle="modal"
+                    <button type="button" class="btn btn-sm fw-bold shadow-sm" style="background-color: #D1FAE5; color: #065F46;" data-bs-toggle="modal"
                         data-bs-target="#modalTambahProdukSupplier">
                         <i class="bi bi-plus-circle me-1"></i> Hubungkan Produk
                     </button>
@@ -78,7 +78,7 @@
                                 @forelse($supplier->produk as $idx => $p)
                                     <tr>
                                         <td class="text-center">{{ $idx + 1 }}</td>
-                                        <td><span class="badge bg-secondary font-monospace">{{ $p->kode_produk }}</span></td>
+                                        <td><span class="badge" style="background-color: #F1F5F9; color: #475569; font-family: monospace;">{{ $p->kode_produk }}</span></td>
                                         <td class="fw-bold">{{ $p->nama_produk }}</td>
                                         <td>{{ $p->kategori->nama_kategori ?? '-' }} / {{ $p->merek->nama_merek ?? '-' }}</td>
                                         <td>{{ $p->satuan->nama_satuan ?? '-' }}</td>
@@ -89,8 +89,8 @@
                                                 onsubmit="return confirm('Hapus produk ini dari daftar pasokan supplier?')">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="submit" class="btn btn-sm btn-outline-danger" title="Hapus dari daftar">
-                                                    <i class="bi bi-trash"></i>
+                                                <button type="submit" class="btn btn-sm" style="background-color: #FEE2E2; color: #B91C1C; font-weight: 500;" title="Hapus dari daftar">
+                                                    Hapus
                                                 </button>
                                             </form>
                                         </td>
@@ -113,28 +113,35 @@
 
     <!-- MODAL HUBUNGKAN PRODUK -->
     <div class="modal fade" id="modalTambahProdukSupplier" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content shadow border-0" style="border-radius: 12px; overflow: hidden;">
                 <form action="{{ route('admin.supplier.produk.attach', $supplier->id) }}" method="POST">
                     @csrf
-                    <div class="modal-header bg-success text-white">
-                        <h5 class="modal-title"><i class="bi bi-link-45deg me-2"></i> Hubungkan Produk ke Supplier</h5>
-                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                    <div class="modal-header py-3 border-0">
+                        <div>
+                            <h5 class="modal-title fw-bold" style="color: #264653;"><i class="bi bi-link-45deg me-2"></i> Hubungkan Produk ke Supplier</h5>
+                            <small class="text-muted">Hubungkan produk yang disediakan supplier ini</small>
+                        </div>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                     </div>
-                    <div class="modal-body">
+                    <div class="modal-body px-4 pt-1 pb-3">
                         <div class="mb-3">
                             <label class="form-label fw-bold">Pilih Produk</label>
                             <select name="produk_id" class="form-select" required>
-                                <option value="">-- Pilih Produk --</option>
+                                <option value="">Pilih Produk</option>
                                 @foreach(\App\Models\Produk::orderBy('nama_produk')->get() as $prod)
                                     <option value="{{ $prod->id }}">{{ $prod->kode_produk }} - {{ $prod->nama_produk }}</option>
                                 @endforeach
                             </select>
                         </div>
                     </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Batal</button>
-                        <button type="submit" class="btn btn-success btn-sm"><i class="bi bi-save me-1"></i> Simpan</button>
+                    <div class="modal-footer border-0 px-4 pb-4">
+                        <button type="button" class="btn btn-sm" style="background-color: #E2E8F0; color: #334155; font-weight: 500; padding: 6px 16px; border-radius: 6px;" data-bs-dismiss="modal">
+                            <i class="bi bi-x-circle me-1"></i> Batal
+                        </button>
+                        <button type="submit" class="btn btn-sm text-white fw-bold shadow-sm" style="background-color: #2A9D8F; padding: 6px 18px; border-radius: 6px;">
+                            <i class="bi bi-download me-1"></i> Simpan
+                        </button>
                     </div>
                 </form>
             </div>
@@ -143,32 +150,34 @@
 
     <!-- MODAL EVALUASI KINERJA SUPPLIER (K3 & K4) -->
     <div class="modal fade" id="modalBeriNilai" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content shadow border-0" style="border-radius: 12px; overflow: hidden;">
                 <form action="{{ route('admin.supplier.nilai.store', $supplier->id) }}" method="POST">
                     @csrf
-                    <div class="modal-header bg-warning text-dark">
-                        <h5 class="modal-title fw-bold"><i class="bi bi-star-fill me-2"></i> Evaluasi Kinerja Supplier (K3 & K4)</h5>
+                    <div class="modal-header py-3 border-0">
+                        <div>
+                            <h5 class="modal-title fw-bold" style="color: #264653;"><i class="bi bi-star-fill me-2" style="color: #2A9D8F;"></i> Penilaian Supplier</h5>
+                            <small class="text-muted">Berikan penilaian pada supplier ini</small>
+                        </div>
                         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                     </div>
-                    <div class="modal-body">
+                    <div class="modal-body px-4 pt-1 pb-3">
                         <div class="mb-3">
-                            <label class="form-label fw-bold">Nama Supplier</label>
+                            <label class="form-label fw-bold small text-dark">Nama Supplier</label>
                             <input type="text" class="form-control bg-light" value="{{ $supplier->nama_supplier }}" readonly>
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label fw-bold">Tanggal Evaluasi</label>
+                            <label class="form-label fw-bold small text-dark">Tanggal Evaluasi</label>
                             <input type="date" name="tanggal_penilaian" class="form-control" value="{{ date('Y-m-d') }}" required>
                         </div>
 
                         <!-- 1. Kecepatan Respon (K3) -->
-                        <div class="mb-3 p-3 border rounded border-primary bg-light">
-                            <label class="form-label fw-bold text-primary mb-1">
-                                <i class="bi bi-chat-dots-fill me-1"></i> 1. Kecepatan Respon / Komunikasi (K3)
+                        <div class="mb-3">
+                            <label class="form-label fw-bold small text-dark mb-1">
+                                <i class="bi bi-chat-dots me-1"></i> Kecepatan Respon (K3)
                             </label>
-                            <small class="text-muted d-block mb-2">Kecepatan membalas pesan, konfirmasi pesanan, dan info stok.</small>
-                            <select name="nilai_respon" class="form-select border-primary fw-bold" required>
+                            <select name="nilai_respon" class="form-select" required>
                                 <option value="5">★★★★★ 5 - Sangat Cepat (Respon < 15 menit, sales sangat aktif)</option>
                                 <option value="4" selected>★★★★☆ 4 - Cepat (Respon dalam hitungan jam)</option>
                                 <option value="3">★★★☆☆ 3 - Cukup (Respon standar jam kerja)</option>
@@ -178,12 +187,11 @@
                         </div>
 
                         <!-- 2. Kebijakan Garansi & Klaim (K4) -->
-                        <div class="mb-3 p-3 border rounded border-success bg-light">
-                            <label class="form-label fw-bold text-success mb-1">
-                                <i class="bi bi-shield-check me-1"></i> 2. Kebijakan Garansi & Klaim Retur (K4)
+                        <div class="mb-3">
+                            <label class="form-label fw-bold small text-dark mb-1">
+                                <i class="bi bi-shield-check me-1"></i> Garansi (K4)
                             </label>
-                            <small class="text-muted d-block mb-2">Kemudahan retur barang rusak/cacat dan kecepatan proses ganti rugi.</small>
-                            <select name="nilai_garansi" class="form-select border-success fw-bold" required>
+                            <select name="nilai_garansi" class="form-select" required>
                                 <option value="5">★★★★★ 5 - Sangat Mudah (Barang rusak langsung diganti baru)</option>
                                 <option value="4" selected>★★★★☆ 4 - Mudah (Garansi resmi, proses klaim wajar)</option>
                                 <option value="3">★★★☆☆ 3 - Cukup (Bisa retur tapi butuh waktu pemeriksaan lama)</option>
@@ -193,14 +201,16 @@
                         </div>
 
                         <div class="mb-2">
-                            <label class="form-label fw-bold">Catatan Evaluasi Owner (Opsional)</label>
-                            <textarea name="keterangan" class="form-control" rows="2" placeholder="Contoh: Sales ramah, tapi proses retur semen bocor butuh approval 2 hari."></textarea>
+                            <label class="form-label fw-bold small text-dark">Catatan Evaluasi Owner (Opsional)</label>
+                            <textarea name="keterangan" class="form-control" rows="2" placeholder="Contoh: Sales responsif, komplain barang langsung ditanggapi"></textarea>
                         </div>
                     </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                        <button type="submit" class="btn btn-warning fw-bold px-4">
-                            <i class="bi bi-save me-1"></i> Simpan Evaluasi
+                    <div class="modal-footer border-0 px-4 pb-4">
+                        <button type="button" class="btn btn-sm" style="background-color: #E2E8F0; color: #334155; font-weight: 500; padding: 6px 16px; border-radius: 6px;" data-bs-dismiss="modal">
+                            <i class="bi bi-x-circle me-1"></i> Batal
+                        </button>
+                        <button type="submit" class="btn btn-sm text-white fw-bold shadow-sm" style="background-color: #2A9D8F; padding: 6px 18px; border-radius: 6px;">
+                            <i class="bi bi-download me-1"></i> Simpan
                         </button>
                     </div>
                 </form>

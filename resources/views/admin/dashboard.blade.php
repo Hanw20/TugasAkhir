@@ -4,84 +4,84 @@
 @section('page_title', 'Dashboard Utama')
 
 @section('content')
-    <!-- Banner Sambutan -->
-    <div class="row mb-3">
+    <!-- Banner Sambutan Sesuai Figma -->
+    <div class="row mb-4">
         <div class="col-12">
-            <div class="alert alert-success d-flex align-items-center mb-0" role="alert">
-                <i class="fas fa-store fa-2x mr-3"></i>
-                <div>
-                    <h5 class="alert-heading mb-1 font-weight-bold">Selamat Datang di Sistem Informasi Toko Bahan Bangunan
-                        "X"!</h5>
-                    <p class="mb-0 text-muted">Ringkasan operasional transaksi, peringatan stok menipis, dan tagihan jatuh
-                        tempo toko Anda.</p>
+            <div class="card border-0 shadow-sm" style="background-color: #EBF5F3; border-radius: 10px;">
+                <div class="card-body py-3 px-4 d-flex align-items-center">
+                    <div>
+                        <h5 class="mb-0 fw-bold" style="color: #264653;">
+                            Selamat Datang di Sistem Informasi Toko Bahan Bangunan X
+                        </h5>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- 4 Kotak Kartu Ringkasan -->
-    <div class="row">
+    <!-- 4 Kotak Kartu Ringkasan Sesuai Figma -->
+    <div class="row g-3 mb-4">
         <!-- Penjualan Bulan Ini -->
         <div class="col-lg-3 col-6">
-            <div class="small-box bg-info">
-                <div class="inner">
-                    <h3>Rp {{ number_format($totalPenjualanBulanIni, 0, ',', '.') }}</h3>
-                    <p>Penjualan Bulan Ini ({{ $jumlahPenjualanBulanIni }} Transaksi)</p>
+            <div class="card border-0 shadow-sm h-100" style="border-radius: 12px; background: #ffffff;">
+                <div class="card-body p-3">
+                    <div class="d-flex align-items-center mb-2">
+                        <span class="badge p-2 me-2" style="background-color: #E0F2FE; color: #0284C7; border-radius: 8px;">
+                            <i class="bi bi-cash-stack fs-5"></i>
+                        </span>
+                        <span class="text-muted small fw-semibold">Penjualan Bulan Ini</span>
+                    </div>
+                    <h4 class="fw-bold mb-1 text-dark">Rp {{ number_format($totalPenjualanBulanIni, 0, ',', '.') }}</h4>
+                    <small class="text-muted">{{ $jumlahPenjualanBulanIni }} Transaksi</small>
                 </div>
-                <div class="icon">
-                    <i class="fas fa-shopping-cart"></i>
-                </div>
-                <a href="{{ route('admin.penjualan.index') }}" class="small-box-footer">
-                    Lihat Penjualan <i class="fas fa-arrow-circle-right"></i>
-                </a>
             </div>
         </div>
 
         <!-- Pembelian Bulan Ini -->
         <div class="col-lg-3 col-6">
-            <div class="small-box bg-primary">
-                <div class="inner">
-                    <h3>Rp {{ number_format($totalPembelianBulanIni, 0, ',', '.') }}</h3>
-                    <p>Pembelian Bulan Ini ({{ $jumlahPembelianBulanIni }} Faktur)</p>
+            <div class="card border-0 shadow-sm h-100" style="border-radius: 12px; background: #ffffff;">
+                <div class="card-body p-3">
+                    <div class="d-flex align-items-center mb-2">
+                        <span class="badge p-2 me-2" style="background-color: #EDE9FE; color: #7C3AED; border-radius: 8px;">
+                            <i class="bi bi-cart3 fs-5"></i>
+                        </span>
+                        <span class="text-muted small fw-semibold">Pembelian Bulan Ini</span>
+                    </div>
+                    <h4 class="fw-bold mb-1 text-dark">Rp {{ number_format($totalPembelianBulanIni, 0, ',', '.') }}</h4>
+                    <small class="text-muted">{{ $jumlahPembelianBulanIni }} Faktur</small>
                 </div>
-                <div class="icon">
-                    <i class="fas fa-truck-loading"></i>
-                </div>
-                <a href="{{ route('admin.pembelian.index') }}" class="small-box-footer">
-                    Lihat Pembelian <i class="fas fa-arrow-circle-right"></i>
-                </a>
             </div>
         </div>
 
         <!-- Peringatan Stok Menipis -->
         <div class="col-lg-3 col-6">
-            <div class="small-box bg-warning">
-                <div class="inner">
-                    <h3>{{ $produkStokMenipis->count() }} <sup style="font-size: 16px">Produk</sup></h3>
-                    <p>Peringatan Stok Menipis</p>
+            <div class="card border-0 shadow-sm h-100" style="border-radius: 12px; background: #ffffff;">
+                <div class="card-body p-3">
+                    <div class="d-flex align-items-center mb-2">
+                        <span class="badge p-2 me-2" style="background-color: #FEF3C7; color: #D97706; border-radius: 8px;">
+                            <i class="bi bi-box-seam fs-5"></i>
+                        </span>
+                        <span class="text-muted small fw-semibold">Peringatan Stok Menipis</span>
+                    </div>
+                    <h4 class="fw-bold mb-1 text-dark">{{ $produkStokMenipis->count() }} Produk</h4>
+                    <span class="badge px-2 py-1" style="background-color: #FEF3C7; color: #92400E; font-size: 0.75rem;">Perlu Restock</span>
                 </div>
-                <div class="icon">
-                    <i class="fas fa-exclamation-triangle"></i>
-                </div>
-                <a href="{{ route('admin.produk.index') }}" class="small-box-footer">
-                    Periksa Stok <i class="fas fa-arrow-circle-right"></i>
-                </a>
             </div>
         </div>
 
         <!-- Hutang Jatuh Tempo -->
         <div class="col-lg-3 col-6">
-            <div class="small-box bg-danger">
-                <div class="inner">
-                    <h3>{{ $hutangJatuhTempo->count() }} <sup style="font-size: 16px">Faktur</sup></h3>
-                    <p>Hutang Belum Lunas / Tempo</p>
+            <div class="card border-0 shadow-sm h-100" style="border-radius: 12px; background: #ffffff;">
+                <div class="card-body p-3">
+                    <div class="d-flex align-items-center mb-2">
+                        <span class="badge p-2 me-2" style="background-color: #FEE2E2; color: #DC2626; border-radius: 8px;">
+                            <i class="bi bi-calendar-event fs-5"></i>
+                        </span>
+                        <span class="text-muted small fw-semibold">Hutang Jatuh Tempo</span>
+                    </div>
+                    <h4 class="fw-bold mb-1 text-dark">{{ $hutangJatuhTempo->count() }} Faktur</h4>
+                    <span class="badge px-2 py-1" style="background-color: #FEE2E2; color: #991B1B; font-size: 0.75rem;">Jatuh Tempo</span>
                 </div>
-                <div class="icon">
-                    <i class="fas fa-calendar-alt"></i>
-                </div>
-                <a href="{{ route('admin.pembayaran-hutang.index') }}" class="small-box-footer">
-                    Kelola Hutang <i class="fas fa-arrow-circle-right"></i>
-                </a>
             </div>
         </div>
     </div>
@@ -89,16 +89,17 @@
     <!-- 2 Tabel Peringatan Penting -->
     <div class="row">
         <!-- Tabel Peringatan Stok Menipis -->
-        <div class="col-md-6">
-            <div class="card card-warning card-outline">
-                <div class="card-header">
-                    <h3 class="card-title font-weight-bold">
-                        <i class="fas fa-boxes mr-1 text-warning"></i> Daftar Produk Stok Menipis (Perlu Restock)
-                    </h3>
+        <div class="col-md-6 mb-3">
+            <div class="card border-0 shadow-sm" style="border-radius: 12px; overflow: hidden;">
+                <div class="card-header bg-white py-3 border-0 d-flex align-items-center justify-content-between">
+                    <h5 class="card-title fw-bold text-dark mb-0 fs-6">
+                        <i class="fas fa-boxes mr-1" style="color: #E76F51;"></i> Daftar Produk Stok Menipis
+                    </h5>
+                    <span class="badge" style="background-color: #FEF3C7; color: #B45309; font-size: 0.75rem;">Perlu Restock</span>
                 </div>
                 <div class="card-body p-0">
-                    <table class="table table-striped table-sm mb-0">
-                        <thead>
+                    <table class="table table-hover table-striped table-sm mb-0 align-middle">
+                        <thead class="table-light">
                             <tr>
                                 <th>Kode</th>
                                 <th>Nama Produk</th>
@@ -112,18 +113,18 @@
                                 <tr>
                                     <td class="fw-bold text-dark">{{ $item->kode_produk }}</td>
                                     <td class="text-dark">{{ $item->nama_produk }}</td>
-                                    <td class="text-center fw-bold text-danger">{{ number_format($item->stok, 0) }}</td>
-                                    <td class="text-center text-secondary fw-semibold">
+                                    <td class="text-center fw-bold" style="color: #E76F51;">{{ number_format($item->stok, 0) }}</td>
+                                    <td class="text-center text-muted fw-semibold">
                                         {{ number_format($item->stok_minimum, 0) }}
                                     </td>
                                     <td><span
-                                            class="badge bg-secondary text-white">{{ $item->satuanDasar->nama_satuan ?? '-' }}</span>
+                                            class="badge" style="background-color: #F1F5F9; color: #475569;">{{ $item->satuanDasar->nama_satuan ?? '-' }}</span>
                                     </td>
                                 </tr>
                             @empty
                                 <tr>
                                     <td colspan="5" class="text-center py-3 text-muted">
-                                        <i class="fas fa-check-circle text-success mr-1"></i> Semua stok produk dalam batas
+                                        <i class="fas fa-check-circle mr-1" style="color: #2A9D8F;"></i> Semua stok produk dalam batas
                                         aman.
                                     </td>
                                 </tr>
@@ -135,21 +136,22 @@
         </div>
 
         <!-- Tabel Pengingat Hutang Pembelian Jatuh Tempo -->
-        <div class="col-md-6">
-            <div class="card card-danger card-outline">
-                <div class="card-header">
-                    <h3 class="card-title font-weight-bold">
-                        <i class="fas fa-file-invoice-dollar mr-1 text-danger"></i> Tagihan Hutang Pembelian Supplier
-                    </h3>
+        <div class="col-md-6 mb-3">
+            <div class="card border-0 shadow-sm" style="border-radius: 12px; overflow: hidden;">
+                <div class="card-header bg-white py-3 border-0 d-flex align-items-center justify-content-between">
+                    <h5 class="card-title fw-bold text-dark mb-0 fs-6">
+                        <i class="fas fa-file-invoice-dollar mr-1" style="color: #E63946;"></i> Tagihan Hutang Pembelian Supplier
+                    </h5>
+                    <span class="badge" style="background-color: #FEE2E2; color: #B91C1C; font-size: 0.75rem;">Perhatian</span>
                 </div>
                 <div class="card-body p-0">
-                    <table class="table table-striped table-sm mb-0">
-                        <thead>
+                    <table class="table table-hover table-striped table-sm mb-0 align-middle">
+                        <thead class="table-light">
                             <tr>
                                 <th>No Faktur</th>
                                 <th>Supplier</th>
                                 <th>Jatuh Tempo</th>
-                                <th class="text-right">Total Tagihan</th>
+                                <th class="text-end">Total Tagihan</th>
                                 <th class="text-center">Status</th>
                             </tr>
                         </thead>
@@ -165,16 +167,16 @@
                                     </td>
                                     <td class="text-center">
                                         @if($beli->status_pembayaran == 'sebagian')
-                                            <span class="badge bg-warning text-dark fw-bold">Sebagian</span>
+                                            <span class="badge" style="background-color: #FEF3C7; color: #B45309; font-weight: 600;">Sebagian</span>
                                         @else
-                                            <span class="badge bg-danger text-white fw-bold">Belum Bayar</span>
+                                            <span class="badge" style="background-color: #FEE2E2; color: #B91C1C; font-weight: 600;">Belum Bayar</span>
                                         @endif
                                     </td>
                                 </tr>
                             @empty
                                 <tr>
                                     <td colspan="5" class="text-center py-3 text-muted">
-                                        <i class="fas fa-check-circle text-success mr-1"></i> Tidak ada tagihan hutang yang
+                                        <i class="fas fa-check-circle mr-1" style="color: #2A9D8F;"></i> Tidak ada tagihan hutang yang
                                         belum lunas.
                                     </td>
                                 </tr>

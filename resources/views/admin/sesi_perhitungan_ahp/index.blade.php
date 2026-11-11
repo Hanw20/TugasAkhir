@@ -7,11 +7,11 @@
     <div class="container-fluid">
 
         <!-- CARD 1: DAFTAR RIWAYAT SESI AHP YANG TERSIMPAN -->
-        <div class="card card-outline card-secondary shadow-sm mb-4">
-            <div class="card-header d-flex justify-content-between align-items-center">
+        <div class="card shadow-sm border-0 mb-4" style="border-radius: 10px; overflow: hidden;">
+            <div class="card-header d-flex justify-content-between align-items-center text-white" style="background-color: #264653;">
                 <h5 class="card-title fw-bold m-0"><i class="bi bi-folder2-open me-2"></i>Daftar Sesi Pembobotan AHP
                     Tersimpan</h5>
-                <span class="badge bg-primary">{{ $daftarSesi->count() }} Sesi Tersimpan</span>
+                <span class="badge" style="background-color: #2A9D8F; color: #ffffff;">{{ $daftarSesi->count() }} Sesi Tersimpan</span>
             </div>
             <div class="card-body p-0">
                 <div class="table-responsive">
@@ -28,32 +28,32 @@
                         </thead>
                         <tbody>
                             @forelse($daftarSesi as $idx => $s)
-                                <tr class="{{ ($sesiAktif && $sesiAktif->id == $s->id) ? 'table-primary fw-bold' : '' }}">
+                                <tr class="{{ ($sesiAktif && $sesiAktif->id == $s->id) ? 'table-light fw-bold' : '' }}">
                                     <td>{{ $idx + 1 }}</td>
                                     <td class="text-start">
-                                        <i class="bi bi-bookmark-fill me-1 text-primary"></i> {{ $s->nama_sesi }}
+                                        <i class="bi bi-bookmark-fill me-1" style="color: #2A9D8F;"></i> {{ $s->nama_sesi }}
                                     </td>
                                     <td>{{ \Carbon\Carbon::parse($s->tanggal_hitung)->format('d/m/Y H:i') }}</td>
                                     <td>{{ $s->user->name ?? '-' }}</td>
                                     <td>
                                         @if($sesiAktif && $sesiAktif->id == $s->id)
-                                            <span class="badge bg-success"><i class="bi bi-check-circle me-1"></i> Sedang
+                                            <span class="badge" style="background-color: #D1FAE5; color: #065F46;"><i class="bi bi-check-circle me-1"></i> Sedang
                                                 Dibuka</span>
                                         @else
-                                            <span class="badge bg-light text-muted">Tersimpan</span>
+                                            <span class="badge" style="background-color: #F1F5F9; color: #475569;">Tersimpan</span>
                                         @endif
                                     </td>
                                     <td>
                                         <div class="d-flex justify-content-center gap-1">
                                             <a href="{{ route('admin.sesi-perhitungan-ahp.index', ['sesi_id' => $s->id]) }}"
-                                                class="btn btn-sm btn-outline-primary" title="Buka Sesi Ini">
+                                                class="btn btn-sm text-decoration-none" style="background-color: #E0F2FE; color: #0369A1; font-weight: 500;" title="Buka Sesi Ini">
                                                 <i class="bi bi-eye"></i> Buka
                                             </a>
                                             <form action="{{ route('admin.sesi-perhitungan-ahp.destroy', $s->id) }}"
                                                 method="POST" onsubmit="return confirm('Hapus sesi perhitungan AHP ini?')">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="submit" class="btn btn-sm btn-outline-danger" title="Hapus Sesi">
+                                                <button type="submit" class="btn btn-sm" style="background-color: #FEE2E2; color: #B91C1C; font-weight: 500;" title="Hapus Sesi">
                                                     <i class="bi bi-trash"></i>
                                                 </button>
                                             </form>
@@ -84,7 +84,7 @@
                         Bobot Prioritas: {{ $sesiAktif->nama_sesi ?? 'Hasil Perhitungan' }}
                     </h5>
                     @if($sesiAktif)
-                        <span class="badge bg-info text-dark">
+                        <span class="badge" style="background-color: #E0F2FE; color: #0369A1;">
                             <i class="bi bi-clock-history me-1"></i>
                             {{ \Carbon\Carbon::parse($sesiAktif->tanggal_hitung)->format('d/m/Y H:i') }}
                         </span>
@@ -188,23 +188,23 @@
                                         <!-- TABEL RADIO BUTTON SKALA SAATY AHP (BERSIH & DINAMIS) -->
                     <div class="table-responsive">
                         <table class="table table-bordered table-hover align-middle text-center mb-0">
-                            <thead class="table-dark">
+                            <thead>
                                 <tr>
-                                    <th style="width: 22%;" class="text-start">Kriteria (Sisi Kiri)</th>
-                                    <th colspan="4" class="bg-primary text-white">Lebih Penting (Kiri)</th>
-                                    <th style="width: 7%;" class="bg-secondary text-white">Sama</th>
-                                    <th colspan="4" class="bg-info text-dark">Lebih Penting (Kanan)</th>
-                                    <th style="width: 22%;" class="text-end">Kriteria (Sisi Kanan)</th>
+                                    <th style="width: 22%; background-color: #264653;" class="text-start text-white">Kriteria (Sisi Kiri)</th>
+                                    <th colspan="4" class="text-white" style="background-color: #2A9D8F;">Lebih Penting (Kiri)</th>
+                                    <th style="width: 7%; background-color: #64748B;" class="text-white">Sama</th>
+                                    <th colspan="4" class="text-white" style="background-color: #2A9D8F;">Lebih Penting (Kanan)</th>
+                                    <th style="width: 22%; background-color: #264653;" class="text-end text-white">Kriteria (Sisi Kanan)</th>
                                 </tr>
                                 <tr class="table-light small">
                                     <th></th>
                                     <th class="text-danger fw-bold">9</th>
                                     <th class="text-danger fw-bold">7</th>
-                                    <th class="text-primary fw-bold">5</th>
-                                    <th class="text-primary fw-bold">3</th>
+                                    <th class="fw-bold" style="color: #2A9D8F;">5</th>
+                                    <th class="fw-bold" style="color: #2A9D8F;">3</th>
                                     <th class="bg-warning-subtle fw-bold">1</th>
-                                    <th class="text-primary fw-bold">3</th>
-                                    <th class="text-primary fw-bold">5</th>
+                                    <th class="fw-bold" style="color: #2A9D8F;">3</th>
+                                    <th class="fw-bold" style="color: #2A9D8F;">5</th>
                                     <th class="text-danger fw-bold">7</th>
                                     <th class="text-danger fw-bold">9</th>
                                     <th></th>
@@ -221,7 +221,7 @@
                                         @endphp
                                         <tr>
                                             <td class="text-start fw-bold">
-                                                <span class="badge bg-primary font-monospace me-1">{{ $kA->kode_kriteria }}</span>
+                                                <span class="badge me-1" style="background-color: #E0F2FE; color: #0369A1; font-family: monospace;">{{ $kA->kode_kriteria }}</span>
                                                 {{ $kA->nama_kriteria }}
                                             </td>
                                             <!-- Sisi Kiri Lebih Penting: 9, 7, 5, 3 -->
@@ -248,7 +248,7 @@
                     </div>
 
                     <div class="d-flex justify-content-end mt-3">
-                        <button type="submit" class="btn btn-primary fw-bold px-4">
+                        <button type="submit" class="btn text-white fw-bold px-4 shadow-sm" style="background-color: #2A9D8F; border-radius: 8px;">
                             <i class="bi bi-save me-1"></i> Hitung & Simpan Sesi AHP Baru
                         </button>
                     </div>

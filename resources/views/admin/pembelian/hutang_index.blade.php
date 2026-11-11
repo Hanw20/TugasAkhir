@@ -7,9 +7,9 @@
     <div class="row">
         <!-- Tabel Tagihan Hutang yang Belum Lunas -->
         <div class="col-12 mb-4">
-            <div class="card">
-                <div class="card-header bg-danger text-white">
-                    <h5 class="card-title mb-0"><i class="bi bi-exclamation-octagon me-2"></i> Daftar Tagihan Faktur Belum
+            <div class="card shadow-sm border-0" style="border-radius: 10px; overflow: hidden;">
+                <div class="card-header text-white" style="background-color: #264653;">
+                    <h5 class="card-title mb-0 fw-bold"><i class="bi bi-exclamation-octagon me-2"></i> Daftar Tagihan Faktur Belum
                         Lunas (Tempo)</h5>
                 </div>
                 <div class="card-body table-responsive">
@@ -30,23 +30,23 @@
                             @forelse($fakturHutang as $index => $f)
                                 <tr>
                                     <td>{{ $index + 1 }}</td>
-                                    <td><span class="badge bg-secondary">{{ $f->no_faktur }}</span></td>
+                                    <td><span class="badge" style="background-color: #F1F5F9; color: #475569;">{{ $f->no_faktur }}</span></td>
                                     <td><strong>{{ $f->supplier->nama_supplier ?? '-' }}</strong></td>
                                     <td>
                                         @if($f->tanggal_jatuh_tempo)
                                             <span
-                                                class="badge {{ $f->tanggal_jatuh_tempo < now() ? 'bg-danger' : 'bg-warning text-dark' }}">
+                                                class="badge" style="{{ $f->tanggal_jatuh_tempo < now() ? 'background-color: #FEE2E2; color: #B91C1C;' : 'background-color: #FEF3C7; color: #B45309;' }}">
                                                 {{ $f->tanggal_jatuh_tempo->format('d/m/Y') }}
                                             </span>
                                         @else
-                                            <span class="badge bg-light text-dark">Non-Tempo</span>
+                                            <span class="badge" style="background-color: #F1F5F9; color: #475569;">Non-Tempo</span>
                                         @endif
                                     </td>
                                     <td>Rp {{ number_format($f->total, 0, ',', '.') }}</td>
                                     <td class="text-success">Rp {{ number_format($f->total_dibayar, 0, ',', '.') }}</td>
-                                    <td class="text-danger fw-bold">Rp {{ number_format($f->sisa_hutang, 0, ',', '.') }}</td>
+                                    <td class="fw-bold" style="color: #E76F51;">Rp {{ number_format($f->sisa_hutang, 0, ',', '.') }}</td>
                                     <td class="text-center">
-                                        <button type="button" class="btn btn-sm btn-success fw-bold" data-bs-toggle="modal"
+                                        <button type="button" class="btn btn-sm fw-bold shadow-sm" style="background-color: #2A9D8F; color: #ffffff;" data-bs-toggle="modal"
                                             data-bs-target="#modalBayarHutang"
                                             onclick="bukaModalBayar({{ $f->id }}, '{{ $f->no_faktur }}', {{ (int) $f->sisa_hutang }})">
                                             <i class="bi bi-cash-stack"></i> Bayar
@@ -56,8 +56,8 @@
                             @empty
                                 <tr>
                                     <td colspan="8" class="text-center text-success py-4">
-                                        <i class="bi bi-check-circle fs-3 d-block mb-1"></i>
-                                        <strong>Semua hutang faktur pembelian sudah lunas!</strong>
+                                        <i class="bi bi-check-circle fs-3 d-block mb-1" style="color: #2A9D8F;"></i>
+                                        <strong style="color: #264653;">Semua hutang faktur pembelian sudah lunas!</strong>
                                     </td>
                                 </tr>
                             @endforelse
@@ -69,9 +69,9 @@
 
         <!-- Tabel Riwayat Pembayaran Hutang -->
         <div class="col-12">
-            <div class="card">
-                <div class="card-header bg-secondary text-white">
-                    <h5 class="card-title mb-0"><i class="bi bi-clock-history me-2"></i> Riwayat Cicilan / Pembayaran Hutang
+            <div class="card shadow-sm border-0" style="border-radius: 10px; overflow: hidden;">
+                <div class="card-header text-white" style="background-color: #2A9D8F;">
+                    <h5 class="card-title mb-0 fw-bold"><i class="bi bi-clock-history me-2"></i> Riwayat Cicilan / Pembayaran Hutang
                     </h5>
                 </div>
                 <div class="card-body table-responsive">

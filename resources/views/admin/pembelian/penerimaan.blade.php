@@ -14,9 +14,9 @@
             @csrf
 
             <!-- Card Informasi Faktur & Penerimaan -->
-            <div class="card mb-3 shadow-sm border-0">
-                <div class="card-header bg-success text-white">
-                    <h5 class="card-title mb-0"><i class="bi bi-box-arrow-in-down me-2"></i> Konfirmasi Barang Datang</h5>
+            <div class="card mb-3 shadow-sm border-0" style="border-radius: 10px; overflow: hidden;">
+                <div class="card-header text-white" style="background-color: #264653;">
+                    <h5 class="card-title mb-0 fw-bold"><i class="bi bi-box-arrow-in-down me-2"></i> Konfirmasi Barang Datang</h5>
                 </div>
                 <div class="card-body">
                     <div class="row g-3">
@@ -99,11 +99,11 @@
                         </tbody>
                     </table>
                 </div>
-                <div class="card-footer d-flex justify-content-between bg-light py-2">
-                    <a href="{{ route('admin.pembelian.show', $pembelian->id) }}" class="btn btn-secondary">
-                        <i class="bi bi-arrow-left"></i> Batal
+                <div class="card-footer d-flex justify-content-between bg-white py-3 border-0">
+                    <a href="{{ route('admin.pembelian.show', $pembelian->id) }}" class="btn btn-sm" style="background-color: #E2E8F0; color: #334155; font-weight: 500; padding: 7px 16px; border-radius: 6px;">
+                        <i class="bi bi-arrow-left me-1"></i> Batal
                     </a>
-                    <button type="submit" class="btn btn-success px-4 fw-bold">
+                    <button type="submit" class="btn btn-sm text-white px-4 fw-bold shadow-sm" style="background-color: #2A9D8F; padding: 7px 18px; border-radius: 6px;">
                         <i class="bi bi-box-seam me-1"></i> Konfirmasi Barang Diterima & Simpan Penilaian
                     </button>
                 </div>

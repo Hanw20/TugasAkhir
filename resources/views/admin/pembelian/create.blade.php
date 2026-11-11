@@ -14,9 +14,9 @@
                 @csrf
 
                 <!-- Card Informasi Faktur -->
-                <div class="card mb-3">
-                    <div class="card-header bg-primary text-white">
-                        <h5 class="card-title mb-0"><i class="bi bi-file-earmark-text me-2"></i> Data Faktur Pembelian</h5>
+                <div class="card shadow-sm border-0 mb-3" style="border-radius: 10px; overflow: hidden;">
+                    <div class="card-header text-white" style="background-color: #264653;">
+                        <h5 class="card-title mb-0 fw-bold"><i class="bi bi-file-earmark-text me-2"></i> Data Faktur Pembelian</h5>
                     </div>
                     <div class="card-body">
                         <div class="row g-3">

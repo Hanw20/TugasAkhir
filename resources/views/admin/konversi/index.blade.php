@@ -6,21 +6,21 @@
 @section('content')
     <div class="row">
         <div class="col-12">
-            <button class="btn btn-primary mb-3" onclick="tambahData()">
-                <i class="fas fa-plus"></i> Tambah Rumus Konversi
+            <button class="btn mb-3 text-white shadow-sm" style="background-color: #2A9D8F; border-radius: 8px; font-weight: 500; padding: 7px 16px;" onclick="tambahData()">
+                Tambah Rumus Konversi
             </button>
 
             <!-- Kotak Bantuan / Petunjuk -->
-            <div class="alert alert-info">
-                <i class="fas fa-info-circle"></i> <strong>Cara Membaca Rumus:</strong> 1 [Satuan Asal] = [Nilai Konversi]
+            <div class="alert border-0 shadow-sm" style="background-color: #EBF5F3; color: #264653; border-radius: 8px;">
+                <i class="bi bi-info-circle me-1" style="color: #2A9D8F;"></i> <strong>Cara Membaca Rumus:</strong> 1 [Satuan Asal] = [Nilai Konversi]
                 [Satuan Tujuan]. <br>
                 <em>Contoh: 1 <strong>Dus</strong> = 12 <strong>Pcs</strong>, atau 1 <strong>Sak</strong> = 50
                     <strong>Kg</strong>.</em>
             </div>
 
-            <div class="card">
+            <div class="card shadow-sm border-0" style="border-radius: 10px; overflow: hidden;">
                 <div class="card-body table-responsive">
-                    <table class="table table-bordered table-striped">
+                    <table class="table table-bordered table-striped align-middle">
                         <thead>
                             <tr>
                                 <th width="5%">No</th>
@@ -28,7 +28,7 @@
                                 <th>Satuan Tujuan</th>
                                 <th>Nilai Konversi</th>
                                 <th>Cara Baca Rumus</th>
-                                <th width="15%">Aksi</th>
+                                <th width="150px">Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -40,15 +40,16 @@
                                     <td>{{ (float) $row->nilai_konversi }}</td>
                                     <td>
                                         <!-- Menampilkan cara baca rumus secara visual -->
-                                        <span class="badge bg-secondary" style="font-size: 14px;">
+                                        <span class="badge" style="background-color: #F1F5F9; color: #475569; font-size: 0.85rem;">
                                             1 {{ $row->satuanAsal->nama_satuan ?? '' }} = {{ (float) $row->nilai_konversi }}
-                                            {{ $row->satuanTujuan->nama_satuan ?? '' }}
+                                             {{ $row->satuanTujuan->nama_satuan ?? '' }}
                                         </span>
                                     </td>
                                     <td>
-                                        <button onclick="editData({{ $row->id }})" class="btn btn-sm btn-warning">Edit</button>
-                                        <button onclick="deleteData({{ $row->id }})"
-                                            class="btn btn-sm btn-danger">Hapus</button>
+                                        <div class="d-flex gap-1">
+                                            <button onclick="editData({{ $row->id }})" class="btn btn-sm" style="background-color: #FEF3C7; color: #B45309; border-radius: 6px; font-weight: 500; font-size: 0.8rem; padding: 4px 10px;">Edit</button>
+                                            <button onclick="deleteData({{ $row->id }})" class="btn btn-sm" style="background-color: #FEE2E2; color: #B91C1C; border-radius: 6px; font-weight: 500; font-size: 0.8rem; padding: 4px 10px;">Hapus</button>
+                                        </div>
                                     </td>
                                 </tr>
                             @endforeach
@@ -62,25 +63,28 @@
     <!-- ================= BOOTSTRAP 5 MODAL MASTER KONVERSI ================= -->
     <div class="modal fade" id="modal-form" tabindex="-1" aria-labelledby="modal-title" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content shadow border-0">
+            <div class="modal-content shadow border-0" style="border-radius: 12px; overflow: hidden;">
                 <form id="form-konversi" method="POST">
                     @csrf
                     <input type="hidden" name="_method" id="method" value="POST">
                     <input type="hidden" id="konversi_id">
 
-                    <div class="modal-header bg-primary text-white py-3">
-                        <h5 class="modal-title fs-5 fw-bold" id="modal-title">
-                            <i class="bi bi-arrow-repeat me-2"></i> Tambah Rumus Konversi
-                        </h5>
-                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                    <div class="modal-header py-3 border-0">
+                        <div>
+                            <h5 class="modal-title fs-5 fw-bold" id="modal-title" style="color: #264653;">
+                                Tambah Rumus Konversi
+                            </h5>
+                            <small class="text-muted">Tentukan rasio konversi satuan besar ke satuan kecil</small>
+                        </div>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"
                             aria-label="Close"></button>
                     </div>
-                    <div class="modal-body p-4">
+                    <div class="modal-body px-4 pt-1 pb-3">
                         <div class="mb-3">
                             <label for="satuan_asal_id" class="form-label fw-semibold">1 Satuan Asal (Kemasan Besar) <span
                                     class="text-danger">*</span></label>
                             <select name="satuan_asal_id" id="satuan_asal_id" class="form-select" required>
-                                <option value="">-- Pilih Satuan Asal --</option>
+                                <option value="">Pilih Satuan Asal</option>
                                 @foreach($satuan as $s)
                                     <option value="{{ $s->id }}">{{ $s->nama_satuan }}</option>
                                 @endforeach
@@ -98,19 +102,19 @@
                             <label for="satuan_tujuan_id" class="form-label fw-semibold">Satuan Tujuan (Eceran) <span
                                     class="text-danger">*</span></label>
                             <select name="satuan_tujuan_id" id="satuan_tujuan_id" class="form-select" required>
-                                <option value="">-- Pilih Satuan Tujuan --</option>
+                                <option value="">Pilih Satuan Tujuan</option>
                                 @foreach($satuan as $s)
                                     <option value="{{ $s->id }}">{{ $s->nama_satuan }}</option>
                                 @endforeach
                             </select>
                         </div>
                     </div>
-                    <div class="modal-footer bg-light py-2">
-                        <button type="button" class="btn btn-secondary px-3" data-bs-dismiss="modal">
+                    <div class="modal-footer border-0 px-4 pb-4">
+                        <button type="button" class="btn btn-sm" style="background-color: #E2E8F0; color: #334155; font-weight: 500; padding: 6px 16px; border-radius: 6px;" data-bs-dismiss="modal">
                             <i class="bi bi-x-circle me-1"></i> Batal
                         </button>
-                        <button type="submit" class="btn btn-primary px-4 fw-bold">
-                            <i class="bi bi-save me-1"></i> Simpan
+                        <button type="submit" class="btn btn-sm text-white fw-bold shadow-sm" style="background-color: #2A9D8F; padding: 6px 18px; border-radius: 6px;">
+                            <i class="bi bi-download me-1"></i> Simpan
                         </button>
                     </div>
                 </form>

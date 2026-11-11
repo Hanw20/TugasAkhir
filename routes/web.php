@@ -73,8 +73,9 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::get('sesi-perhitungan-ahp', [App\Http\Controllers\SesiPerhitunganAhpController::class, 'index'])->name('sesi-perhitungan-ahp.index');
     Route::post('sesi-perhitungan-ahp', [App\Http\Controllers\SesiPerhitunganAhpController::class, 'store'])->name('sesi-perhitungan-ahp.store');
     Route::delete('sesi-perhitungan-ahp/{id}', [App\Http\Controllers\SesiPerhitunganAhpController::class, 'destroy'])->name('sesi-perhitungan-ahp.destroy');
-    // Rekomendasi Supplier (Metode SAW per Produk)
+        // Rekomendasi Supplier (Metode SAW per Produk)
     Route::get('rekomendasi-supplier', [App\Http\Controllers\RekomendasiSupplierController::class, 'index'])->name('rekomendasi-supplier.index');
+    Route::get('rekomendasi-supplier/{id}', [App\Http\Controllers\RekomendasiSupplierController::class, 'show'])->name('rekomendasi-supplier.show');
 });
 
 // ========================================================

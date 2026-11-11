@@ -15,6 +15,70 @@
     {{-- Vite (Bootstrap SCSS) --}}
     @vite(['resources/sass/app.scss', 'resources/js/app.js'])
 
+    <style>
+        /* ================= THEMA NORDIC MINIMALIST SAGE (FIGMA) ================= */
+        .app-sidebar, 
+        .app-sidebar.bg-body-secondary {
+            background-color: #264653 !important;
+            border-right: none !important;
+        }
+        .sidebar-brand {
+            background-color: #213d49 !important;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+        }
+        .sidebar-brand .brand-text {
+            color: #FFFFFF !important;
+            font-weight: 700 !important;
+            letter-spacing: 0.5px;
+        }
+        .nav-header {
+            color: #829AB1 !important;
+            font-size: 0.72rem !important;
+            font-weight: 700 !important;
+            letter-spacing: 1px;
+            padding: 18px 16px 6px !important;
+            text-transform: uppercase;
+        }
+        .sidebar-menu .nav-link {
+            color: #E2E8F0 !important;
+            border-radius: 8px !important;
+            margin: 2px 10px !important;
+            padding: 9px 12px !important;
+            transition: all 0.2s ease-in-out;
+            font-size: 0.88rem;
+        }
+        .sidebar-menu .nav-link:hover {
+            background-color: rgba(255, 255, 255, 0.08) !important;
+            color: #FFFFFF !important;
+        }
+        .sidebar-menu .nav-link.active {
+            background-color: #2A9D8F !important;
+            color: #FFFFFF !important;
+            font-weight: 600 !important;
+            box-shadow: 0 3px 8px rgba(42, 157, 143, 0.3) !important;
+        }
+        .sidebar-menu .nav-link.active .nav-icon {
+            color: #FFFFFF !important;
+        }
+        .sidebar-menu .nav-icon {
+            color: #CBD5E1 !important;
+            margin-right: 8px;
+            font-size: 1.05rem;
+        }
+        .sidebar-menu .nav-treeview .nav-link {
+            padding-left: 28px !important;
+            font-size: 0.84rem;
+        }
+        .sidebar-menu .nav-treeview .nav-link.active {
+            background-color: #21867a !important;
+        }
+        .app-header.navbar {
+            background-color: #FFFFFF !important;
+            border-bottom: 1px solid #E2E8F0 !important;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+        }
+    </style>
+
     @stack('styles')
 </head>
 
@@ -62,10 +126,11 @@
 
         {{-- Sidebar --}}
         <aside class="app-sidebar bg-body-secondary shadow" data-bs-theme="dark">
-            <div class="sidebar-brand">
-                <a href="{{ url('/') }}" class="brand-link">
-                    <span class="brand-text fw-light">
-                        <i class="bi bi-building me-1"></i> Toko BB
+            <div class="sidebar-brand py-3">
+                <a href="{{ url('/') }}" class="brand-link text-decoration-none">
+                    <span class="brand-text d-flex align-items-center">
+                        <i class="bi bi-shop fs-4 me-2 text-warning"></i>
+                        <span class="fs-6 fw-bold">Toko Bahan Bangunan X</span>
                     </span>
                 </a>
             </div>
@@ -253,14 +318,14 @@
                                 <a href="{{ route('admin.sesi-perhitungan-ahp.index') }}"
                                     class="nav-link {{ request()->routeIs('admin.sesi-perhitungan-ahp*') ? 'active' : '' }}">
                                     <i class="nav-icon bi bi-diagram-3"></i>
-                                    <p>Bobot AHP</p>
+                                    <p>Bobot Penilaian</p>
                                 </a>
                             </li>
                             <li class="nav-item">
                                 <a href="{{ route('admin.rekomendasi-supplier.index') }}"
                                     class="nav-link {{ request()->routeIs('admin.rekomendasi-supplier*') ? 'active' : '' }}">
                                     <i class="nav-icon bi bi-trophy"></i>
-                                    <p>Rekomendasi SAW</p>
+                                    <p>Rekomendasi Supplier</p>
                                 </a>
                             </li>
                         @endif
