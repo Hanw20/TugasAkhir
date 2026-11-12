@@ -24,7 +24,7 @@ class DetailPenerimaanPembelian extends Model
         return $this->belongsTo(DetailPembelian::class);
     }
 
-    public function riwayatPenilaian()
+    public function riwayatPenilaianSupplier()
     {
         return $this->hasMany(RiwayatPenilaianSupplier::class, 'detail_penerimaan_pembelian_id');
     }

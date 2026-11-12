@@ -96,13 +96,13 @@ class Produk extends Model
     public function getHargaBeliRataRataAttribute()
     {
         // Ambil semua detail pembelian untuk produk ini yang sudah ada penerimaan fisiknya
-        $details = $this->detailPembelian()->with('detailPenerimaan')->get();
+        $details = $this->detailPembelian()->with('detailPenerimaanPembelian')->get();
 
         $totalNilaiFisik = 0;
         $totalQtyFisik = 0;
 
         foreach ($details as $dp) {
-            $qtyDiterima = $dp->detailPenerimaan->sum('qty_diterima');
+            $qtyDiterima = $dp->detailPenerimaanPembelian->sum('qty_diterima');
             if ($qtyDiterima > 0) {
                 $totalNilaiFisik += ($qtyDiterima * $dp->harga_satuan);
                 $totalQtyFisik += $qtyDiterima;

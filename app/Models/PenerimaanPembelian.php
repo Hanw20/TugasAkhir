@@ -24,7 +24,7 @@ class PenerimaanPembelian extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function detailPenerimaan()
+    public function detailPenerimaanPembelian()
     {
         return $this->hasMany(DetailPenerimaanPembelian::class);
     }

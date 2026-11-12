@@ -24,7 +24,7 @@ class PengirimanPenjualan extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function detailPengiriman()
+    public function detailPengirimanPenjualan()
     {
         return $this->hasMany(DetailPengirimanPenjualan::class);
     }

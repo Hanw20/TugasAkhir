@@ -15,7 +15,7 @@
 
  <!-- Card Informasi Faktur & Penerimaan -->
  <div class="card mb-3" >
- <div class="card-header text-white" style="background-color: #264653;">
+ <div class="card-header text-white"  style="background-color: #2A9D8F;">
  <h5 class="card-title mb-0 fw-bold"><i class="bi bi-box-arrow-in-down me-2"></i> Konfirmasi Barang Datang</h5>
  </div>
  <div class="card-body">
@@ -43,7 +43,7 @@
 
  <!-- Card Tabel Checklist Barang Fisik & Penilaian Kualitas Per Produk -->
  <div class="card mb-3">
- <div class="card-header bg-secondary text-white">
+ <div class="card-header text-white" style="background-color: #2A9D8F;"">
  <h5 class="card-title mb-0"><i class="bi bi-check2-square me-2"></i> Ceklist Kuantitas & Kualitas Fisik Per Produk</h5>
  </div>
  <div class="card-body table-responsive p-0">

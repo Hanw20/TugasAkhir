@@ -15,7 +15,7 @@
 
  <!-- Header Nota -->
  <div class="card mb-3" >
- <div class="card-header text-white" style="background-color: #264653;">
+ <div class="card-header text-white"  style="background-color: #2A9D8F;">
  <h5 class="card-title mb-0 fw-bold"><i class="bi bi-file-earmark-text me-2"></i> Data Nota Penjualan</h5>
  </div>
  <div class="card-body">
@@ -59,7 +59,7 @@
 
  <!-- Daftar Barang Belanja -->
  <div class="card mb-3">
- <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
+ <div class="card-header text-white d-flex justify-content-between align-items-center" style="background-color: #2A9D8F;">
  <h5 class="card-title mb-0"><i class="bi bi-cart me-2"></i> Daftar Barang yang Dijual</h5>
  <button type="button" class="btn btn-sm btn-light fw-bold" onclick="tambahBaris()">
  <i class="bi bi-plus-circle"></i> + Tambah Item Barang

@@ -8,7 +8,6 @@
  <!-- Judul Halaman -->
  <div class="d-flex justify-content-between align-items-center mb-3">
  <div>
- <h4 class="mb-0 fw-bold" style="color: #264653;">Rekomendasi Supplier Terbaik</h4>
  <p class="text-muted small mb-0">Penentuan supplier optimal menggunakan integrasi pembobotan AHP dan perankingan SAW</p>
  </div>
  @if ($selectedProduk)

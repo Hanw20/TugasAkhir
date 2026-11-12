@@ -20,7 +20,7 @@ class KriteriaAhp extends Model
         return $this->hasMany(PerbandinganKriteriaAhp::class, 'kriteria_b_id');
     }
 
-    public function riwayatPenilaian()
+    public function riwayatPenilaianSupplier()
     {
         return $this->hasMany(RiwayatPenilaianSupplier::class);
     }

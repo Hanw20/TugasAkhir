@@ -21,7 +21,7 @@ class DetailPembelian extends Model
     // Accessor: qty yang sudah diterima
     public function getQtyDiterimaAttribute()
     {
-        return $this->detailPenerimaan->sum('qty_diterima');
+        return $this->detailPenerimaanPembelian->sum('qty_diterima');
     }
 
     // Accessor: sisa qty yang belum diterima
@@ -40,12 +40,12 @@ class DetailPembelian extends Model
         return $this->belongsTo(Produk::class);
     }
 
-    public function detailPenerimaan()
+    public function detailPenerimaanPembelian()
     {
         return $this->hasMany(DetailPenerimaanPembelian::class);
     }
 
-    public function riwayatPenilaian()
+    public function riwayatPenilaianSupplier()
     {
         return $this->hasMany(RiwayatPenilaianSupplier::class, 'detail_penerimaan_pembelian_id');
     }

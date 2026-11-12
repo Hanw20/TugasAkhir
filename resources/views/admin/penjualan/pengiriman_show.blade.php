@@ -67,7 +67,7 @@
  </tr>
  </thead>
  <tbody>
- @foreach($pengiriman->detailPengiriman as $index => $item)
+ @foreach($pengiriman->detailPengirimanPenjualan as $index => $item)
  <tr>
  <td class="text-center">{{ $index + 1 }}</td>
  <td><span class="badge" style="background-color: #F1F5F9; color: #475569; font-family: monospace;">{{ $item->detailPenjualan->produk->kode_produk ?? '-' }}</span></td>

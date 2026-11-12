@@ -34,7 +34,7 @@ class SupplierController extends Controller
 
     public function show(string $id)
     {
-        $supplier = Supplier::with(['riwayatPenilaian.kriteria', 'produk.satuanDasar'])->findOrFail($id);
+        $supplier = Supplier::with(['riwayatPenilaianSupplier.kriteria', 'produk.satuanDasar'])->findOrFail($id);
         $semuaProduk = \App\Models\Produk::orderBy('nama_produk', 'asc')->get();
         return view('admin.supplier.show', compact('supplier', 'semuaProduk'));
     }

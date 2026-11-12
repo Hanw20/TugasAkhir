@@ -15,9 +15,12 @@
 
  <!-- Card Informasi Faktur -->
  <div class="card mb-3" >
- <div class="card-header text-white" style="background-color: #264653;">
- <h5 class="card-title mb-0 fw-bold"><i class="bi bi-file-earmark-text me-2"></i> Data Faktur Pembelian</h5>
- </div>
+ <div class="card-header text-white d-flex justify-content-between align-items-center"  style="background-color: #2A9D8F;">
+            <h5 class="card-title mb-0 fw-bold"><i class="bi bi-file-earmark-text me-2"></i> Data Faktur Pembelian</h5>
+            <a href="{{ route('admin.rekomendasi-supplier.index') }}" target="_blank" class="btn btn-sm btn-light fw-semibold shadow-sm">
+              <i class="bi bi-stars me-1 text-primary"></i> Lihat Rekomendasi Supplier (SPK)
+            </a>
+          </div>
  <div class="card-body">
  <div class="row g-3">
  <div class="col-md-3">
@@ -50,7 +53,7 @@
 
  <!-- Card Daftar Item Barang -->
  <div class="card mb-3">
- <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
+ <div class="card-header text-white d-flex justify-content-between align-items-center" style="background-color: #2A9D8F;">
  <h5 class="card-title mb-0"><i class="bi bi-cart-plus me-2"></i> Daftar Barang Dipesan (Purchase
  Order)</h5>
  <button type="button" class="btn btn-sm btn-light" onclick="tambahBarisItem()">

@@ -19,7 +19,7 @@ class PengirimanPenjualanController extends Controller
         $pengiriman = PengirimanPenjualan::with([
             'penjualan.customer',
             'user',
-            'detailPengiriman.detailPenjualan.produk.satuanDasar'
+            'detailPengirimanPenjualan.detailPenjualan.produk.satuanDasar'
         ])
             ->orderBy('id', 'desc')
             ->get();
@@ -132,7 +132,7 @@ class PengirimanPenjualanController extends Controller
         $pengiriman = PengirimanPenjualan::with([
             'penjualan.customer',
             'user',
-            'detailPengiriman.detailPenjualan.produk.satuanDasar'
+            'detailPengirimanPenjualan.detailPenjualan.produk.satuanDasar'
         ])->findOrFail($id);
 
         return view('admin.penjualan.pengiriman_show', compact('pengiriman'));

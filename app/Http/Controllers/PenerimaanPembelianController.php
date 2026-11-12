@@ -19,7 +19,7 @@ class PenerimaanPembelianController extends Controller
         $penerimaan = PenerimaanPembelian::with([
             'pembelian.supplier',
             'user',
-            'detailPenerimaan.detailPembelian.produk.satuanDasar'
+            'detailPenerimaanPembelian.detailPembelian.produk.satuanDasar'
         ])
             ->orderBy('tanggal_terima', 'desc')
             ->get();
@@ -158,7 +158,7 @@ class PenerimaanPembelianController extends Controller
         $penerimaan = PenerimaanPembelian::with([
             'pembelian.supplier',
             'user',
-            'detailPenerimaan.detailPembelian.produk.satuanDasar'
+            'detailPenerimaanPembelian.detailPembelian.produk.satuanDasar'
         ])->findOrFail($id);
 
         return view('admin.pembelian.penerimaan_show', compact('penerimaan'));

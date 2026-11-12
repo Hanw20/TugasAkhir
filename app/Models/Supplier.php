@@ -23,7 +23,7 @@ class Supplier extends Model
         return $this->hasMany(Pembelian::class);
     }
 
-    public function riwayatPenilaian()
+    public function riwayatPenilaianSupplier()
     {
         return $this->hasMany(RiwayatPenilaianSupplier::class);
     }
