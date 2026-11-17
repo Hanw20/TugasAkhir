@@ -15,7 +15,7 @@ return new class extends Migration
             $table->unsignedBigInteger('detail_penerimaan_pembelian_id');
             $table->foreign('detail_penerimaan_pembelian_id', 'fk_rps_detail_penerimaan')
                   ->references('id')->on('detail_penerimaan_pembelian')->cascadeOnDelete();
-            $table->foreignId('kriteria_ahp_id')->constrained('kriteria_ahp')->restrictOnDelete();
+            $table->foreignId('kriteria_supplier_id')->constrained('kriteria_supplier')->restrictOnDelete();
             $table->decimal('nilai', 12, 2);
             $table->date('tanggal_penilaian');
             $table->text('keterangan')->nullable();

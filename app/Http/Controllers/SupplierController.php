@@ -77,14 +77,14 @@ class SupplierController extends Controller
         ]);
 
         $supplier = Supplier::findOrFail($id);
-        $k3 = \App\Models\KriteriaAhp::where('kode_kriteria', 'K3')->first();
-        $k4 = \App\Models\KriteriaAhp::where('kode_kriteria', 'K4')->first();
+        $k3 = \App\Models\KriteriaSupplier::where('kode_kriteria', 'K3')->first();
+        $k4 = \App\Models\KriteriaSupplier::where('kode_kriteria', 'K4')->first();
 
         // Simpan Nilai Kecepatan Respon (K3)
         if ($k3) {
             \App\Models\RiwayatPenilaianSupplier::create([
                 'supplier_id' => $supplier->id,
-                'kriteria_ahp_id' => $k3->id,
+                'kriteria_supplier_id' => $k3->id,
                 'nilai' => $request->nilai_respon,
                 'tanggal_penilaian' => $request->tanggal_penilaian,
                 'keterangan' => 'Evaluasi Kecepatan Respon: ' . ($request->keterangan ?? '-'),
@@ -95,7 +95,7 @@ class SupplierController extends Controller
         if ($k4) {
             \App\Models\RiwayatPenilaianSupplier::create([
                 'supplier_id' => $supplier->id,
-                'kriteria_ahp_id' => $k4->id,
+                'kriteria_supplier_id' => $k4->id,
                 'nilai' => $request->nilai_garansi,
                 'tanggal_penilaian' => $request->tanggal_penilaian,
                 'keterangan' => 'Evaluasi Kebijakan Garansi: ' . ($request->keterangan ?? '-'),

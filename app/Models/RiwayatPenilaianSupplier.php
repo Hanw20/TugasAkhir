@@ -10,7 +10,7 @@ class RiwayatPenilaianSupplier extends Model
 
     protected $fillable = [
         'supplier_id', 'detail_penerimaan_pembelian_id',
-        'kriteria_ahp_id', 'nilai', 'tanggal_penilaian', 'keterangan',
+        'kriteria_supplier_id', 'nilai', 'tanggal_penilaian', 'keterangan',
     ];
 
     protected $casts = ['tanggal_penilaian' => 'date'];
@@ -27,6 +27,6 @@ class RiwayatPenilaianSupplier extends Model
 
     public function kriteria()
     {
-        return $this->belongsTo(KriteriaAhp::class, 'kriteria_ahp_id');
+        return $this->belongsTo(KriteriaSupplier::class, 'kriteria_supplier_id');
     }
 }

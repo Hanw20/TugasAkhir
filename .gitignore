@@ -16,3 +16,7 @@ yarn-error.log
 /.fleet
 /.idea
 /.vscode
+.phpunit.result.cache
+*.py
+*.pyc
+__pycache__/

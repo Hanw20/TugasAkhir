@@ -10,13 +10,13 @@ class SawNormalisasi extends Model
 
     protected $fillable = [
         'produk_supplier_id',
-        'kriteria_ahp_id',
+        'kriteria_supplier_id',
         'nilai_asli',
         'nilai_normalisasi',
     ];
 
     public function kriteria()
     {
-        return $this->belongsTo(KriteriaAhp::class, 'kriteria_ahp_id');
+        return $this->belongsTo(KriteriaSupplier::class, 'kriteria_supplier_id');
     }
 }

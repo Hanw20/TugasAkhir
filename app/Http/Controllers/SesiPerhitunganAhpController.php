@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\KriteriaAhp;
+use App\Models\KriteriaSupplier;
 use App\Models\SesiPerhitunganAhp;
 use App\Models\PerbandinganKriteriaAhp;
 use Illuminate\Support\Facades\Auth;
@@ -17,7 +17,7 @@ class SesiPerhitunganAhpController extends Controller
      */
     public function index(Request $request)
     {
-        $kriteria = KriteriaAhp::orderBy('id', 'asc')->get();
+        $kriteria = KriteriaSupplier::orderBy('id', 'asc')->get();
         $daftarSesi = SesiPerhitunganAhp::with('user')->orderBy('tanggal_hitung', 'desc')->get();
 
         // Jika user memilih sesi tertentu dari list, buka sesi tersebut. Jika tidak, buka yang terbaru.
@@ -51,7 +51,7 @@ class SesiPerhitunganAhpController extends Controller
      */
     public function store(Request $request)
     {
-        $kriteria = KriteriaAhp::orderBy('id', 'asc')->get();
+        $kriteria = KriteriaSupplier::orderBy('id', 'asc')->get();
         $n = count($kriteria);
 
         if ($n < 2) {

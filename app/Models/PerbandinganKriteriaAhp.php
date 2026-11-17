@@ -20,11 +20,11 @@ class PerbandinganKriteriaAhp extends Model
 
     public function kriteriaA()
     {
-        return $this->belongsTo(KriteriaAhp::class, 'kriteria_a_id');
+        return $this->belongsTo(KriteriaSupplier::class, 'kriteria_a_id');
     }
 
     public function kriteriaB()
     {
-        return $this->belongsTo(KriteriaAhp::class, 'kriteria_b_id');
+        return $this->belongsTo(KriteriaSupplier::class, 'kriteria_b_id');
     }
 }

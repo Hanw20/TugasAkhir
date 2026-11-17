@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Produk;
 use App\Models\Supplier;
-use App\Models\KriteriaAhp;
+use App\Models\KriteriaSupplier;
 use App\Models\SesiPerhitunganAhp;
 use App\Models\DetailPembelian;
 use App\Models\RiwayatPenilaianSupplier;
@@ -36,7 +36,7 @@ class RekomendasiSupplierController extends Controller
             $sesiDipilih = SesiPerhitunganAhp::with('perbandingan')->latest('tanggal_hitung')->first();
         }
 
-        $kriteriaList = KriteriaAhp::orderBy('id', 'asc')->get();
+        $kriteriaList = KriteriaSupplier::orderBy('id', 'asc')->get();
 
         // Hitung bobot AHP (Eigen Vector)
         $bobotAHP = $this->hitungBobotDariSesi($sesiDipilih, $kriteriaList);
@@ -120,7 +120,7 @@ class RekomendasiSupplierController extends Controller
                             SawNormalisasi::updateOrCreate(
                                 [
                                     'produk_supplier_id' => $produkSupplierId,
-                                    'kriteria_ahp_id'    => $k->id,
+                                    'kriteria_supplier_id' => $k->id,
                                 ],
                                 [
                                     'nilai_asli'         => $x,
@@ -412,7 +412,7 @@ class RekomendasiSupplierController extends Controller
             $sesiDipilih = SesiPerhitunganAhp::with('perbandingan')->latest('tanggal_hitung')->first();
         }
 
-        $kriteriaList = KriteriaAhp::orderBy('id', 'asc')->get();
+        $kriteriaList = KriteriaSupplier::orderBy('id', 'asc')->get();
         $bobotAHP = $this->hitungBobotDariSesi($sesiDipilih, $kriteriaList);
 
         $alternatif = [];

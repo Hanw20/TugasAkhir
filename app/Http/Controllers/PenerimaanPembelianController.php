@@ -54,7 +54,7 @@ class PenerimaanPembelianController extends Controller
         $pembelian = Pembelian::with('detailPembelian')->findOrFail($id);
 
         // Ambil Kriteria Kualitas (K2) untuk SAW
-        $kriteriaKualitas = \App\Models\KriteriaAhp::where('kode_kriteria', 'K2')
+        $kriteriaKualitas = \App\Models\KriteriaSupplier::where('kode_kriteria', 'K2')
             ->orWhere('nama_kriteria', 'like', '%Kualitas%')
             ->first();
 
@@ -84,7 +84,7 @@ class PenerimaanPembelianController extends Controller
                         \App\Models\RiwayatPenilaianSupplier::create([
                             'supplier_id' => $pembelian->supplier_id,
                             'detail_penerimaan_pembelian_id' => $detailPenerimaan->id, // Tepat per produk!
-                            'kriteria_ahp_id' => $kriteriaKualitas->id,
+                            'kriteria_supplier_id' => $kriteriaKualitas->id,
                             'nilai' => $request->nilai_kualitas[$index] ?? 5,
                             'tanggal_penilaian' => $request->tanggal_terima,
                             'keterangan' => 'Penilaian fisik produk pada faktur #' . $pembelian->no_faktur,

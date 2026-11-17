@@ -5,7 +5,7 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
-use App\Models\KriteriaAhp;
+use App\Models\KriteriaSupplier;
 
 class DatabaseSeeder extends Seeder
 {
@@ -36,7 +36,7 @@ class DatabaseSeeder extends Seeder
         ];
 
         foreach ($kriteria as $k) {
-            \Illuminate\Support\Facades\DB::table('kriteria_ahp')->insert($k);
+            \Illuminate\Support\Facades\DB::table('kriteria_supplier')->insert($k);
         }
     }
 }

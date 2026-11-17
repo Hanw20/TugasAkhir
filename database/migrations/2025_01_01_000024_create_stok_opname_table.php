@@ -13,6 +13,7 @@ return new class extends Migration
             $table->dateTime('tanggal');
             $table->foreignId('user_id')->constrained('users')->restrictOnDelete();
             $table->string('catatan', 255)->nullable();
+            $table->enum('status', ['menunggu_persetujuan', 'disesuaikan'])->default('menunggu_persetujuan');
             $table->timestamps();
         });
     }
