@@ -20,13 +20,11 @@ class Pembelian extends Model
         'total'               => 'decimal:2',
     ];
 
-    // Accessor: total sudah dibayar
     public function getTotalDibayarAttribute()
     {
         return $this->pembayaranHutang->sum('jumlah_bayar');
     }
 
-    // Accessor: sisa hutang
     public function getSisaHutangAttribute()
     {
         return $this->total - $this->total_dibayar;

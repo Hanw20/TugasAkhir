@@ -36,15 +36,38 @@
                                     <td>{{ $row->merek->nama_merek ?? '-' }}</td>
                                     <!-- Format Uang Rupiah Otomatis -->
                                     <td>Rp {{ number_format($row->harga_jual, 0, ',', '.') }}</td>
-                                    <td>{{ $row->stok }} {{ $row->satuanDasar->nama_satuan ?? '' }}</td>
+                                    <td>
+                                        <strong>{{ (float) $row->stok }}</strong> {{ $row->satuanDasar->nama_satuan ?? '' }}
+                                        @if($row->stok_onorder_supplier > 0)
+                                            <div class="small" style="font-size: 0.75rem; color: #0284C7;">
+                                                +{{ (float) $row->stok_onorder_supplier }} PO
+                                            </div>
+                                        @endif
+                                        @if($row->stok_onorder_customer > 0)
+                                            <div class="small" style="font-size: 0.75rem; color: #D97706;">
+                                                -{{ (float) $row->stok_onorder_customer }} Belum Kirim
+                                            </div>
+                                        @endif
+                                    </td>
                                     <td>
                                         <div class="d-flex gap-1">
                                             <a href="/admin/produk/{{ $row->id }}" class="btn btn-sm"
                                                 style="background-color: #E0F2FE; color: #0369A1; font-weight: 500; font-size: 0.8rem; padding: 4px 10px;">Detail</a>
                                             <button onclick="editData({{ $row->id }})" class="btn btn-sm"
                                                 style="background-color: #FEF3C7; color: #B45309; font-weight: 500; font-size: 0.8rem; padding: 4px 10px;">Edit</button>
-                                            <button onclick="deleteData({{ $row->id }})" class="btn btn-sm"
-                                                style="background-color: #FEE2E2; color: #B91C1C; font-weight: 500; font-size: 0.8rem; padding: 4px 10px;">Hapus</button>
+                                            @php
+                                                $adaTransaksi = ($row->detail_penjualan_count ?? 0) > 0 
+                                                    || ($row->detail_pembelian_count ?? 0) > 0 
+                                                    || ($row->konversi_asal_count ?? 0) > 0 
+                                                    || ($row->konversi_tujuan_count ?? 0) > 0 
+                                                    || ($row->detail_stok_opname_count ?? 0) > 0;
+                                            @endphp
+                                            @if($adaTransaksi)
+                                                <button type="button" class="btn btn-sm" disabled style="background-color: #E2E8F0; color: #94A3B8; font-weight: 500; font-size: 0.8rem; padding: 4px 10px; cursor: not-allowed;" title="Terkunci: Sudah memiliki riwayat transaksi">Hapus</button>
+                                            @else
+                                                <button onclick="deleteData({{ $row->id }})" class="btn btn-sm"
+                                                    style="background-color: #FEE2E2; color: #B91C1C; font-weight: 500; font-size: 0.8rem; padding: 4px 10px;">Hapus</button>
+                                            @endif
                                         </div>
                                     </td>
                                 </tr>
@@ -55,6 +78,13 @@
             </div>
         </div>
     </div>
+
+    <style>
+        .bg-disabled {
+            background-color: #e9ecef !important;
+            cursor: not-allowed !important;
+        }
+    </style>
 
     <div class="modal fade" id="modal-form" tabindex="-1" aria-labelledby="modal-title" aria-hidden="true">
         <div class="modal-dialog modal-lg modal-dialog-centered">
@@ -74,6 +104,9 @@
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body px-4 pt-1 pb-3">
+                        <div id="edit-info-alert" class="alert alert-info py-2 px-3 small mb-3 d-none">
+                            <i class="bi bi-info-circle me-1"></i> Pada mode edit, identitas produk dan stok dikunci untuk menjaga integritas transaksi. Hanya <strong>Harga Jual</strong> dan <strong>Stok Minimum</strong> yang dapat diubah.
+                        </div>
                         <div class="row g-3 mb-3">
                             <div class="col-md-6">
                                 <label for="kode_produk" class="form-label fw-semibold">Kode Produk <span
@@ -127,7 +160,7 @@
                                 <label for="harga_beli" class="form-label fw-semibold">Harga Beli (Modal) <span
                                         class="text-danger">*</span></label>
                                 <div class="input-group">
-                                    <span class="input-group-text bg-white border-end-0">Rp</span>
+                                    <span class="input-group-text bg-white border-end-0" id="harga_beli_rp">Rp</span>
                                     <input type="number" step="any" name="harga_beli" id="harga_beli"
                                         class="form-control border-start-0" placeholder="0" required>
                                 </div>
@@ -136,7 +169,7 @@
                                 <label for="harga_jual" class="form-label fw-semibold">Harga Jual <span
                                         class="text-danger">*</span></label>
                                 <div class="input-group">
-                                    <span class="input-group-text bg-white border-end-0">Rp</span>
+                                    <span class="input-group-text bg-white border-end-0" id="harga_jual_rp">Rp</span>
                                     <input type="number" step="any" name="harga_jual" id="harga_jual"
                                         class="form-control border-start-0" placeholder="0" required>
                                 </div>
@@ -194,6 +227,15 @@
             $('#form-produk')[0].reset();
             $('#method').val('POST');
             $('#modal-title').text('Tambah Produk');
+            $('#edit-info-alert').addClass('d-none');
+
+            // Buka semua kunci input untuk input baru
+            const allInputs = ['#kode_produk', '#nama_produk', '#kategori_produk_id', '#merek_id', '#satuan_dasar_id', '#metode_jual', '#harga_beli', '#stok', '#harga_jual', '#stok_minimum'];
+            allInputs.forEach(sel => {
+                $(sel).prop('readonly', false).prop('disabled', false).removeClass('bg-disabled');
+            });
+            $('#harga_beli_rp').removeClass('bg-disabled');
+
             $('#modal-form').modal('show');
         }
 
@@ -202,19 +244,28 @@
                 $('#modal-title').text('Edit Produk');
                 $('#method').val('PUT');
                 $('#produk_id').val(id);
+                $('#edit-info-alert').removeClass('d-none');
 
-                // Isi semua inputan
+                // Kunci field identitas dan stok fisik saat edit (Standar Abu-abu Disabled)
+                const lockedFields = ['#kode_produk', '#nama_produk', '#kategori_produk_id', '#merek_id', '#satuan_dasar_id', '#metode_jual', '#harga_beli', '#stok'];
+                lockedFields.forEach(sel => {
+                    $(sel).prop('readonly', true).addClass('bg-disabled');
+                    if ($(sel).is('select')) $(sel).prop('disabled', true);
+                });
+                $('#harga_beli_rp').addClass('bg-disabled');
+
                 $('#kode_produk').val(data.kode_produk);
                 $('#nama_produk').val(data.nama_produk);
                 $('#kategori_produk_id').val(data.kategori_produk_id);
                 $('#merek_id').val(data.merek_id);
                 $('#satuan_dasar_id').val(data.satuan_dasar_id);
-
-                // Math.floor menghilangkan angka desimal bawaan database
+                $('#metode_jual').val(data.metode_jual);
                 $('#harga_beli').val(Math.floor(data.harga_beli));
-                $('#harga_jual').val(Math.floor(data.harga_jual));
                 $('#stok').val(Math.floor(data.stok));
-                $('#stok_minimum').val(Math.floor(data.stok_minimum));
+
+                // Hanya Harga Jual dan Stok Minimum yang boleh diedit (Normal Putih)
+                $('#harga_jual').val(Math.floor(data.harga_jual)).prop('readonly', false).removeClass('bg-disabled');
+                $('#stok_minimum').val(Math.floor(data.stok_minimum)).prop('readonly', false).removeClass('bg-disabled');
 
                 $('#modal-form').modal('show');
             });
@@ -229,6 +280,10 @@
                     success: function (response) {
                         alert(response.message);
                         location.reload();
+                    },
+                    error: function (xhr) {
+                        let msg = (xhr.responseJSON && xhr.responseJSON.message) ? xhr.responseJSON.message : 'Terjadi kesalahan saat menghapus produk.';
+                        alert(msg);
                     }
                 });
             }

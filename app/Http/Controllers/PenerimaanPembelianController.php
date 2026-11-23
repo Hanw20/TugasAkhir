@@ -15,7 +15,6 @@ class PenerimaanPembelianController extends Controller
 {
     public function index()
     {
-        // Ambil riwayat setiap sesi kedatangan barang beserta rincian item fisik yang diterima
         $penerimaan = PenerimaanPembelian::with([
             'pembelian.supplier',
             'user',
@@ -27,7 +26,6 @@ class PenerimaanPembelianController extends Controller
         return view('admin.pembelian.penerimaan_index', compact('penerimaan'));
     }
 
-    // Form Checklist Barang Datang
     public function create(string $id)
     {
         $pembelian = Pembelian::with(['supplier', 'detailPembelian.produk.satuanDasar'])->findOrFail($id);
@@ -40,27 +38,37 @@ class PenerimaanPembelianController extends Controller
         return view('admin.pembelian.penerimaan', compact('pembelian'));
     }
 
-    // Simpan Checklist Barang Masuk & Update Stok Produk Nyata
     public function store(Request $request, string $id)
     {
-                $request->validate([
+        $request->validate([
             'tanggal_terima' => 'required|date',
             'detail_id' => 'required|array',
             'qty_diterima' => 'required|array',
-            'nilai_kualitas' => 'required|array', // Sekarang array per baris produk!
+            'nilai_kualitas' => 'required|array',
             'catatan' => 'nullable|string|max:255',
         ]);
 
+        $totalQtyDiterima = 0;
+        foreach ($request->detail_id as $index => $detailId) {
+            $qty = (float) ($request->qty_diterima[$index] ?? 0);
+            if ($qty < 0) {
+                return back()->withInput()->with('error', 'Jumlah penerimaan tidak boleh bernilai negatif!');
+            }
+            $totalQtyDiterima += $qty;
+        }
+
+        if ($totalQtyDiterima <= 0) {
+            return back()->withInput()->with('error', 'Harap masukkan jumlah penerimaan minimal 1 barang yang bernilai lebih dari 0!');
+        }
+
         $pembelian = Pembelian::with('detailPembelian')->findOrFail($id);
 
-        // Ambil Kriteria Kualitas (K2) untuk SAW
         $kriteriaKualitas = \App\Models\KriteriaSupplier::where('kode_kriteria', 'K2')
             ->orWhere('nama_kriteria', 'like', '%Kualitas%')
             ->first();
 
         DB::beginTransaction();
         try {
-            // 1. Simpan Header Penerimaan
             $penerimaan = PenerimaanPembelian::create([
                 'pembelian_id' => $pembelian->id,
                 'tanggal_terima' => $request->tanggal_terima,
@@ -68,33 +76,34 @@ class PenerimaanPembelianController extends Controller
                 'catatan' => $request->catatan,
             ]);
 
-            // 2. Simpan Detail Penerimaan, Penilaian Kualitas Per Produk, & Tambah Stok
             foreach ($request->detail_id as $index => $detailId) {
                 $qtyDiterima = (float) $request->qty_diterima[$index];
 
                 if ($qtyDiterima > 0) {
-                    $detailPenerimaan = DetailPenerimaanPembelian::create([
-                        'penerimaan_pembelian_id' => $penerimaan->id,
-                        'detail_pembelian_id' => $detailId,
-                        'qty_diterima' => $qtyDiterima,
-                    ]);
-
-                    // Simpan Penilaian Kualitas Fisik Produk ke Tabel riwayat_penilaian_supplier
-                    if ($kriteriaKualitas) {
-                        \App\Models\RiwayatPenilaianSupplier::create([
-                            'supplier_id' => $pembelian->supplier_id,
-                            'detail_penerimaan_pembelian_id' => $detailPenerimaan->id, // Tepat per produk!
-                            'kriteria_supplier_id' => $kriteriaKualitas->id,
-                            'nilai' => $request->nilai_kualitas[$index] ?? 5,
-                            'tanggal_penilaian' => $request->tanggal_terima,
-                            'keterangan' => 'Penilaian fisik produk pada faktur #' . $pembelian->no_faktur,
-                        ]);
-                    }
-
-                    // Tambah Stok Fisik Produk & Kurangi stok_onorder_supplier
                     $detailPembelian = DetailPembelian::find($detailId);
                     if ($detailPembelian && $detailPembelian->produk) {
                         $produk = $detailPembelian->produk;
+
+                        if ($qtyDiterima > $detailPembelian->sisa_qty) {
+                            throw new \Exception("Jumlah terima untuk '{$produk->nama_produk}' ({$qtyDiterima}) melebihi sisa pesanan faktur ({$detailPembelian->sisa_qty})!");
+                        }
+
+                        $detailPenerimaan = DetailPenerimaanPembelian::create([
+                            'penerimaan_pembelian_id' => $penerimaan->id,
+                            'detail_pembelian_id' => $detailId,
+                            'qty_diterima' => $qtyDiterima,
+                        ]);
+
+                        if ($kriteriaKualitas) {
+                            \App\Models\RiwayatPenilaianSupplier::create([
+                                'supplier_id' => $pembelian->supplier_id,
+                                'detail_penerimaan_pembelian_id' => $detailPenerimaan->id,
+                                'kriteria_supplier_id' => $kriteriaKualitas->id,
+                                'nilai' => $request->nilai_kualitas[$index] ?? 5,
+                                'tanggal_penilaian' => $request->tanggal_terima,
+                                'keterangan' => 'Penilaian fisik produk pada faktur #' . $pembelian->no_faktur,
+                            ]);
+                        }
 
                         $stokLama = (float) $produk->stok;
                         $hargaRataLama = (float) $produk->harga_beli;
@@ -117,7 +126,6 @@ class PenerimaanPembelianController extends Controller
                 }
             }
 
-                   // 3. Update Status Akumulasi Penerimaan Faktur Pembelian
             $pembelian->refresh();
             $semuaLengkap = true;
             $adaYangDiterima = false;
@@ -154,7 +162,6 @@ class PenerimaanPembelianController extends Controller
     }
     public function show(string $id)
     {
-        // Ambil data 1 sesi penerimaan fisik tertentu beserta rincian barang yang diterima
         $penerimaan = PenerimaanPembelian::with([
             'pembelian.supplier',
             'user',

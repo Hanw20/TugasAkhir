@@ -61,7 +61,7 @@
                                             {{ number_format($produk->harga_jual, 0, ',', '.') }}</strong></td>
                                 </tr>
                                 <tr>
-                                    <th class="ps-3">Stok Saat Ini</th>
+                                    <th class="ps-3">Stok Fisik Gudang</th>
                                     <td>
                                         <strong class="fs-6">{{ (float) $produk->stok }}
                                             {{ $produk->satuanDasar->nama_satuan ?? '' }}</strong>
@@ -76,7 +76,33 @@
                                 </tr>
                                 <tr>
                                     <th class="ps-3">Batas Stok Minimum</th>
-                                    <td>{{ (float) $produk->stok_minimum }} {{ $produk->satuanDasar->nama_satuan ?? '' }}
+                                    <td>{{ (float) $produk->stok_minimum }} {{ $produk->satuanDasar->nama_satuan ?? '' }}</td>
+                                </tr>
+                                <tr>
+                                    <th class="ps-3">Pesanan Supplier (PO Masuk)</th>
+                                    <td>
+                                        <strong class="fs-6 text-dark">{{ (float) $produk->stok_onorder_supplier }} {{ $produk->satuanDasar->nama_satuan ?? '' }}</strong>
+                                        @if($produk->stok_onorder_supplier > 0)
+                                            <span class="badge ms-2" style="background-color: #E0F2FE; color: #0369A1;">Dalam Pemesanan PO</span>
+                                        @endif
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th class="ps-3">Pesanan Pelanggan (Belum Dikirim)</th>
+                                    <td>
+                                        <strong class="fs-6 text-dark">{{ (float) $produk->stok_onorder_customer }} {{ $produk->satuanDasar->nama_satuan ?? '' }}</strong>
+                                        @if($produk->stok_onorder_customer > 0)
+                                            <span class="badge ms-2" style="background-color: #FEF3C7; color: #92400E;">Menunggu Pengiriman</span>
+                                        @endif
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th class="ps-3">Stok Siap Jual</th>
+                                    <td>
+                                        @php
+                                            $stokEfektif = ($produk->stok + $produk->stok_onorder_supplier) - $produk->stok_onorder_customer;
+                                        @endphp
+                                        <strong class="fs-6 fw-bold" style="color: #264653;">{{ (float) $stokEfektif }} {{ $produk->satuanDasar->nama_satuan ?? '' }}</strong>
                                     </td>
                                 </tr>
                             </tbody>

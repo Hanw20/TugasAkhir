@@ -13,7 +13,6 @@ use Illuminate\Support\Facades\Auth;
 
 class PengirimanPenjualanController extends Controller
 {
-    // Daftar Log Semua Pengiriman Barang (Surat Jalan Gudang)
     public function index()
     {
         $pengiriman = PengirimanPenjualan::with([
@@ -27,7 +26,6 @@ class PengirimanPenjualanController extends Controller
         return view('admin.penjualan.pengiriman_index', compact('pengiriman'));
     }
 
-    // Form Checklist Barang Keluar / Truk Berangkat
     public function create(string $id)
     {
         $penjualan = Penjualan::with(['customer', 'detailPenjualan.produk.satuanDasar'])->findOrFail($id);
@@ -37,11 +35,9 @@ class PengirimanPenjualanController extends Controller
                 ->with('error', 'Semua barang pada nota ini sudah dikirimkan!');
         }
 
-        // Sekarang mengarah ke pengiriman.blade.php (sama persis dengan penerimaan)
         return view('admin.penjualan.pengiriman', compact('penjualan'));
     }
 
-    // Simpan Checklist Pengiriman & Kurangi Stok Fisik Gudang
     public function store(Request $request, string $id)
     {
         $request->validate([
@@ -51,11 +47,23 @@ class PengirimanPenjualanController extends Controller
             'catatan' => 'nullable|string|max:255',
         ]);
 
+        $totalQtyDikirim = 0;
+        foreach ($request->detail_id as $index => $detailId) {
+            $qty = (float) ($request->qty_dikirim[$index] ?? 0);
+            if ($qty < 0) {
+                return back()->withInput()->with('error', 'Jumlah kirim tidak boleh bernilai negatif!');
+            }
+            $totalQtyDikirim += $qty;
+        }
+
+        if ($totalQtyDikirim <= 0) {
+            return back()->withInput()->with('error', 'Harap masukkan jumlah kirim minimal 1 barang yang bernilai lebih dari 0!');
+        }
+
         $penjualan = Penjualan::with('detailPenjualan')->findOrFail($id);
 
         DB::beginTransaction();
         try {
-            // 1. Simpan Header Surat Jalan Pengiriman
             $pengiriman = PengirimanPenjualan::create([
                 'penjualan_id' => $penjualan->id,
                 'tanggal_kirim' => $request->tanggal_kirim,
@@ -63,7 +71,6 @@ class PengirimanPenjualanController extends Controller
                 'catatan' => $request->catatan,
             ]);
 
-            // 2. Simpan Detail Pengiriman & Potong Stok Produk
             foreach ($request->detail_id as $index => $detailId) {
                 $qtyDikirim = (float) $request->qty_dikirim[$index];
 
@@ -73,7 +80,10 @@ class PengirimanPenjualanController extends Controller
                     if ($detailPenjualan && $detailPenjualan->produk) {
                         $produk = $detailPenjualan->produk;
 
-                        // Cek apakah stok cukup saat barang fisik dinaikkan ke truk
+                        if ($qtyDikirim > $detailPenjualan->sisa_qty) {
+                            throw new \Exception("Jumlah kirim untuk '{$produk->nama_produk}' ({$qtyDikirim}) melebihi sisa pesanan yang belum dikirim ({$detailPenjualan->sisa_qty})!");
+                        }
+
                         if ($produk->stok < $qtyDikirim) {
                             throw new \Exception("Stok fisik '{$produk->nama_produk}' tidak mencukupi di gudang (Sisa: {$produk->stok})!");
                         }
@@ -84,13 +94,13 @@ class PengirimanPenjualanController extends Controller
                             'qty_dikirim' => $qtyDikirim,
                         ]);
 
-                        // Potong stok produk nyata
                         $produk->decrement('stok', $qtyDikirim);
+                        $sisaOnOrderCust = max(0, (float)$produk->stok_onorder_customer - $qtyDikirim);
+                        $produk->update(['stok_onorder_customer' => $sisaOnOrderCust]);
                     }
                 }
             }
 
-            // 3. Cek Status Akumulasi Pengiriman (Apakah sudah terkirim semua atau baru sebagian?)
             $penjualan->refresh();
             $semuaLengkap = true;
             $adaYangDikirim = false;
@@ -126,7 +136,6 @@ class PengirimanPenjualanController extends Controller
         }
     }
 
-    // Lihat Surat Jalan Bukti Fisik Pengiriman
     public function show(string $id)
     {
         $pengiriman = PengirimanPenjualan::with([

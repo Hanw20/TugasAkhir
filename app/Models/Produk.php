@@ -34,7 +34,6 @@ class Produk extends Model
         'stok_onorder_customer' => 'float',
     ];
 
-    // Accessor: apakah stok menipis?
     public function getStokMenipisAttribute(): bool
     {
         return $this->stok <= $this->stok_minimum;
@@ -44,7 +43,6 @@ class Produk extends Model
         return $this->belongsTo(SatuanProduk::class, 'satuan_dasar_id');
     }
 
-    // Relasi ke master
     public function kategori()
     {
         return $this->belongsTo(KategoriProduk::class, 'kategori_produk_id');
@@ -60,13 +58,11 @@ class Produk extends Model
         return $this->belongsTo(SatuanProduk::class, 'satuan_dasar_id');
     }
 
-    // Relasi ke supplier (many-to-many)
     public function supplier()
     {
         return $this->belongsToMany(Supplier::class, 'produk_supplier');
     }
 
-    // Relasi ke transaksi
     public function detailPembelian()
     {
         return $this->hasMany(DetailPembelian::class);
@@ -77,7 +73,6 @@ class Produk extends Model
         return $this->hasMany(DetailPenjualan::class);
     }
 
-    // Relasi ke konversi
     public function konversiAsal()
     {
         return $this->hasMany(Konversi::class, 'produk_asal_id');
@@ -92,10 +87,8 @@ class Produk extends Model
     {
         return $this->hasMany(DetailStokOpname::class);
     }
-    // Menghitung Harga Beli Rata-Rata secara riil dari histori transaksi penerimaan
     public function getHargaBeliRataRataAttribute()
     {
-        // Ambil semua detail pembelian untuk produk ini yang sudah ada penerimaan fisiknya
         $details = $this->detailPembelian()->with('detailPenerimaanPembelian')->get();
 
         $totalNilaiFisik = 0;
@@ -109,12 +102,10 @@ class Produk extends Model
             }
         }
 
-        // Jika pernah ada penerimaan dari supplier, hitung rata-ratanya
         if ($totalQtyFisik > 0) {
             return round($totalNilaiFisik / $totalQtyFisik, 2);
         }
 
-        // Jika belum pernah ada transaksi penerimaan, gunakan harga beli default
         return (float) $this->harga_beli;
     }
 }

@@ -8,19 +8,15 @@ use App\Models\SesiPerhitunganAhp;
 use App\Models\PerbandinganKriteriaAhp;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Bardiz12\AHPDss\Constants;
 
 class SesiPerhitunganAhpController extends Controller
 {
-    /**
-     * Menampilkan daftar sesi AHP dan form matriks perbandingan kriteria.
-     */
+    
     public function index(Request $request)
     {
         $kriteria = KriteriaSupplier::orderBy('id', 'asc')->get();
         $daftarSesi = SesiPerhitunganAhp::with('user')->orderBy('tanggal_hitung', 'desc')->get();
 
-        // Jika user memilih sesi tertentu dari list, buka sesi tersebut. Jika tidak, buka yang terbaru.
         $selectedSesiId = $request->input('sesi_id');
         if ($selectedSesiId) {
             $sesiAktif = SesiPerhitunganAhp::with(['perbandingan.kriteriaA', 'perbandingan.kriteriaB'])->find($selectedSesiId);
@@ -28,7 +24,6 @@ class SesiPerhitunganAhpController extends Controller
             $sesiAktif = SesiPerhitunganAhp::with(['perbandingan.kriteriaA', 'perbandingan.kriteriaB'])->latest('tanggal_hitung')->first();
         }
 
-        // Pre-fill nilai matriks dari sesi yang aktif
         $matrixValues = [];
         $hasilAhp = session('hasil_ahp');
 
@@ -37,7 +32,6 @@ class SesiPerhitunganAhpController extends Controller
                 $matrixValues[$p->kriteria_a_id][$p->kriteria_b_id] = (float) $p->nilai_perbandingan;
             }
 
-            // Hitung ulang bobot sesi yang dibuka untuk ditampilkan
             if (!$hasilAhp) {
                 $hasilAhp = $this->kalkulasiUlangSesi($sesiAktif, $kriteria);
             }
@@ -46,9 +40,7 @@ class SesiPerhitunganAhpController extends Controller
         return view('admin.sesi_perhitungan_ahp.index', compact('kriteria', 'daftarSesi', 'sesiAktif', 'matrixValues', 'hasilAhp'));
     }
 
-    /**
-     * Memproses perhitungan matriks AHP, menguji nilai CR, dan menyimpan sebagai sesi baru.
-     */
+    
     public function store(Request $request)
     {
         $kriteria = KriteriaSupplier::orderBy('id', 'asc')->get();
@@ -62,7 +54,6 @@ class SesiPerhitunganAhpController extends Controller
         $kriteriaIds = $kriteria->pluck('id')->toArray();
         $matrix = [];
 
-        // 1. Membentuk Matriks Bujursangkar (n x n)
         for ($i = 0; $i < $n; $i++) {
             $idA = $kriteriaIds[$i];
             $matrix[$i] = [];
@@ -79,7 +70,6 @@ class SesiPerhitunganAhpController extends Controller
             }
         }
 
-        // 2. Normalisasi Matriks & Hitung Eigen Vector
         $colSums = array_fill(0, $n, 0.0);
         for ($j = 0; $j < $n; $j++) {
             for ($i = 0; $i < $n; $i++) {
@@ -98,14 +88,13 @@ class SesiPerhitunganAhpController extends Controller
             $eigenVector[$i] /= $n;
         }
 
-        // 3. Uji Konsistensi (Lambda Max, CI, CR)
         $lambdaMax = 0.0;
         for ($i = 0; $i < $n; $i++) {
             $lambdaMax += $colSums[$i] * $eigenVector[$i];
         }
 
         $ci = ($lambdaMax - $n) / ($n - 1);
-        $ri = Constants::getIR($n);
+        $ri = $this->getRandomIndex($n);
         $cr = $ri > 0 ? ($ci / $ri) : 0.0;
 
         $isConsistent = ($cr <= 0.1);
@@ -113,7 +102,6 @@ class SesiPerhitunganAhpController extends Controller
         if ($isConsistent) {
             DB::beginTransaction();
             try {
-                // Simpan Sesi Baru
                 $namaSesi = $request->input('nama_sesi') ?: ('Sesi AHP ' . date('d/m/Y H:i'));
                 $sesi = SesiPerhitunganAhp::create([
                     'nama_sesi'      => $namaSesi,
@@ -165,9 +153,7 @@ class SesiPerhitunganAhpController extends Controller
         }
     }
 
-    /**
-     * Hapus salah satu sesi AHP yang tersimpan.
-     */
+    
     public function destroy(string $id)
     {
         $sesi = SesiPerhitunganAhp::findOrFail($id);
@@ -216,7 +202,7 @@ class SesiPerhitunganAhpController extends Controller
         }
 
         $ci = ($lambdaMax - $n) / ($n - 1);
-        $ri = Constants::getIR($n);
+        $ri = $this->getRandomIndex($n);
         $cr = $ri > 0 ? ($ci / $ri) : 0.0;
 
         return [
@@ -228,5 +214,24 @@ class SesiPerhitunganAhpController extends Controller
             'kriteria' => $kriteria,
             'isConsistent' => ($cr <= 0.1)
         ];
+    }
+
+    
+    private function getRandomIndex(int $n): float
+    {
+        $riTable = [
+            1 => 0.0,
+            2 => 0.0,
+            3 => 0.58,
+            4 => 0.90,
+            5 => 1.12,
+            6 => 1.24,
+            7 => 1.32,
+            8 => 1.41,
+            9 => 1.45,
+            10 => 1.49,
+        ];
+
+        return $riTable[$n] ?? 1.24;
     }
 }

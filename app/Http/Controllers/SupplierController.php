@@ -4,11 +4,12 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Supplier;
+
 class SupplierController extends Controller
 {
     public function index()
     {
-        $data = Supplier::orderBy('id', 'desc')->get();
+        $data = Supplier::withCount(['pembelian', 'riwayatPenilaianSupplier'])->orderBy('id', 'desc')->get();
         return view('admin.supplier.index', compact('data'));
     }
 
@@ -18,7 +19,6 @@ class SupplierController extends Controller
 
     public function store(Request $request)
     {
-        // Validasi: unique:suppliers artinya kode tidak boleh kembar di database
         $request->validate([
             'kode_supplier' => 'required|string|unique:suppliers,kode_supplier',
             'nama_supplier' => 'required|string|max:255',
@@ -36,37 +36,71 @@ class SupplierController extends Controller
     {
         $supplier = Supplier::with(['riwayatPenilaianSupplier.kriteria', 'produk.satuanDasar'])->findOrFail($id);
         $semuaProduk = \App\Models\Produk::orderBy('nama_produk', 'asc')->get();
-        return view('admin.supplier.show', compact('supplier', 'semuaProduk'));
+
+        $k3 = \App\Models\KriteriaSupplier::where('kode_kriteria', 'K3')->first();
+        $k4 = \App\Models\KriteriaSupplier::where('kode_kriteria', 'K4')->first();
+
+        $terakhirRespon = $supplier->riwayatPenilaianSupplier()
+            ->where('kriteria_supplier_id', $k3->id ?? 0)
+            ->latest('tanggal_penilaian')
+            ->first();
+
+        $terakhirGaransi = $supplier->riwayatPenilaianSupplier()
+            ->where('kriteria_supplier_id', $k4->id ?? 0)
+            ->latest('tanggal_penilaian')
+            ->first();
+
+        return view('admin.supplier.show', compact('supplier', 'semuaProduk', 'terakhirRespon', 'terakhirGaransi'));
     }
 
     public function edit(string $id)
     {
-        $supplier = Supplier::find($id);
+        $supplier = Supplier::findOrFail($id);
         return response()->json($supplier);
     }
 
     public function update(Request $request, string $id)
     {
+        $supplier = Supplier::findOrFail($id);
+
         $request->validate([
-            // Pengecualian unique agar saat di-edit kodenya sendiri tidak terbaca kembar
-            'kode_supplier' => 'required|string|unique:suppliers,kode_supplier,' . $id,
-            'nama_supplier' => 'required|string|max:255',
             'alamat' => 'nullable|string',
             'nomor_telepon' => 'nullable|string|max:20',
             'email' => 'nullable|email'
         ]);
 
-        $supplier = Supplier::find($id);
-        $supplier->update($request->all());
+        $supplier->update([
+            'nomor_telepon' => $request->nomor_telepon,
+            'email' => $request->email,
+            'alamat' => $request->alamat,
+        ]);
 
-        return response()->json(['message' => 'Supplier berhasil diubah!']);
+        return response()->json(['message' => 'Data supplier berhasil diperbarui!']);
     }
 
     public function destroy(string $id)
     {
-        Supplier::find($id)->delete();
-        return response()->json(['message' => 'Supplier berhasil dihapus!']);
+        $supplier = Supplier::findOrFail($id);
+
+        $adaTransaksi = $supplier->pembelian()->exists() 
+            || $supplier->riwayatPenilaianSupplier()->exists();
+
+        if ($adaTransaksi) {
+            return response()->json([
+                'status'  => 'error',
+                'message' => "Supplier '{$supplier->nama_supplier}' tidak dapat dihapus karena sudah memiliki riwayat transaksi pembelian atau penilaian!"
+            ], 422);
+        }
+
+        $supplier->produk()->detach();
+        $supplier->delete();
+
+        return response()->json([
+            'status'  => 'success',
+            'message' => 'Supplier berhasil dihapus!'
+        ]);
     }
+
     public function storePenilaian(Request $request, string $id)
     {
         $request->validate([
@@ -80,7 +114,6 @@ class SupplierController extends Controller
         $k3 = \App\Models\KriteriaSupplier::where('kode_kriteria', 'K3')->first();
         $k4 = \App\Models\KriteriaSupplier::where('kode_kriteria', 'K4')->first();
 
-        // Simpan Nilai Kecepatan Respon (K3)
         if ($k3) {
             \App\Models\RiwayatPenilaianSupplier::create([
                 'supplier_id' => $supplier->id,
@@ -91,7 +124,6 @@ class SupplierController extends Controller
             ]);
         }
 
-        // Simpan Nilai Garansi (K4)
         if ($k4) {
             \App\Models\RiwayatPenilaianSupplier::create([
                 'supplier_id' => $supplier->id,
@@ -113,7 +145,6 @@ class SupplierController extends Controller
 
         $supplier = Supplier::findOrFail($id);
 
-        // syncWithoutDetaching agar jika sudah ada tidak error / tidak duplikat
         $supplier->produk()->syncWithoutDetaching([$request->produk_id]);
 
         return back()->with('success', 'Produk berhasil ditambahkan ke daftar pasokan supplier ini!');

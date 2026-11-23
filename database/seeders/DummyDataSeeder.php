@@ -204,7 +204,7 @@ class DummyDataSeeder extends Seeder
         // ── 11. SESI PERHITUNGAN AHP ──────────────────────────────────────────
         $sesiAhp = [
             'id' => 1,
-            'nama_sesi' => 'Sesi Standar Pemilik Toko (Fokus Kualitas & Harga)',
+            'nama_sesi' => 'Sesi Default Pemilik Toko (Fokus Harga Utama)',
             'tanggal_hitung' => Carbon::now()->subDays(5),
             'user_id' => 1,
             'created_at' => Carbon::now()->subDays(5),
@@ -213,15 +213,15 @@ class DummyDataSeeder extends Seeder
         DB::table('sesi_perhitungan_ahp')->insert($sesiAhp);
 
         // ── 12. PERBANDINGAN KRITERIA AHP (6x6 Matriks Bujursangkar, CR <= 0.1) ──
-        // Matriks AHP Konsisten:
-        // K1=Harga (0.245), K2=Kualitas (0.312), K3=Respon (0.118), K4=Garansi (0.137), K5=Waktu Kirim (0.114), K6=Tempo (0.074)
+        // Matriks AHP Konsisten (Fokus Harga Utama):
+        // K1=Harga (0.4479), K2=Kualitas (0.2052), K3=Respon (0.0930), K4=Garansi (0.0979), K5=Waktu Kirim (0.1018), K6=Tempo (0.0541) -> CR = 0.0101
         $pairs = [
-            [1, 1, 1.0], [1, 2, 0.5], [1, 3, 2.0], [1, 4, 2.0], [1, 5, 2.0], [1, 6, 3.0],
-            [2, 1, 2.0], [2, 2, 1.0], [2, 3, 3.0], [2, 4, 2.0], [2, 5, 3.0], [2, 6, 4.0],
-            [3, 1, 0.5], [3, 2, 0.333], [3, 3, 1.0], [3, 4, 1.0], [3, 5, 1.0], [3, 6, 2.0],
-            [4, 1, 0.5], [4, 2, 0.5], [4, 3, 1.0], [4, 4, 1.0], [4, 5, 1.0], [4, 6, 2.0],
-            [5, 1, 0.5], [5, 2, 0.333], [5, 3, 1.0], [5, 4, 1.0], [5, 5, 1.0], [5, 6, 2.0],
-            [6, 1, 0.333], [6, 2, 0.25], [6, 3, 0.5], [6, 4, 0.5], [6, 5, 0.5], [6, 6, 1.0],
+            [1, 1, 1.0],   [1, 2, 3.0],   [1, 3, 5.0],   [1, 4, 5.0],   [1, 5, 4.0],   [1, 6, 7.0],
+            [2, 1, 0.333], [2, 2, 1.0],   [2, 3, 2.0],   [2, 4, 2.0],   [2, 5, 2.0],   [2, 6, 4.0],
+            [3, 1, 0.2],   [3, 2, 0.5],   [3, 3, 1.0],   [3, 4, 1.0],   [3, 5, 1.0],   [3, 6, 2.0],
+            [4, 1, 0.2],   [4, 2, 0.5],   [4, 3, 1.0],   [4, 4, 1.0],   [4, 5, 1.0],   [4, 6, 2.0],
+            [5, 1, 0.25],  [5, 2, 0.5],   [5, 3, 1.0],   [5, 4, 1.0],   [5, 5, 1.0],   [5, 6, 2.0],
+            [6, 1, 0.143], [6, 2, 0.25],  [6, 3, 0.5],   [6, 4, 0.5],   [6, 5, 0.5],   [6, 6, 1.0],
         ];
 
         $perbandinganData = [];

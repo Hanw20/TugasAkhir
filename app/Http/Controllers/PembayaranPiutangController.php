@@ -12,13 +12,12 @@ class PembayaranPiutangController extends Controller
 {
     public function index()
     {
-        // Ambil semua nota penjualan yang status pembayarannya belum lunas / tempo
         $notaPiutang = Penjualan::with(['customer', 'pembayaranPiutang'])
+            ->where('status', '!=', 'batal')
             ->whereIn('status_pembayaran', ['belum_dibayar', 'sebagian'])
             ->orderBy('id', 'desc')
             ->get();
 
-        // Riwayat cicilan pembayaran piutang dari customer
         $riwayatBayar = PembayaranPiutang::with(['penjualan.customer', 'user'])
             ->orderBy('id', 'desc')
             ->get();
@@ -43,7 +42,6 @@ class PembayaranPiutangController extends Controller
 
         DB::beginTransaction();
         try {
-            // 1. Simpan Transaksi Pembayaran Piutang
             PembayaranPiutang::create([
                 'penjualan_id'  => $penjualan->id,
                 'tanggal_bayar' => $request->tanggal_bayar,
@@ -52,7 +50,6 @@ class PembayaranPiutangController extends Controller
                 'catatan'       => $request->catatan,
             ]);
 
-            // 2. Cek apakah piutang customer sudah lunas atau masih ada sisa
             $totalTerbayarBaru = $penjualan->total_dibayar + $request->jumlah_bayar;
             if ($totalTerbayarBaru >= $penjualan->total) {
                 $penjualan->update(['status_pembayaran' => 'lunas']);

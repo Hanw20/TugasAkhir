@@ -35,6 +35,32 @@
  <th class="ps-3">Alamat</th>
  <td>{{ $supplier->alamat ?? '-' }}</td>
  </tr>
+ <tr>
+ <th class="ps-3">Kecepatan Respon (K3)</th>
+ <td>
+ @if($terakhirRespon)
+ <span class="badge" style="background-color: #E0F2FE; color: #0369A1; font-weight: 600;">
+ Skala {{ $terakhirRespon->nilai }} / 5
+ </span>
+ <small class="text-muted ms-2">(Diperbarui: {{ \Carbon\Carbon::parse($terakhirRespon->tanggal_penilaian)->format('d M Y') }})</small>
+ @else
+ <span class="badge bg-secondary">Supplier Baru (Data Awal: 3)</span>
+ @endif
+ </td>
+ </tr>
+ <tr>
+ <th class="ps-3">Garansi (K4)</th>
+ <td>
+ @if($terakhirGaransi)
+ <span class="badge" style="background-color: #DCFCE7; color: #166534; font-weight: 600;">
+ Skala {{ $terakhirGaransi->nilai }} / 5
+ </span>
+ <small class="text-muted ms-2">(Diperbarui: {{ \Carbon\Carbon::parse($terakhirGaransi->tanggal_penilaian)->format('d M Y') }})</small>
+ @else
+ <span class="badge bg-secondary">Supplier Baru (Data Awal: 3)</span>
+ @endif
+ </td>
+ </tr>
  </tbody>
  </table>
  </div>
@@ -162,6 +188,21 @@
  <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
  </div>
  <div class="modal-body px-4 pt-1 pb-3">
+ @php
+ $valRespon = $terakhirRespon ? (int)$terakhirRespon->nilai : 3;
+ $valGaransi = $terakhirGaransi ? (int)$terakhirGaransi->nilai : 3;
+ @endphp
+
+ @if($terakhirRespon || $terakhirGaransi)
+ <div class="alert alert-info py-2 px-3 mb-3 small">
+ <i class="bi bi-info-circle me-1"></i> Form telah memuat evaluasi terakhir (Respon: <b>{{ $valRespon }}</b>, Garansi: <b>{{ $valGaransi }}</b>). Silakan perbarui jika ada perubahan performa supplier.
+ </div>
+ @else
+ <div class="alert alert-warning py-2 px-3 mb-3 small">
+ <i class="bi bi-exclamation-triangle me-1"></i> Supplier baru: nilai bawaan awal diset ke skala 3 (Cukup).
+ </div>
+ @endif
+
  <div class="mb-3">
  <label class="form-label fw-bold small text-dark">Nama Supplier</label>
  <input type="text" class="form-control bg-light" value="{{ $supplier->nama_supplier }}" readonly>
@@ -178,11 +219,11 @@
  <i class="bi bi-chat-dots me-1"></i> Kecepatan Respon (K3)
  </label>
  <select name="nilai_respon" class="form-select" required>
- <option value="5">★★★★★ 5 - Sangat Cepat (Respon < 15 menit, sales sangat aktif)</option>
- <option value="4" selected>★★★★☆ 4 - Cepat (Respon dalam hitungan jam)</option>
- <option value="3">★★★☆☆ 3 - Cukup (Respon standar jam kerja)</option>
- <option value="2">★★☆☆☆ 2 - Lambat (Sering slow respon)</option>
- <option value="1">★☆☆☆☆ 1 - Sangat Lambat (Sulit dihubungi)</option>
+ <option value="5" {{ $valRespon == 5 ? 'selected' : '' }}>★★★★★ 5 - Sangat Cepat (Respon < 15 menit, sales sangat aktif)</option>
+ <option value="4" {{ $valRespon == 4 ? 'selected' : '' }}>★★★★☆ 4 - Cepat (Respon dalam hitungan jam)</option>
+ <option value="3" {{ $valRespon == 3 ? 'selected' : '' }}>★★★☆☆ 3 - Cukup (Respon standar jam kerja)</option>
+ <option value="2" {{ $valRespon == 2 ? 'selected' : '' }}>★★☆☆☆ 2 - Lambat (Sering slow respon)</option>
+ <option value="1" {{ $valRespon == 1 ? 'selected' : '' }}>★☆☆☆☆ 1 - Sangat Lambat (Sulit dihubungi)</option>
  </select>
  </div>
 
@@ -192,11 +233,11 @@
  <i class="bi bi-shield-check me-1"></i> Garansi (K4)
  </label>
  <select name="nilai_garansi" class="form-select" required>
- <option value="5">★★★★★ 5 - Sangat Mudah (Barang rusak langsung diganti baru)</option>
- <option value="4" selected>★★★★☆ 4 - Mudah (Garansi resmi, proses klaim wajar)</option>
- <option value="3">★★★☆☆ 3 - Cukup (Bisa retur tapi butuh waktu pemeriksaan lama)</option>
- <option value="2">★★☆☆☆ 2 - Sulit (Klaim berbelit-belit, sering tolak retur)</option>
- <option value="1">★☆☆☆☆ 1 - Tidak Ada Garansi (Resiko ditanggung toko)</option>
+ <option value="5" {{ $valGaransi == 5 ? 'selected' : '' }}>★★★★★ 5 - Sangat Mudah (Barang rusak langsung diganti baru)</option>
+ <option value="4" {{ $valGaransi == 4 ? 'selected' : '' }}>★★★★☆ 4 - Mudah (Garansi resmi, proses klaim wajar)</option>
+ <option value="3" {{ $valGaransi == 3 ? 'selected' : '' }}>★★★☆☆ 3 - Cukup (Bisa retur tapi butuh waktu pemeriksaan lama)</option>
+ <option value="2" {{ $valGaransi == 2 ? 'selected' : '' }}>★★☆☆☆ 2 - Sulit (Klaim berbelit-belit, sering tolak retur)</option>
+ <option value="1" {{ $valGaransi == 1 ? 'selected' : '' }}>★☆☆☆☆ 1 - Tidak Ada Garansi (Resiko ditanggung toko)</option>
  </select>
  </div>
 

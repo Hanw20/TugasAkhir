@@ -11,27 +11,21 @@ use Illuminate\Support\Facades\DB;
 
 class StokOpnameController extends Controller
 {
-    /**
-     * Tampilkan riwayat transaksi stok opname.
-     */
+    
     public function index()
     {
         $data = StokOpname::with(['user', 'detailStokOpname.produk.satuanDasar'])->orderBy('tanggal', 'desc')->get();
         return view('admin.stok_opname.index', compact('data'));
     }
 
-    /**
-     * Form input penyesuaian stok opname baru.
-     */
+    
     public function create()
     {
         $produk = Produk::with('satuanDasar')->orderBy('nama_produk', 'asc')->get();
         return view('admin.stok_opname.create', compact('produk'));
     }
 
-    /**
-     * Simpan hasil opname dan update stok produk di gudang.
-     */
+    
     public function store(Request $request)
     {
         $request->validate([
@@ -46,7 +40,6 @@ class StokOpnameController extends Controller
         try {
             $tanggal = \Carbon\Carbon::parse($request->tanggal)->format('Y-m-d H:i:s');
 
-            // Buat sesi opname dengan status default: menunggu_persetujuan
             $opname = StokOpname::create([
                 'tanggal' => $tanggal,
                 'user_id' => Auth::id() ?? 1,
@@ -60,7 +53,6 @@ class StokOpnameController extends Controller
                 $stokFisik = (float) $item['stok_fisik'];
                 $selisih = $stokFisik - $stokSistem;
 
-                // Catat detail opname (stok master produk BELUM diubah di sini)
                 DetailStokOpname::create([
                     'stok_opname_id' => $opname->id,
                     'produk_id' => $prod->id,
@@ -79,18 +71,14 @@ class StokOpnameController extends Controller
         }
     }
 
-    /**
-     * Lihat detail bukti stok opname.
-     */
+    
     public function show(string $id)
     {
         $opname = StokOpname::with(['user', 'detailStokOpname.produk.satuanDasar'])->findOrFail($id);
         return view('admin.stok_opname.show', compact('opname'));
     }
 
-    /**
-     * Eksekusi persetujuan penyesuaian (Reconcile) stok sistem ke fisik nyata.
-     */
+    
     public function reconcile(string $id)
     {
         $opname = StokOpname::with('detailStokOpname')->findOrFail($id);
@@ -101,7 +89,6 @@ class StokOpnameController extends Controller
 
         DB::beginTransaction();
         try {
-            // Update stok fisik ke master produk
             foreach ($opname->detailStokOpname as $detail) {
                 $prod = Produk::findOrFail($detail->produk_id);
                 $prod->update([
@@ -109,7 +96,6 @@ class StokOpnameController extends Controller
                 ]);
             }
 
-            // Ubah status sesi opname menjadi 'disesuaikan'
             $opname->update([
                 'status' => 'disesuaikan'
             ]);

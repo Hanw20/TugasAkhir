@@ -14,7 +14,6 @@ class PembelianController extends Controller
 {
     public function index(Request $request)
     {
-        // Default filter: bulan dan tahun saat ini jika user belum memilih
         $bulan = $request->get('bulan', date('m'));
         $tahun = $request->get('tahun', date('Y'));
 
@@ -24,23 +23,19 @@ class PembelianController extends Controller
             ->orderBy('id', 'desc');
 
         $pembelian = $query->get();
-        $totalAkumulasi = $pembelian->sum('total');
+        $totalAkumulasi = $pembelian->where('status', '!=', 'batal')->sum('total');
 
         return view('admin.pembelian.index', compact('pembelian', 'bulan', 'tahun', 'totalAkumulasi'));
     }
 
     public function create()
     {
-        // Ambil data supplier dan produk untuk form pembelian
         $suppliers = Supplier::orderBy('nama_supplier')->get();
         $produks = Produk::with('satuanDasar')->orderBy('nama_produk')->get();
 
-        // Buat nomor faktur otomatis, misal: PB-20261013-0001
         $today = date('Ymd');
         $countToday = Pembelian::whereDate('created_at', today())->count() + 1;
         $noFakturOtomatis = 'PB-' . $today . '-' . str_pad($countToday, 4, '0', STR_PAD_LEFT);
-
-
 
         return view('admin.pembelian.create', compact('suppliers', 'produks', 'noFakturOtomatis'));
     }
@@ -58,14 +53,12 @@ class PembelianController extends Controller
 
         DB::beginTransaction();
         try {
-            // Hitung total belanja
             $total = 0;
             foreach ($request->produk_id as $index => $prodId) {
                 $subtotal = $request->qty[$index] * $request->harga_satuan[$index];
                 $total += $subtotal;
             }
 
-            // 1. Simpan Header Pembelian (Status default: belum_diterima)
             $pembelian = Pembelian::create([
                 'no_faktur' => $request->no_faktur,
                 'supplier_id' => $request->supplier_id,
@@ -78,7 +71,6 @@ class PembelianController extends Controller
                 'status_pembayaran' => 'belum_dibayar',
             ]);
 
-            // 2. Simpan Detail Produk (Stok TIDAK bertambah di sini)
             foreach ($request->produk_id as $index => $prodId) {
                 $qty = $request->qty[$index];
                 $harga = $request->harga_satuan[$index];
@@ -96,6 +88,7 @@ class PembelianController extends Controller
                     $produk->update([
                         'harga_beli_terakhir' => $harga
                     ]);
+                    $produk->increment('stok_onorder_supplier', $qty);
                 }
             }
 
@@ -125,5 +118,39 @@ class PembelianController extends Controller
     }
     public function destroy(string $id)
     {
+        $pembelian = Pembelian::with(['detailPembelian.produk', 'penerimaanPembelian', 'pembayaranHutang'])->findOrFail($id);
+
+        if ($pembelian->status === 'batal') {
+            return back()->with('error', 'Faktur pembelian ini sudah dibatalkan sebelumnya!');
+        }
+
+        if ($pembelian->status_penerimaan !== 'belum_diterima' || $pembelian->penerimaanPembelian()->exists()) {
+            return back()->with('error', 'Faktur tidak dapat dibatalkan karena sudah ada barang yang diterima dari supplier!');
+        }
+
+        if ($pembelian->pembayaranHutang()->exists()) {
+            return back()->with('error', 'Faktur tidak dapat dibatalkan karena sudah ada riwayat pembayaran hutang!');
+        }
+
+        DB::beginTransaction();
+        try {
+            foreach ($pembelian->detailPembelian as $dp) {
+                if ($dp->produk) {
+                    $sisaOnOrder = max(0, (float)$dp->produk->stok_onorder_supplier - (float)$dp->qty);
+                    $dp->produk->update(['stok_onorder_supplier' => $sisaOnOrder]);
+                }
+            }
+
+            $pembelian->update([
+                'status' => 'batal',
+            ]);
+
+            DB::commit();
+            return redirect()->route('admin.pembelian.show', $pembelian->id)
+                ->with('success', 'Faktur pembelian #' . $pembelian->no_faktur . ' berhasil dibatalkan dan kuota pesanan supplier telah dikembalikan!');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->with('error', 'Gagal membatalkan faktur: ' . $e->getMessage());
+        }
     }
 }

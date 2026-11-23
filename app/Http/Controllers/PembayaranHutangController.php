@@ -12,13 +12,12 @@ class PembayaranHutangController extends Controller
 {
     public function index()
     {
-        // Ambil semua faktur pembelian yang belum lunas atau tempo
         $fakturHutang = Pembelian::with(['supplier', 'pembayaranHutang'])
+            ->where('status', '!=', 'batal')
             ->whereIn('status_pembayaran', ['belum_dibayar', 'sebagian'])
             ->orderBy('tanggal_jatuh_tempo', 'asc')
             ->get();
 
-        // Ambil riwayat pembayaran hutang yang sudah pernah dilakukan
         $riwayatBayar = PembayaranHutang::with(['pembelian.supplier', 'user'])
             ->orderBy('id', 'desc')
             ->get();
@@ -43,7 +42,6 @@ class PembayaranHutangController extends Controller
 
         DB::beginTransaction();
         try {
-            // 1. Simpan Transaksi Pembayaran Hutang
             PembayaranHutang::create([
                 'pembelian_id'  => $pembelian->id,
                 'tanggal_bayar' => $request->tanggal_bayar,
@@ -52,7 +50,6 @@ class PembayaranHutangController extends Controller
                 'catatan'       => $request->catatan,
             ]);
 
-            // 2. Cek apakah hutangnya sudah lunas atau masih sebagian
             $totalTerbayarBaru = $pembelian->total_dibayar + $request->jumlah_bayar;
             if ($totalTerbayarBaru >= $pembelian->total) {
                 $pembelian->update(['status_pembayaran' => 'lunas']);

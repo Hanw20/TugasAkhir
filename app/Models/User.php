@@ -16,7 +16,6 @@ class User extends Authenticatable
 
     
 
-    // Helper roles
     public function isAdmin(): bool
     {
         return $this->role === 'admin';
@@ -27,7 +26,6 @@ class User extends Authenticatable
         return $this->role === 'kasir';
     }
 
-    // Relasi
     public function pembelian()
     {
         return $this->hasMany(Pembelian::class);

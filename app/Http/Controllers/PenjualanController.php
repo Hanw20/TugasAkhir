@@ -14,7 +14,6 @@ class PenjualanController extends Controller
 {
     public function index(Request $request)
     {
-        // Default filter: bulan dan tahun saat ini jika user belum memilih
         $bulan = $request->get('bulan', date('m'));
         $tahun = $request->get('tahun', date('Y'));
 
@@ -24,7 +23,7 @@ class PenjualanController extends Controller
             ->orderBy('id', 'desc');
 
         $penjualan = $query->get();
-        $totalAkumulasi = $penjualan->sum('total');
+        $totalAkumulasi = $penjualan->where('status', '!=', 'batal')->sum('total');
 
         return view('admin.penjualan.index', compact('penjualan', 'bulan', 'tahun', 'totalAkumulasi'));
     }
@@ -32,9 +31,14 @@ class PenjualanController extends Controller
     public function create()
     {
         $customers = Customer::orderBy('nama_customer')->get();
-        $produks = Produk::with('satuanDasar')->where('stok', '>', 0)->orderBy('nama_produk')->get();
+        $produks = Produk::with('satuanDasar')
+            ->where(function ($q) {
+                $q->where('stok', '>', 0)
+                    ->orWhere('stok_onorder_supplier', '>', 0);
+            })
+            ->orderBy('nama_produk')
+            ->get();
 
-        // Buat nomor nota otomatis: PJ-20261022-0001
         $today = date('Ymd');
         $countToday = Penjualan::whereDate('created_at', today())->count() + 1;
         $noNotaOtomatis = 'PJ-' . $today . '-' . str_pad($countToday, 4, '0', STR_PAD_LEFT);
@@ -66,7 +70,6 @@ class PenjualanController extends Controller
             $statusPengiriman = ($request->metode_pengiriman === 'langsung') ? 'seluruh' : 'belum_dikirim';
             $statusPembayaran = ($request->metode_pembayaran === 'lunas') ? 'lunas' : 'belum_dibayar';
 
-            // 1. Simpan Header Penjualan
             $penjualan = Penjualan::create([
                 'no_nota' => $request->no_nota,
                 'customer_id' => $request->customer_id,
@@ -80,7 +83,6 @@ class PenjualanController extends Controller
                 'status_pembayaran' => $statusPembayaran,
             ]);
 
-            // 2. Simpan Detail Item
             foreach ($request->produk_id as $index => $prodId) {
                 $qty = (float) $request->qty[$index];
                 $harga = (float) $request->harga_satuan[$index];
@@ -88,9 +90,16 @@ class PenjualanController extends Controller
 
                 $produk = Produk::findOrFail($prodId);
 
-                // Cek ketersediaan stok
-                if ($produk->stok < $qty) {
-                    throw new \Exception("Stok untuk produk '{$produk->nama_produk}' tidak mencukupi (Sisa stok: {$produk->stok}).");
+                if ($request->metode_pengiriman === 'langsung') {
+                    if ($produk->stok < $qty) {
+                        throw new \Exception("Stok fisik '{$produk->nama_produk}' di gudang tidak mencukupi untuk dibawa langsung! (Tersedia: {$produk->stok})");
+                    }
+                } else {
+                    $kapasitas = ((float)$produk->stok + (float)$produk->stok_onorder_supplier) - (float)$produk->stok_onorder_customer;
+                    if ($kapasitas < $qty) {
+                        $kapasitasTampil = max(0, $kapasitas);
+                        throw new \Exception("Total stok '{$produk->nama_produk}' tidak mencukupi untuk pesanan pengiriman ini! (Maksimal tersedia dari fisik + pesanan supplier: {$kapasitasTampil})");
+                    }
                 }
 
                 $detailPenjualan = DetailPenjualan::create([
@@ -103,16 +112,13 @@ class PenjualanController extends Controller
                     'subtotal' => $subtotal,
                 ]);
 
-                // Jika langsung dibawa pembeli, potong stok fisik
                 if ($request->metode_pengiriman === 'langsung') {
                     $produk->decrement('stok', $qty);
                 } else {
-                    // Jika dikirim nanti, tambahkan ke stok on order customer
                     $produk->increment('stok_onorder_customer', $qty);
                 }
             }
 
-            // Jika langsung dibawa pembeli, catat log pengiriman langsung
             if ($request->metode_pengiriman === 'langsung') {
                 $pengiriman = \App\Models\PengirimanPenjualan::create([
                     'penjualan_id' => $penjualan->id,
@@ -153,5 +159,46 @@ class PenjualanController extends Controller
     }
     public function destroy(string $id)
     {
+        $penjualan = Penjualan::with(['detailPenjualan.produk', 'pengirimanPenjualan', 'pembayaranPiutang'])->findOrFail($id);
+
+        if ($penjualan->status === 'batal') {
+            return back()->with('error', 'Nota penjualan ini sudah dibatalkan sebelumnya!');
+        }
+
+        if ($penjualan->pembayaranPiutang()->exists()) {
+            return back()->with('error', 'Nota penjualan tidak dapat dibatalkan karena sudah memiliki riwayat pembayaran cicilan piutang!');
+        }
+
+        $isBawaLangsung = ($penjualan->pengirimanPenjualan->count() === 1 && $penjualan->pengirimanPenjualan->first()->catatan === 'Barang langsung diserahkan di toko (Bawa Langsung)');
+        $isBelumKirim = ($penjualan->status_pengiriman === 'belum_dikirim' && $penjualan->pengirimanPenjualan->count() === 0);
+
+        if (!$isBawaLangsung && !$isBelumKirim) {
+            return back()->with('error', 'Nota penjualan tidak dapat dibatalkan karena sebagian atau seluruh barang sudah dalam proses pengiriman ekspedisi!');
+        }
+
+        DB::beginTransaction();
+        try {
+            foreach ($penjualan->detailPenjualan as $dp) {
+                if ($dp->produk) {
+                    if ($isBawaLangsung) {
+                        $dp->produk->increment('stok', $dp->qty);
+                    } else {
+                        $sisaOnOrder = max(0, (float)$dp->produk->stok_onorder_customer - (float)$dp->qty);
+                        $dp->produk->update(['stok_onorder_customer' => $sisaOnOrder]);
+                    }
+                }
+            }
+
+            $penjualan->update([
+                'status' => 'batal',
+            ]);
+
+            DB::commit();
+            return redirect()->route('admin.penjualan.show', $penjualan->id)
+                ->with('success', 'Nota penjualan #' . $penjualan->no_nota . ' berhasil dibatalkan dan stok produk telah disesuaikan kembali!');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->with('error', 'Gagal membatalkan nota: ' . $e->getMessage());
+        }
     }
 }

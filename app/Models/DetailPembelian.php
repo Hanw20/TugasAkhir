@@ -18,13 +18,11 @@ class DetailPembelian extends Model
         'subtotal'     => 'decimal:2',
     ];
 
-    // Accessor: qty yang sudah diterima
     public function getQtyDiterimaAttribute()
     {
         return $this->detailPenerimaanPembelian->sum('qty_diterima');
     }
 
-    // Accessor: sisa qty yang belum diterima
     public function getSisaQtyAttribute()
     {
         return $this->qty - $this->qty_diterima;

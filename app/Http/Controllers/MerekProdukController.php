@@ -7,13 +7,10 @@ use App\Models\MerekProduk;
 
 class MerekProdukController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+    
     public function index()
     {
-        $data = MerekProduk::orderBy('id', 'desc')->get();
-        // Nanti kita buat file view-nya di folder admin/merek/
+        $data = MerekProduk::withCount('produk')->orderBy('id', 'desc')->get();
         return view('admin.merek.index', compact('data'));
     }
     public function create()
@@ -28,26 +25,43 @@ class MerekProdukController extends Controller
     }
     public function show(string $id)
     {
-        // Ambil data merek beserta produk-produk di dalamnya
         $merek = MerekProduk::with('produk')->findOrFail($id);
         return view('admin.merek.show', compact('merek'));
     }
     public function edit(string $id)
     {
-        $merek = MerekProduk::find($id);
+        $merek = MerekProduk::findOrFail($id);
+        $merek->is_used = $merek->produk()->exists();
         return response()->json($merek);
     }
     public function update(Request $request, string $id)
     {
+        $merek = MerekProduk::findOrFail($id);
+
+        if ($merek->produk()->exists()) {
+            return response()->json([
+                'status'  => 'error',
+                'message' => "Merek '{$merek->nama_merek}' tidak dapat diubah karena sedang digunakan oleh produk aktif!"
+            ], 422);
+        }
+
         $request->validate(['nama_merek' => 'required|string|max:255']);
-        $merek = MerekProduk::find($id);
         $merek->update(['nama_merek' => $request->nama_merek]);
 
         return response()->json(['message' => 'Merek berhasil diubah!']);
     }
     public function destroy(string $id)
     {
-        MerekProduk::find($id)->delete();
+        $merek = MerekProduk::findOrFail($id);
+
+        if ($merek->produk()->exists()) {
+            return response()->json([
+                'status'  => 'error',
+                'message' => "Merek '{$merek->nama_merek}' tidak dapat dihapus karena masih digunakan oleh produk aktif!"
+            ], 422);
+        }
+
+        $merek->delete();
         return response()->json(['message' => 'Merek berhasil dihapus!']);
     }
 }

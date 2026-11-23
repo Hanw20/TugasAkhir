@@ -21,13 +21,11 @@ class DetailPenjualan extends Model
         'subtotal'     => 'decimal:2',
     ];
 
-    // Accessor: qty yang sudah dikirim
     public function getQtyDikirimAttribute()
     {
         return $this->detailPengirimanPenjualan->sum('qty_dikirim');
     }
 
-    // Accessor: sisa qty yang belum dikirim
     public function getSisaQtyAttribute()
     {
         return $this->qty - $this->qty_dikirim;

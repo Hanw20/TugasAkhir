@@ -12,10 +12,11 @@ class ProdukController extends Controller
 {
     public function index()
     {
-        // Ambil data produk beserta relasinya
-        $data = Produk::with(['kategori', 'merek', 'satuanDasar'])->orderBy('id', 'desc')->get();
+        $data = Produk::with(['kategori', 'merek', 'satuanDasar'])
+            ->withCount(['detailPenjualan', 'detailPembelian', 'konversiAsal', 'konversiTujuan', 'detailStokOpname'])
+            ->orderBy('id', 'desc')
+            ->get();
         
-        // Ambil data master untuk Dropdown di Form
         $kategori = KategoriProduk::orderBy('nama_kategori')->get();
         $merek = MerekProduk::orderBy('nama_merek')->get();
         $satuan = SatuanProduk::orderBy('nama_satuan')->get();
@@ -44,7 +45,6 @@ class ProdukController extends Controller
         return response()->json(['message' => 'Produk berhasil disimpan!']);
     }
 
-    // Fungsi show kita siapkan untuk "Halaman Detail Produk"
     public function show(string $id)
     {
         $produk = Produk::with(['kategori', 'merek', 'satuanDasar'])->findOrFail($id);
@@ -60,26 +60,42 @@ class ProdukController extends Controller
     public function update(Request $request, string $id)
     {
         $request->validate([
-            'kode_produk' => 'required|string|unique:produk,kode_produk,'.$id,
-            'nama_produk' => 'required|string|max:255',
-            'kategori_produk_id' => 'required|integer',
-            'merek_id' => 'required|integer',
-            'satuan_dasar_id' => 'required|integer',
-            'harga_beli' => 'required|numeric',
-            'harga_jual' => 'required|numeric',
-            'stok' => 'required|numeric',
-            'stok_minimum' => 'required|numeric'
+            'harga_jual' => 'required|numeric|min:0',
+            'stok_minimum' => 'required|numeric|min:0'
         ]);
 
-        $produk = Produk::find($id);
-        $produk->update($request->all());
+        $produk = Produk::findOrFail($id);
+        $produk->update([
+            'harga_jual' => $request->harga_jual,
+            'stok_minimum' => $request->stok_minimum,
+        ]);
         
         return response()->json(['message' => 'Produk berhasil diubah!']);
     }
 
     public function destroy(string $id)
     {
-        Produk::find($id)->delete();
-        return response()->json(['message' => 'Produk berhasil dihapus!']);
+        $produk = Produk::findOrFail($id);
+
+        $adaTransaksi = $produk->detailPenjualan()->exists()
+            || $produk->detailPembelian()->exists()
+            || $produk->konversiAsal()->exists()
+            || $produk->konversiTujuan()->exists()
+            || $produk->detailStokOpname()->exists();
+
+        if ($adaTransaksi) {
+            return response()->json([
+                'status'  => 'error',
+                'message' => "Produk '{$produk->nama_produk}' tidak dapat dihapus karena sudah memiliki riwayat transaksi!"
+            ], 422);
+        }
+
+        $produk->supplier()->detach();
+        $produk->delete();
+
+        return response()->json([
+            'status'  => 'success',
+            'message' => 'Produk berhasil dihapus!'
+        ]);
     }
 }

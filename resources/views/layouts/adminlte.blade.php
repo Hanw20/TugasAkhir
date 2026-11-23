@@ -101,6 +101,35 @@
  background-color: #FFFFFF !important;
  border-bottom: 1px solid #E2E8F0 !important;
  }
+
+ /* ================= STANDAR GLOBAL INPUT & BUTTON DISABLED / READONLY ================= */
+ .form-control[readonly],
+ .form-control:disabled,
+ .form-select:disabled,
+ input[readonly],
+ input:disabled,
+ select:disabled,
+ textarea[readonly],
+ textarea:disabled,
+ .input-group-text.bg-disabled,
+ .input-group-text.bg-light,
+ .bg-disabled,
+ .form-control.bg-light,
+ .form-control.bg-disabled {
+     background-color: #E2E8F0 !important;
+     color: #475569 !important;
+     cursor: not-allowed !important;
+     border-color: #CBD5E1 !important;
+ }
+ button:disabled,
+ .btn:disabled,
+ .btn.disabled {
+     background-color: #E2E8F0 !important;
+     color: #94A3B8 !important;
+     border-color: #CBD5E1 !important;
+     cursor: not-allowed !important;
+     opacity: 0.75 !important;
+ }
  </style>
 
  @stack('styles')
@@ -214,7 +243,7 @@
  <a href="{{ route('admin.konversi.index') }}"
  class="nav-link {{ (request()->routeIs('admin.konversi.*') && !request()->routeIs('admin.konversi-produk.*')) ? 'active' : '' }}">
  <i class="nav-icon bi bi-dot"></i>
- <p>Master Rumus Konversi</p>
+ <p>Rumus Konversi</p>
  </a>
  </li>
  </ul>

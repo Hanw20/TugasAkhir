@@ -10,10 +10,11 @@ class KonversiController extends Controller
 {
     public function index()
     {
-        // Ambil data rumus konversi beserta nama satuannya
-        $data = MasterKonversi::with(['satuanAsal', 'satuanTujuan'])->orderBy('id', 'desc')->get();
+        $data = MasterKonversi::with(['satuanAsal', 'satuanTujuan'])
+            ->withCount('konversi')
+            ->orderBy('id', 'desc')
+            ->get();
         
-        // Ambil data satuan untuk modal dropdown
         $satuan = SatuanProduk::orderBy('nama_satuan')->get();
         
         return view('admin.konversi.index', compact('data', 'satuan'));
@@ -23,7 +24,6 @@ class KonversiController extends Controller
 
     public function store(Request $request)
     {
-        // Validasi: Satuan asal & tujuan tidak boleh sama (different)
         $request->validate([
             'satuan_asal_id' => 'required|integer',
             'satuan_tujuan_id' => 'required|integer|different:satuan_asal_id',
@@ -41,19 +41,28 @@ class KonversiController extends Controller
 
     public function edit(string $id)
     {
-        $konversi = MasterKonversi::find($id);
+        $konversi = MasterKonversi::findOrFail($id);
+        $konversi->is_used = $konversi->konversi()->exists();
         return response()->json($konversi);
     }
 
     public function update(Request $request, string $id)
     {
+        $konversi = MasterKonversi::findOrFail($id);
+
+        if ($konversi->konversi()->exists()) {
+            return response()->json([
+                'status'  => 'error',
+                'message' => 'Rumus konversi ini tidak dapat diubah karena sudah digunakan oleh transaksi konversi produk aktif!'
+            ], 422);
+        }
+
         $request->validate([
             'satuan_asal_id' => 'required|integer',
             'satuan_tujuan_id' => 'required|integer|different:satuan_asal_id',
             'nilai_konversi' => 'required|numeric|min:0.01'
         ]);
 
-        $konversi = MasterKonversi::find($id);
         $konversi->update($request->all());
         
         return response()->json(['message' => 'Rumus konversi berhasil diubah!']);
@@ -61,7 +70,16 @@ class KonversiController extends Controller
 
     public function destroy(string $id)
     {
-        MasterKonversi::find($id)->delete();
+        $konversi = MasterKonversi::findOrFail($id);
+
+        if ($konversi->konversi()->exists()) {
+            return response()->json([
+                'status'  => 'error',
+                'message' => 'Rumus konversi ini tidak dapat dihapus karena sudah memiliki riwayat transaksi konversi produk!'
+            ], 422);
+        }
+
+        $konversi->delete();
         return response()->json(['message' => 'Rumus konversi berhasil dihapus!']);
     }
 }

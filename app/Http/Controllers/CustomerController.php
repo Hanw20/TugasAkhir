@@ -9,7 +9,7 @@ class CustomerController extends Controller
 {
     public function index()
     {
-        $data = Customer::orderBy('id', 'desc')->get();
+        $data = Customer::withCount('penjualan')->orderBy('id', 'desc')->get();
         return view('admin.customer.index', compact('data'));
     }
 
@@ -32,34 +32,49 @@ class CustomerController extends Controller
 
     public function show(string $id)
     {
-        // Ambil data customer beserta riwayat penjualannya (jika sudah ada)
         $customer = Customer::with('penjualan')->findOrFail($id);
         return view('admin.customer.show', compact('customer'));
     }
 
     public function edit(string $id)
     {
-        $customer = Customer::find($id);
+        $customer = Customer::findOrFail($id);
         return response()->json($customer);
     }
 
     public function update(Request $request, string $id)
     {
+        $customer = Customer::findOrFail($id);
+
         $request->validate([
-            'nama_customer' => 'required|string|max:255',
             'no_telepon' => 'nullable|string|max:20',
             'alamat' => 'nullable|string'
         ]);
 
-        $customer = Customer::find($id);
-        $customer->update($request->all());
+        $customer->update([
+            'no_telepon' => $request->no_telepon,
+            'alamat' => $request->alamat,
+        ]);
 
-        return response()->json(['message' => 'Customer berhasil diubah!']);
+        return response()->json(['message' => 'Data customer berhasil diperbarui!']);
     }
 
     public function destroy(string $id)
     {
-        Customer::find($id)->delete();
-        return response()->json(['message' => 'Customer berhasil dihapus!']);
+        $customer = Customer::findOrFail($id);
+
+        if ($customer->penjualan()->exists()) {
+            return response()->json([
+                'status'  => 'error',
+                'message' => "Pelanggan '{$customer->nama_customer}' tidak dapat dihapus karena sudah memiliki riwayat transaksi penjualan!"
+            ], 422);
+        }
+
+        $customer->delete();
+
+        return response()->json([
+            'status'  => 'success',
+            'message' => 'Customer berhasil dihapus!'
+        ]);
     }
 }

@@ -9,8 +9,9 @@ class SatuanProdukController extends Controller
 {
     public function index()
     {
-        $data = SatuanProduk::orderBy('id', 'desc')->get();
-        // Nanti kita buat file view-nya di folder admin/satuan/
+        $data = SatuanProduk::withCount(['produk', 'masterKonversiAsal', 'masterKonversiTujuan'])
+            ->orderBy('id', 'desc')
+            ->get();
         return view('admin.satuan.index', compact('data')); 
     }
 
@@ -28,14 +29,28 @@ class SatuanProdukController extends Controller
 
     public function edit(string $id)
     {
-        $satuan = SatuanProduk::find($id);
+        $satuan = SatuanProduk::findOrFail($id);
+        $satuan->is_used = $satuan->produk()->exists() 
+            || $satuan->masterKonversiAsal()->exists() 
+            || $satuan->masterKonversiTujuan()->exists();
         return response()->json($satuan);
     }
 
     public function update(Request $request, string $id)
     {
+        $satuan = SatuanProduk::findOrFail($id);
+        $isUsed = $satuan->produk()->exists() 
+            || $satuan->masterKonversiAsal()->exists() 
+            || $satuan->masterKonversiTujuan()->exists();
+
+        if ($isUsed) {
+            return response()->json([
+                'status'  => 'error',
+                'message' => "Satuan '{$satuan->nama_satuan}' tidak dapat diubah karena sedang digunakan oleh produk atau master rumus konversi!"
+            ], 422);
+        }
+
         $request->validate(['nama_satuan' => 'required|string|max:255']);
-        $satuan = SatuanProduk::find($id);
         $satuan->update(['nama_satuan' => $request->nama_satuan]);
         
         return response()->json(['message' => 'Satuan berhasil diubah!']);
@@ -43,7 +58,19 @@ class SatuanProdukController extends Controller
 
     public function destroy(string $id)
     {
-        SatuanProduk::find($id)->delete();
+        $satuan = SatuanProduk::findOrFail($id);
+        $isUsed = $satuan->produk()->exists() 
+            || $satuan->masterKonversiAsal()->exists() 
+            || $satuan->masterKonversiTujuan()->exists();
+
+        if ($isUsed) {
+            return response()->json([
+                'status'  => 'error',
+                'message' => "Satuan '{$satuan->nama_satuan}' tidak dapat dihapus karena sedang digunakan oleh produk atau master rumus konversi!"
+            ], 422);
+        }
+
+        $satuan->delete();
         return response()->json(['message' => 'Satuan berhasil dihapus!']);
     }
 }
