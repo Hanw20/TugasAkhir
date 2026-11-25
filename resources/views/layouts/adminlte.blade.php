@@ -12,10 +12,42 @@
  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
  {{-- AdminLTE CSS --}}
  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@4.0.0-beta3/dist/css/adminlte.min.css">
+ {{-- DataTables Bootstrap 5 CSS --}}
+ <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css">
  {{-- Vite (Bootstrap SCSS) --}}
  @vite(['resources/sass/app.scss', 'resources/js/app.js'])
 
  <style>
+    /* Styling DataTables agar selaras dengan tema Nordic Teal */
+    .dataTables_wrapper .dataTables_filter input {
+        border-radius: 6px;
+        border: 1px solid #CBD5E1;
+        padding: 5px 12px;
+        margin-left: 8px;
+    }
+    .dataTables_wrapper .dataTables_filter input:focus {
+        border-color: #2A9D8F;
+        outline: none;
+        box-shadow: 0 0 0 2px rgba(42, 157, 143, 0.2);
+    }
+    .dataTables_wrapper .dataTables_length select {
+        border-radius: 6px;
+        border: 1px solid #CBD5E1;
+        padding: 4px 30px 4px 12px !important;
+        width: auto !important;
+        display: inline-block !important;
+        margin: 0 6px !important;
+        cursor: pointer;
+    }
+    .page-item.active .page-link {
+        background-color: #2A9D8F !important;
+        border-color: #2A9D8F !important;
+        color: #fff !important;
+    }
+    .page-link {
+        color: #264653;
+    }
+
  /* ================= THEMA NORDIC MINIMALIST SAGE (FIGMA) ================= */
     .app-sidebar,
     .app-sidebar.bg-body-secondary {
@@ -476,6 +508,20 @@
  <script src="https://cdn.jsdelivr.net/npm/admin-lte@4.0.0-beta3/dist/js/adminlte.min.js"></script>
  {{-- jQuery --}}
  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+ {{-- DataTables JS & Bootstrap 5 Integration --}}
+ <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+ <script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
+ <script>
+     $.extend(true, $.fn.dataTable.defaults, {
+         paging: false,
+         info: false,
+         language: {
+             search: "Cari:",
+             searchPlaceholder: "Masukkan kode atau nama...",
+             zeroRecords: "Tidak ada data yang cocok"
+         }
+     });
+ </script>
 
  @stack('scripts')
 </body>

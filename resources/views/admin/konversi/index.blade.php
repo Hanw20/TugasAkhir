@@ -22,7 +22,7 @@
 
             <div class="card">
                 <div class="card-body table-responsive">
-                    <table class="table table-bordered table-striped align-middle">
+                    <table class="table table-bordered table-striped align-middle" id="tabel-konversi">
                         <thead>
                             <tr>
                                 <th width="5%">No</th>
@@ -144,6 +144,15 @@
     <script>
         $.ajaxSetup({
             headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') }
+        });
+
+        $(document).ready(function () {
+            $('#tabel-konversi').DataTable({
+                columnDefs: [
+                    { targets: [0, 3, 4, 5], searchable: false },
+                    { targets: [5], orderable: false }
+                ]
+            });
         });
 
         function tambahData() {

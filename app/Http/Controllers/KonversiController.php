@@ -25,8 +25,8 @@ class KonversiController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'satuan_asal_id' => 'required|integer',
-            'satuan_tujuan_id' => 'required|integer|different:satuan_asal_id',
+            'satuan_asal_id' => 'required|exists:satuan_produk,id',
+            'satuan_tujuan_id' => 'required|exists:satuan_produk,id|different:satuan_asal_id',
             'nilai_konversi' => 'required|numeric|min:0.01'
         ], [
             'satuan_tujuan_id.different' => 'Satuan tujuan tidak boleh sama dengan satuan asal!'
@@ -58,8 +58,8 @@ class KonversiController extends Controller
         }
 
         $request->validate([
-            'satuan_asal_id' => 'required|integer',
-            'satuan_tujuan_id' => 'required|integer|different:satuan_asal_id',
+            'satuan_asal_id' => 'required|exists:satuan_produk,id',
+            'satuan_tujuan_id' => 'required|exists:satuan_produk,id|different:satuan_asal_id',
             'nilai_konversi' => 'required|numeric|min:0.01'
         ]);
 

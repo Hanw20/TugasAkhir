@@ -20,11 +20,11 @@ class SupplierController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'kode_supplier' => 'required|string|unique:suppliers,kode_supplier',
-            'nama_supplier' => 'required|string|max:255',
-            'alamat' => 'nullable|string',
-            'nomor_telepon' => 'nullable|string|max:20',
-            'email' => 'nullable|email'
+            'kode_supplier' => 'required|string|max:50|unique:suppliers,kode_supplier',
+            'nama_supplier' => 'required|string|max:100',
+            'alamat' => 'required|string',
+            'nomor_telepon' => 'required|string|max:20',
+            'email' => 'nullable|email|max:100'
         ]);
 
         Supplier::create($request->all());
@@ -64,9 +64,9 @@ class SupplierController extends Controller
         $supplier = Supplier::findOrFail($id);
 
         $request->validate([
-            'alamat' => 'nullable|string',
-            'nomor_telepon' => 'nullable|string|max:20',
-            'email' => 'nullable|email'
+            'alamat' => 'required|string',
+            'nomor_telepon' => 'required|string|max:20',
+            'email' => 'nullable|email|max:100'
         ]);
 
         $supplier->update([

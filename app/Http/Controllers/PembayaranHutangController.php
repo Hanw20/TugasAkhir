@@ -28,7 +28,7 @@ class PembayaranHutangController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'pembelian_id'  => 'required|integer',
+            'pembelian_id'  => 'required|exists:pembelian,id',
             'tanggal_bayar' => 'required|date',
             'jumlah_bayar'  => 'required|numeric|min:1',
             'catatan'       => 'nullable|string|max:255',

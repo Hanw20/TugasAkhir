@@ -36,9 +36,9 @@
                                     value="{{ date('Y-m-d\TH:i') }}" required>
                             </div>
                             <div class="col-12">
-                                <label class="form-label fw-bold">Catatan Pengiriman / Supir</label>
+                                <label class="form-label fw-bold">Alamat Tujuan / Lokasi Proyek & Catatan Supir</label>
                                 <input type="text" name="catatan" class="form-control"
-                                    placeholder="Contoh: Dikirim via Pickup Toko L300 (Supir: Pak Wawan), kirim ke alamat proyek">
+                                    placeholder="Contoh: Kirim ke Jl. Raya Rungkut No. 45 (Proyek Rumah Baru Pak Budi), Supir: Pak Wawan">
                             </div>
                         </div>
                     </div>

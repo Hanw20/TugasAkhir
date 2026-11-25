@@ -13,7 +13,7 @@
 
             <div class="card">
                 <div class="card-body">
-                    <table class="table table-bordered table-striped align-middle">
+                    <table class="table table-bordered table-striped align-middle" id="tabel-satuan">
                         <thead>
                             <tr>
                                 <th width="5%" class="text-center">No</th>
@@ -103,6 +103,12 @@
     <script>
         $.ajaxSetup({
             headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') }
+        });
+
+        $(document).ready(function () {
+            $('#tabel-satuan').DataTable({
+                columnDefs: [{ targets: [2], orderable: false }]
+            });
         });
 
         function tambahData() {

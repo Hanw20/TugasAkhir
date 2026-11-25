@@ -29,15 +29,16 @@ class ProdukController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'kode_produk' => 'required|string|unique:produk,kode_produk',
-            'nama_produk' => 'required|string|max:255',
-            'kategori_produk_id' => 'required|integer',
-            'merek_id' => 'required|integer',
-            'satuan_dasar_id' => 'required|integer',
-            'harga_beli' => 'required|numeric',
-            'harga_jual' => 'required|numeric',
-            'stok' => 'required|numeric',
-            'stok_minimum' => 'required|numeric'
+            'kode_produk' => 'required|string|max:50|unique:produk,kode_produk',
+            'nama_produk' => 'required|string|max:100',
+            'kategori_produk_id' => 'required|exists:kategori_produk,id',
+            'merek_id' => 'required|exists:merek_produk,id',
+            'satuan_dasar_id' => 'required|exists:satuan_produk,id',
+            'metode_jual' => 'required|in:satuan,nominal_timbang',
+            'harga_beli' => 'required|numeric|min:0',
+            'harga_jual' => 'required|numeric|min:0',
+            'stok' => 'required|numeric|min:0',
+            'stok_minimum' => 'required|numeric|min:0'
         ]);
 
         Produk::create($request->all());

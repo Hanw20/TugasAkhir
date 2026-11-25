@@ -31,27 +31,29 @@
                                 <input type="date" name="tanggal" class="form-control" value="{{ date('Y-m-d') }}" required>
                             </div>
                             <div class="col-md-3">
-                                <label class="form-label fw-bold">Pilih Customer</label>
-                                <select name="customer_id" class="form-select" required>
-                                    <option value="">-- Pilih Customer --</option>
+                                <label class="form-label fw-bold" id="label-customer">Pilih Customer</label>
+                                <select name="customer_id" id="select-customer" class="form-select">
+                                    <option value="">-- Pelanggan Umum --</option>
                                     @foreach($customers as $c)
-                                        <option value="{{ $c->id }}">{{ $c->nama_customer }} ({{ $c->no_telepon ?? '-' }})
+                                        <option value="{{ $c->id }}" {{ old('customer_id') == $c->id ? 'selected' : '' }}>
+                                            {{ $c->nama_customer }} ({{ $c->no_telepon ?? '-' }})
                                         </option>
                                     @endforeach
                                 </select>
+                                <small class="text-muted small" id="hint-customer">Bisa dikosongkan jika tunai & bawa sendiri.</small>
                             </div>
                             <div class="col-md-3">
                                 <label class="form-label fw-bold">Penyerahan Barang</label>
-                                <select name="metode_pengiriman" class="form-select" required>
-                                    <option value="langsung">Ambil Langsung di Toko</option>
-                                    <option value="nanti">Dikirim / Ekspedisi Toko</option>
+                                <select name="status_pengiriman" id="select-status-pengiriman" class="form-select" required onchange="updateCustomerRequirement()">
+                                    <option value="seluruh">Ambil Langsung di Toko</option>
+                                    <option value="belum_dikirim">Dikirim / Ekspedisi Toko</option>
                                 </select>
                             </div>
                             <div class="col-md-3">
-                                <label class="form-label fw-bold">Metode Pembayaran</label>
-                                <select name="metode_pembayaran" class="form-select" required>
+                                <label class="form-label fw-bold">Status Pembayaran</label>
+                                <select name="status_pembayaran" id="select-status-pembayaran" class="form-select" required onchange="updateCustomerRequirement()">
                                     <option value="lunas">Tunai (Lunas)</option>
-                                    <option value="tempo">Piutang / Tempo</option>
+                                    <option value="belum_dibayar">Piutang / Tempo</option>
                                 </select>
                             </div>
                         </div>
@@ -119,8 +121,22 @@
                             </tbody>
                             <tfoot class="table-light">
                                 <tr>
-                                    <th colspan="4" class="text-end fs-5">TOTAL AKHIR PENJUALAN:</th>
-                                    <th class="text-end fs-5 text-success fw-bold" id="label-total-akhir">Rp 0</th>
+                                    <th colspan="4" class="text-end align-middle">Potongan / Diskon (Rp):</th>
+                                    <th>
+                                        <input type="number" name="diskon" id="input-diskon" class="form-control text-end" value="0" min="0" oninput="hitungTotalSemua()" placeholder="0">
+                                    </th>
+                                    <th></th>
+                                </tr>
+                                <tr>
+                                    <th colspan="4" class="text-end align-middle">Ongkos Kirim (Rp):</th>
+                                    <th>
+                                        <input type="number" name="ongkos_kirim" id="input-ongkir" class="form-control text-end" value="0" min="0" oninput="hitungTotalSemua()" placeholder="0">
+                                    </th>
+                                    <th></th>
+                                </tr>
+                                <tr>
+                                    <th colspan="4" class="text-end align-middle fs-5">TOTAL AKHIR PENJUALAN:</th>
+                                    <th class="text-end align-middle fs-5 text-success fw-bold" id="label-total-akhir">Rp 0</th>
                                     <th></th>
                                 </tr>
                             </tfoot>
@@ -150,6 +166,32 @@
          </option>
      @endforeach
      `;
+
+        let subtotalBarang = 0;
+
+        function updateCustomerRequirement() {
+            const statusBayar = document.getElementById('select-status-pembayaran').value;
+            const statusKirim = document.getElementById('select-status-pengiriman').value;
+            const selectCustomer = document.getElementById('select-customer');
+            const labelCustomer = document.getElementById('label-customer');
+            const hintCustomer = document.getElementById('hint-customer');
+
+            if (statusBayar === 'belum_dibayar' || statusKirim === 'belum_dikirim') {
+                selectCustomer.setAttribute('required', 'required');
+                labelCustomer.innerHTML = 'Pilih Customer <span class="text-danger">*</span>';
+                if (hintCustomer) {
+                    hintCustomer.innerText = 'Wajib dipilih jika barang dikirim atau transaksi piutang.';
+                    hintCustomer.className = 'text-danger small';
+                }
+            } else {
+                selectCustomer.removeAttribute('required');
+                labelCustomer.innerHTML = 'Pilih Customer';
+                if (hintCustomer) {
+                    hintCustomer.innerText = 'Bisa dikosongkan jika tunai & bawa sendiri.';
+                    hintCustomer.className = 'text-muted small';
+                }
+            }
+        }
 
         function tambahBaris() {
             const tr = document.createElement('tr');
@@ -194,11 +236,11 @@
             const harga = selected.getAttribute('data-harga') || 0;
             const satuan = selected.getAttribute('data-satuan') || '-';
             const stok = parseFloat(selected.getAttribute('data-stok')) || 0;
-            const metodeKirim = document.querySelector('select[name="metode_pengiriman"]').value;
+            const statusKirim = document.getElementById('select-status-pengiriman').value;
 
             row.querySelector('.input-harga').value = harga;
             row.querySelector('.label-satuan').value = satuan;
-            if (metodeKirim === 'langsung') {
+            if (statusKirim === 'seluruh') {
                 row.querySelector('.input-qty').max = stok;
             } else {
                 row.querySelector('.input-qty').removeAttribute('max');
@@ -206,14 +248,14 @@
             hitungSubtotal(selectEl);
         }
 
-        document.querySelector('select[name="metode_pengiriman"]').addEventListener('change', function() {
-            const metodeKirim = this.value;
+        document.getElementById('select-status-pengiriman').addEventListener('change', function() {
+            const statusKirim = this.value;
             document.querySelectorAll('.item-row').forEach(row => {
                 const selectEl = row.querySelector('.select-produk');
                 if (selectEl && selectEl.selectedIndex > 0) {
                     const selected = selectEl.options[selectEl.selectedIndex];
                     const stok = parseFloat(selected.getAttribute('data-stok')) || 0;
-                    if (metodeKirim === 'langsung') {
+                    if (statusKirim === 'seluruh') {
                         row.querySelector('.input-qty').max = stok;
                     } else {
                         row.querySelector('.input-qty').removeAttribute('max');
@@ -233,13 +275,23 @@
         }
 
         function hitungTotalSemua() {
-            let total = 0;
+            subtotalBarang = 0;
             document.querySelectorAll('.item-row').forEach(row => {
                 const harga = parseFloat(row.querySelector('.input-harga').value) || 0;
                 const qty = parseFloat(row.querySelector('.input-qty').value) || 0;
-                total += (harga * qty);
+                subtotalBarang += (harga * qty);
             });
-            document.getElementById('label-total-akhir').innerText = 'Rp ' + new Intl.NumberFormat('id-ID').format(total);
+
+            const diskon = parseFloat(document.getElementById('input-diskon').value) || 0;
+            const ongkir = parseFloat(document.getElementById('input-ongkir').value) || 0;
+            const totalAkhir = Math.max(0, subtotalBarang - diskon + ongkir);
+
+            document.getElementById('label-total-akhir').innerText = 'Rp ' + new Intl.NumberFormat('id-ID').format(totalAkhir);
         }
+
+        $(document).ready(function () {
+            updateCustomerRequirement();
+            hitungTotalSemua();
+        });
     </script>
 @endpush

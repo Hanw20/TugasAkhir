@@ -13,7 +13,7 @@
 
             <div class="card">
                 <div class="card-body table-responsive">
-                    <table class="table table-bordered table-striped align-middle">
+                    <table class="table table-bordered table-striped align-middle" id="tabel-produk">
                         <thead>
                             <tr>
                                 <th width="5%" class="text-center">No</th>
@@ -221,6 +221,15 @@
     <script>
         $.ajaxSetup({
             headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') }
+        });
+
+        $(document).ready(function () {
+            $('#tabel-produk').DataTable({
+                columnDefs: [
+                    { targets: [0, 3, 4, 5, 6, 7], searchable: false },
+                    { targets: [7], orderable: false }
+                ]
+            });
         });
 
         function tambahData() {

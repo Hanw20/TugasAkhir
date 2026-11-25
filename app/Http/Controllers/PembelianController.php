@@ -33,9 +33,17 @@ class PembelianController extends Controller
         $suppliers = Supplier::orderBy('nama_supplier')->get();
         $produks = Produk::with('satuanDasar')->orderBy('nama_produk')->get();
 
-        $today = date('Ymd');
-        $countToday = Pembelian::whereDate('created_at', today())->count() + 1;
-        $noFakturOtomatis = 'PB-' . $today . '-' . str_pad($countToday, 4, '0', STR_PAD_LEFT);
+        $prefix = 'PO-' . date('Ym') . '-';
+        $latest = Pembelian::where('no_faktur', 'like', $prefix . '%')
+            ->orderBy('no_faktur', 'desc')
+            ->first();
+        if ($latest) {
+            $lastNum = (int) substr($latest->no_faktur, -3);
+            $nextNum = $lastNum + 1;
+        } else {
+            $nextNum = 1;
+        }
+        $noFakturOtomatis = $prefix . str_pad($nextNum, 3, '0', STR_PAD_LEFT);
 
         return view('admin.pembelian.create', compact('suppliers', 'produks', 'noFakturOtomatis'));
     }
@@ -43,8 +51,8 @@ class PembelianController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'no_faktur' => 'required|string|unique:pembelian,no_faktur',
-            'supplier_id' => 'required|integer',
+            'no_faktur' => 'required|string|max:50|unique:pembelian,no_faktur',
+            'supplier_id' => 'required|exists:suppliers,id',
             'tanggal' => 'required|date',
             'produk_id' => 'required|array|min:1',
             'qty' => 'required|array|min:1',

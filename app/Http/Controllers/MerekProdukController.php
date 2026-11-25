@@ -18,7 +18,7 @@ class MerekProdukController extends Controller
     }
     public function store(Request $request)
     {
-        $request->validate(['nama_merek' => 'required|string|max:255']);
+        $request->validate(['nama_merek' => 'required|string|max:100']);
         MerekProduk::create(['nama_merek' => $request->nama_merek]);
 
         return response()->json(['message' => 'Merek berhasil disimpan!']);
@@ -45,7 +45,7 @@ class MerekProdukController extends Controller
             ], 422);
         }
 
-        $request->validate(['nama_merek' => 'required|string|max:255']);
+        $request->validate(['nama_merek' => 'required|string|max:100']);
         $merek->update(['nama_merek' => $request->nama_merek]);
 
         return response()->json(['message' => 'Merek berhasil diubah!']);

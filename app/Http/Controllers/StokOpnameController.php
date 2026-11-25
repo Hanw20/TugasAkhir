@@ -29,7 +29,7 @@ class StokOpnameController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'tanggal' => 'required',
+            'tanggal' => 'required|date',
             'catatan' => 'nullable|string|max:255',
             'items' => 'required|array|min:1',
             'items.*.produk_id' => 'required|exists:produk,id',

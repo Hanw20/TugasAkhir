@@ -13,7 +13,7 @@ return new class extends Migration
             $table->foreignId('sesi_perhitungan_ahp_id')->constrained('sesi_perhitungan_ahp')->cascadeOnDelete();
             $table->foreignId('kriteria_a_id')->constrained('kriteria_supplier')->restrictOnDelete();
             $table->foreignId('kriteria_b_id')->constrained('kriteria_supplier')->restrictOnDelete();
-            $table->decimal('nilai_perbandingan', 12, 2);
+            $table->double('nilai_perbandingan');
             $table->timestamps();
         });
     }

@@ -93,6 +93,24 @@
                                 @endforeach
                             </tbody>
                             <tfoot class="table-light">
+                                @if(($penjualan->diskon > 0) || ($penjualan->ongkos_kirim > 0))
+                                    <tr>
+                                        <th colspan="4" class="text-end">Subtotal:</th>
+                                        <th class="text-end">Rp {{ number_format($penjualan->detailPenjualan->sum('subtotal'), 0, ',', '.') }}</th>
+                                    </tr>
+                                @endif
+                                @if($penjualan->diskon > 0)
+                                    <tr>
+                                        <th colspan="4" class="text-end text-danger">Potongan / Diskon:</th>
+                                        <th class="text-end text-danger">- Rp {{ number_format($penjualan->diskon, 0, ',', '.') }}</th>
+                                    </tr>
+                                @endif
+                                @if($penjualan->ongkos_kirim > 0)
+                                    <tr>
+                                        <th colspan="4" class="text-end text-primary">Ongkos Kirim:</th>
+                                        <th class="text-end text-primary">+ Rp {{ number_format($penjualan->ongkos_kirim, 0, ',', '.') }}</th>
+                                    </tr>
+                                @endif
                                 <tr>
                                     <th colspan="4" class="text-end fs-6 fw-bold">TOTAL PEMBAYARAN:</th>
                                     <th class="text-end fs-6 fw-bold" style="color: #264653;">Rp

@@ -11,8 +11,8 @@ return new class extends Migration
         Schema::create('customers', function (Blueprint $table) {
             $table->id();
             $table->string('nama_customer', 100);
-            $table->string('no_telepon', 20)->nullable();
-            $table->text('alamat')->nullable();
+            $table->string('no_telepon', 20);
+            $table->text('alamat');
             $table->timestamps();
         });
     }

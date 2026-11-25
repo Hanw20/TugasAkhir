@@ -120,7 +120,6 @@
                 <i class="bi bi-shop"></i>
             </div>
             <h1 class="brand-title">Toko "X"</h1>
-            <p class="brand-subtitle">Sistem Informasi & Pengambilan Keputusan</p>
         </div>
 
         <!-- Form Login -->
@@ -156,10 +155,6 @@
                 Masuk
             </button>
         </form>
-
-        <div class="copyright-text">
-            &copy; {{ date('Y') }} Toko Bahan Bangunan "X".
-        </div>
     </div>
 
 </body>

@@ -39,48 +39,62 @@ class PenjualanController extends Controller
             ->orderBy('nama_produk')
             ->get();
 
-        $today = date('Ymd');
-        $countToday = Penjualan::whereDate('created_at', today())->count() + 1;
-        $noNotaOtomatis = 'PJ-' . $today . '-' . str_pad($countToday, 4, '0', STR_PAD_LEFT);
+        $prefix = 'NOT-' . date('Ym') . '-';
+        $latest = Penjualan::where('no_nota', 'like', $prefix . '%')
+            ->orderBy('no_nota', 'desc')
+            ->first();
+        if ($latest) {
+            $lastNum = (int) substr($latest->no_nota, -3);
+            $nextNum = $lastNum + 1;
+        } else {
+            $nextNum = 1;
+        }
+        $noNotaOtomatis = $prefix . str_pad($nextNum, 3, '0', STR_PAD_LEFT);
 
         return view('admin.penjualan.create', compact('customers', 'produks', 'noNotaOtomatis'));
     }
 
     public function store(Request $request)
     {
+        $isCustomerWajib = ($request->status_pembayaran === 'belum_dibayar' || $request->status_pengiriman === 'belum_dikirim');
+
         $request->validate([
-            'no_nota' => 'required|string|unique:penjualan,no_nota',
-            'customer_id' => 'required|integer',
+            'no_nota' => 'required|string|max:50|unique:penjualan,no_nota',
+            'customer_id' => $isCustomerWajib ? 'required|exists:customers,id' : 'nullable|exists:customers,id',
             'tanggal' => 'required|date',
-            'metode_pengiriman' => 'required|in:langsung,nanti',
-            'metode_pembayaran' => 'required|in:lunas,tempo',
+            'status_pengiriman' => 'required|in:seluruh,belum_dikirim',
+            'status_pembayaran' => 'required|in:lunas,belum_dibayar',
+            'diskon' => 'nullable|numeric|min:0',
+            'ongkos_kirim' => 'nullable|numeric|min:0',
             'produk_id' => 'required|array|min:1',
             'qty' => 'required|array|min:1',
             'harga_satuan' => 'required|array|min:1',
+        ], [
+            'customer_id.required' => 'Customer wajib dipilih jika barang dikirim atau transaksi piutang!',
         ]);
 
         DB::beginTransaction();
         try {
-            $total = 0;
+            $subtotalBarang = 0;
             foreach ($request->produk_id as $index => $prodId) {
-                $subtotal = $request->qty[$index] * $request->harga_satuan[$index];
-                $total += $subtotal;
+                $subtotalBarang += ((float) $request->qty[$index]) * ((float) $request->harga_satuan[$index]);
             }
 
-            $statusPengiriman = ($request->metode_pengiriman === 'langsung') ? 'seluruh' : 'belum_dikirim';
-            $statusPembayaran = ($request->metode_pembayaran === 'lunas') ? 'lunas' : 'belum_dibayar';
+            $diskon = (float) ($request->diskon ?? 0);
+            $ongkosKirim = (float) ($request->ongkos_kirim ?? 0);
+            $total = max(0, $subtotalBarang - $diskon + $ongkosKirim);
 
             $penjualan = Penjualan::create([
                 'no_nota' => $request->no_nota,
-                'customer_id' => $request->customer_id,
+                'customer_id' => $request->customer_id ?: null,
                 'user_id' => Auth::id() ?? 1,
                 'tanggal' => $request->tanggal,
                 'total' => $total,
-                'ongkos_kirim' => 0,
-                'diskon' => 0,
-                'status' => ($statusPengiriman === 'seluruh') ? 'selesai' : 'proses',
-                'status_pengiriman' => $statusPengiriman,
-                'status_pembayaran' => $statusPembayaran,
+                'ongkos_kirim' => $ongkosKirim,
+                'diskon' => $diskon,
+                'status' => ($request->status_pengiriman === 'seluruh') ? 'selesai' : 'proses',
+                'status_pengiriman' => $request->status_pengiriman,
+                'status_pembayaran' => $request->status_pembayaran,
             ]);
 
             foreach ($request->produk_id as $index => $prodId) {
@@ -90,7 +104,7 @@ class PenjualanController extends Controller
 
                 $produk = Produk::findOrFail($prodId);
 
-                if ($request->metode_pengiriman === 'langsung') {
+                if ($request->status_pengiriman === 'seluruh') {
                     if ($produk->stok < $qty) {
                         throw new \Exception("Stok fisik '{$produk->nama_produk}' di gudang tidak mencukupi untuk dibawa langsung! (Tersedia: {$produk->stok})");
                     }
@@ -112,14 +126,14 @@ class PenjualanController extends Controller
                     'subtotal' => $subtotal,
                 ]);
 
-                if ($request->metode_pengiriman === 'langsung') {
+                if ($request->status_pengiriman === 'seluruh') {
                     $produk->decrement('stok', $qty);
                 } else {
                     $produk->increment('stok_onorder_customer', $qty);
                 }
             }
 
-            if ($request->metode_pengiriman === 'langsung') {
+            if ($request->status_pengiriman === 'seluruh') {
                 $pengiriman = \App\Models\PengirimanPenjualan::create([
                     'penjualan_id' => $penjualan->id,
                     'tanggal_kirim' => $request->tanggal,

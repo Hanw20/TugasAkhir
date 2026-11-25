@@ -20,7 +20,7 @@
 
             <div class="card">
                 <div class="card-body table-responsive">
-                    <table class="table table-bordered table-striped align-middle">
+                    <table class="table table-bordered table-striped align-middle" id="tabel-customer">
                         <thead>
                             <tr>
                                 <th width="5%" class="text-center">No</th>
@@ -92,15 +92,15 @@
                         </div>
 
                         <div class="mb-3">
-                            <label for="no_telepon" class="form-label fw-semibold">Nomor Telepon / WhatsApp</label>
+                            <label for="no_telepon" class="form-label fw-semibold">Nomor Telepon / WhatsApp <span class="text-danger">*</span></label>
                             <input type="text" name="no_telepon" id="no_telepon" class="form-control"
-                                placeholder="Contoh: 08123456789">
+                                placeholder="Contoh: 08123456789" required>
                         </div>
 
                         <div class="mb-0">
-                            <label for="alamat" class="form-label fw-semibold">Alamat Lengkap</label>
+                            <label for="alamat" class="form-label fw-semibold">Alamat Lengkap <span class="text-danger">*</span></label>
                             <textarea name="alamat" id="alamat" class="form-control" rows="3"
-                                placeholder="Masukkan alamat pengiriman / proyek..."></textarea>
+                                placeholder="Masukkan alamat pengiriman / proyek..." required></textarea>
                         </div>
                     </div>
 
@@ -126,6 +126,15 @@
     <script>
         $.ajaxSetup({
             headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') }
+        });
+
+        $(document).ready(function () {
+            $('#tabel-customer').DataTable({
+                columnDefs: [
+                    { targets: [0, 2, 3, 4], searchable: false },
+                    { targets: [4], orderable: false }
+                ]
+            });
         });
 
         function tambahData() {
@@ -191,8 +200,17 @@
                     alert(response.message);
                     location.reload();
                 },
-                error: function (err) {
-                    alert('Gagal menyimpan! Pastikan form terisi dengan benar.');
+                error: function (xhr) {
+                    let msg = 'Gagal menyimpan data!';
+                    if (xhr.responseJSON) {
+                        if (xhr.responseJSON.errors) {
+                            let errors = Object.values(xhr.responseJSON.errors).flat();
+                            msg = errors.join('\n');
+                        } else if (xhr.responseJSON.message) {
+                            msg = xhr.responseJSON.message;
+                        }
+                    }
+                    alert(msg);
                 }
             });
         });

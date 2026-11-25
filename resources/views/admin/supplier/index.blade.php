@@ -19,7 +19,7 @@
 
             <div class="card">
                 <div class="card-body table-responsive">
-                    <table class="table table-bordered table-striped align-middle">
+                    <table class="table table-bordered table-striped align-middle" id="tabel-supplier">
                         <thead>
                             <tr>
                                 <th width="5%" class="text-center">No</th>
@@ -97,8 +97,8 @@
                         </div>
 
                         <div class="mb-0">
-                            <label for="alamat" class="form-label fw-semibold">Alamat Lengkap</label>
-                            <textarea name="alamat" id="alamat" class="form-control" rows="3" placeholder="Masukkan alamat kantor / gudang supplier..."></textarea>
+                            <label for="alamat" class="form-label fw-semibold">Alamat Lengkap <span class="text-danger">*</span></label>
+                            <textarea name="alamat" id="alamat" class="form-control" rows="3" placeholder="Masukkan alamat kantor / gudang supplier..." required></textarea>
                         </div>
                     </div>
                     <div class="modal-footer border-0 px-4 pb-4">
@@ -120,6 +120,15 @@
     <script>
         $.ajaxSetup({
             headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') }
+        });
+
+        $(document).ready(function () {
+            $('#tabel-supplier').DataTable({
+                columnDefs: [
+                    { targets: [0, 3, 4, 5], searchable: false },
+                    { targets: [5], orderable: false }
+                ]
+            });
         });
 
         function tambahData() {
@@ -186,8 +195,17 @@
                     alert(response.message);
                     location.reload();
                 },
-                error: function (err) {
-                    alert('Gagal menyimpan! Pastikan form terisi dengan benar.');
+                error: function (xhr) {
+                    let msg = 'Gagal menyimpan data!';
+                    if (xhr.responseJSON) {
+                        if (xhr.responseJSON.errors) {
+                            let errors = Object.values(xhr.responseJSON.errors).flat();
+                            msg = errors.join('\n');
+                        } else if (xhr.responseJSON.message) {
+                            msg = xhr.responseJSON.message;
+                        }
+                    }
+                    alert(msg);
                 }
             });
         });

@@ -104,8 +104,7 @@ class RekomendasiSupplierController extends Controller
                             $r = $x > 0 ? ($minVal / $x) : 0;
                         }
 
-                        $rBulat = round($r, 4);
-                        $matriksNormalisasi[$supId][$kode] = $rBulat;
+                        $matriksNormalisasi[$supId][$kode] = (float) $r;
 
                         if ($produkSupplierId && $k->id) {
                             SawNormalisasi::updateOrCreate(
@@ -114,8 +113,8 @@ class RekomendasiSupplierController extends Controller
                                     'kriteria_supplier_id' => $k->id,
                                 ],
                                 [
-                                    'nilai_asli'         => $x,
-                                    'nilai_normalisasi'  => $rBulat,
+                                    'nilai_asli'         => (float) $x,
+                                    'nilai_normalisasi'  => (float) $r,
                                 ]
                             );
                         }
@@ -264,7 +263,7 @@ class RekomendasiSupplierController extends Controller
                 $q->where('kode_kriteria', 'K2');
             })->avg('nilai');
 
-        return $avg ? round($avg, 2) : 3.5;
+        return $avg ? (float) $avg : 3.5;
     }
 
     private function getNilaiRespon($supplierId)
@@ -307,7 +306,7 @@ class RekomendasiSupplierController extends Controller
                 }
             }
             if ($count > 0) {
-                return round($totalHari / $count, 1);
+                return (float) ($totalHari / $count);
             }
         }
 
@@ -328,7 +327,7 @@ class RekomendasiSupplierController extends Controller
                 $diff = $tglPo->diffInDays($tglTempo);
                 $totalHari += $diff;
             }
-            return round($totalHari / $pembelian->count(), 1);
+            return (float) ($totalHari / $pembelian->count());
         }
 
         return 14.0;

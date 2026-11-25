@@ -19,7 +19,7 @@ class KategoriProdukController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate(['nama_kategori' => 'required|string|max:255']);
+        $request->validate(['nama_kategori' => 'required|string|max:100']);
         KategoriProduk::create(['nama_kategori' => $request->nama_kategori]);
         
         return response()->json(['message' => 'Kategori berhasil disimpan!']);
@@ -49,7 +49,7 @@ class KategoriProdukController extends Controller
             ], 422);
         }
 
-        $request->validate(['nama_kategori' => 'required|string|max:255']);
+        $request->validate(['nama_kategori' => 'required|string|max:100']);
         $kategori->update(['nama_kategori' => $request->nama_kategori]);
         
         return response()->json(['message' => 'Kategori berhasil diubah!']);

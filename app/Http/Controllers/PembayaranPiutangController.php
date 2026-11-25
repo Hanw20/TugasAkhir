@@ -28,7 +28,7 @@ class PembayaranPiutangController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'penjualan_id'  => 'required|integer',
+            'penjualan_id'  => 'required|exists:penjualan,id',
             'tanggal_bayar' => 'required|date',
             'jumlah_bayar'  => 'required|numeric|min:1',
             'catatan'       => 'nullable|string|max:255',

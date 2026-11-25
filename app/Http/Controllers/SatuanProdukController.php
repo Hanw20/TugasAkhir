@@ -19,7 +19,7 @@ class SatuanProdukController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate(['nama_satuan' => 'required|string|max:255']);
+        $request->validate(['nama_satuan' => 'required|string|max:50']);
         SatuanProduk::create(['nama_satuan' => $request->nama_satuan]);
         
         return response()->json(['message' => 'Satuan berhasil disimpan!']);
@@ -50,7 +50,7 @@ class SatuanProdukController extends Controller
             ], 422);
         }
 
-        $request->validate(['nama_satuan' => 'required|string|max:255']);
+        $request->validate(['nama_satuan' => 'required|string|max:50']);
         $satuan->update(['nama_satuan' => $request->nama_satuan]);
         
         return response()->json(['message' => 'Satuan berhasil diubah!']);
