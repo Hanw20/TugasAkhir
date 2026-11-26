@@ -13,7 +13,6 @@
             <form action="{{ route('admin.penjualan.kirim.store', $penjualan->id) }}" method="POST">
                 @csrf
 
-                <!-- Card Informasi Nota & Pengiriman -->
                 <div class="card mb-3">
                     <div class="card-header text-white" style="background-color: #264653;">
                         <h5 class="card-title mb-0 fw-bold"><i class="bi bi-truck me-2"></i> Konfirmasi Barang
@@ -44,10 +43,9 @@
                     </div>
                 </div>
 
-                <!-- Card Tabel Checklist Barang Fisik Naik Truk -->
                 <div class="card mb-3">
                     <div class="card-header text-white" style="background-color: #264653;">
-                        <h5 class="card-title mb-0 fw-bold"><i class="bi bi-check2-square me-2"></i> Checklist Kuantitas Fisik Barang Keluar</h5>
+                        <h5 class="card-title mb-0 fw-bold"><i class="bi bi-check2-square me-2"></i> Checklist Jumlah Barang yang Dikirim</h5>
                     </div>
                     <div class="card-body table-responsive p-0">
                         <table class="table table-bordered mb-0 align-middle">

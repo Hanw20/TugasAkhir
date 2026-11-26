@@ -28,10 +28,10 @@
                 <div class="card-body">
                     <div class="row mb-4">
                         <div class="col-md-6">
-                            <h6 class="fw-bold text-dark">Informasi Faktur</h6>
+                            <h6 class="fw-bold text-dark">Informasi Nota Faktur</h6>
                             <table class="table table-sm table-borderless">
                                 <tr>
-                                    <th width="35%">No Faktur</th>
+                                    <th>No Faktur</th>
                                     <td>: <strong>{{ $pembelian->no_faktur }}</strong></td>
                                 </tr>
                                 <tr>
@@ -39,7 +39,7 @@
                                     <td>: {{ $pembelian->tanggal->format('d F Y') }}</td>
                                 </tr>
                                 <tr>
-                                    <th>Petugas Input</th>
+                                    <th>Petugas</th>
                                     <td>: {{ $pembelian->user->name ?? '-' }}</td>
                                 </tr>
                             </table>

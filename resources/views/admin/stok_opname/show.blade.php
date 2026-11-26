@@ -5,7 +5,7 @@
 
 @section('content')
     <div class="container-fluid">
-        <!-- CARD INFORMASI SESI OPNAME -->
+
         <div class="card mb-4">
             <div class="card-header d-flex justify-content-between align-items-center text-white"
                 style="background-color: #264653;">
@@ -22,7 +22,7 @@
                         <h6 class="fw-bold">{{ \Carbon\Carbon::parse($opname->tanggal)->format('d F Y - H:i') }}</h6>
                     </div>
                     <div class="col-md-3">
-                        <p class="mb-1 text-muted">Petugas Pemeriksa:</p>
+                        <p class="mb-1 text-muted">Petugas:</p>
                         <h6 class="fw-bold">{{ $opname->user->name ?? '-' }}</h6>
                     </div>
                     <div class="col-md-3">
@@ -43,10 +43,9 @@
             </div>
         </div>
 
-        <!-- CARD RINCIAN SELISIH & TOMBOL PERSETUJUAN -->
         <div class="card mb-4">
             <div class="card-header text-white" style="background-color: #264653;">
-                <h6 class="card-title fw-bold m-0"><i class="bi bi-box-seam me-2"></i>Rincian Selisih Fisik vs Komputer</h6>
+                <h6 class="card-title fw-bold m-0"><i class="bi bi-box-seam me-2"></i>Rincian Selisih Stok</h6>
             </div>
             <div class="card-body p-0">
                 <div class="table-responsive">
@@ -55,8 +54,8 @@
                             <tr>
                                 <th style="width: 50px;">No</th>
                                 <th class="text-start">Kode & Nama Produk</th>
-                                <th>Stok Sistem Awal</th>
-                                <th>Stok Fisik Nyata</th>
+                                <th>Stok dalam Sistem</th>
+                                <th>Stok Asli di Gudang</th>
                                 <th>Selisih Penyesuaian</th>
                                 <th>Satuan</th>
                             </tr>
@@ -84,7 +83,6 @@
                 </div>
             </div>
 
-            <!-- FOOTER: TOMBOL RECONCILE/PERSETUJUAN -->
             @if(($opname->status ?? 'menunggu_persetujuan') !== 'disesuaikan')
                 <div class="card-footer bg-light d-flex justify-content-between align-items-center">
                     <span class="text-muted">

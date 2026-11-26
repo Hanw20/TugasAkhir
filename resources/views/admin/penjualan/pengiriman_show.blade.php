@@ -33,11 +33,11 @@
                                             WIB</strong></td>
                                 </tr>
                                 <tr>
-                                    <th>Petugas Gudang</th>
+                                    <th>Petugas</th>
                                     <td>: {{ $pengiriman->user->name ?? '-' }}</td>
                                 </tr>
                                 <tr>
-                                    <th>Catatan Supir / Proyek</th>
+                                    <th>Catatan</th>
                                     <td>: <em>{{ $pengiriman->catatan ?? '-' }}</em></td>
                                 </tr>
                             </table>
@@ -69,7 +69,7 @@
                                     <th width="5%" class="text-center">No</th>
                                     <th width="15%">Kode Produk</th>
                                     <th>Nama Produk</th>
-                                    <th width="20%" class="text-center">Kuantitas Dikirim</th>
+                                    <th width="20%" class="text-center">Jumlah Dikirim</th>
                                 </tr>
                             </thead>
                             <tbody>

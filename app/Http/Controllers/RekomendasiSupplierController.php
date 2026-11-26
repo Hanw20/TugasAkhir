@@ -268,26 +268,35 @@ class RekomendasiSupplierController extends Controller
 
     private function getNilaiRespon($supplierId)
     {
-        $latest = RiwayatPenilaianSupplier::where('supplier_id', $supplierId)
+        $avg = RiwayatPenilaianSupplier::where('supplier_id', $supplierId)
             ->whereHas('kriteria', function ($q) {
                 $q->where('kode_kriteria', 'K3');
-            })->latest('tanggal_penilaian')->first();
+            })->avg('nilai');
 
-        return $latest ? (float) $latest->nilai : 3.0;
+        return $avg ? (float) $avg : 3.0;
     }
 
     private function getNilaiGaransi($supplierId)
     {
-        $latest = RiwayatPenilaianSupplier::where('supplier_id', $supplierId)
+        $avg = RiwayatPenilaianSupplier::where('supplier_id', $supplierId)
             ->whereHas('kriteria', function ($q) {
                 $q->where('kode_kriteria', 'K4');
-            })->latest('tanggal_penilaian')->first();
+            })->avg('nilai');
 
-        return $latest ? (float) $latest->nilai : 3.0;
+        return $avg ? (float) $avg : 3.0;
     }
 
     private function getWaktuPengiriman($supplierId)
     {
+        $avg = RiwayatPenilaianSupplier::where('supplier_id', $supplierId)
+            ->whereHas('kriteria', function ($q) {
+                $q->where('kode_kriteria', 'K5');
+            })->avg('nilai');
+
+        if ($avg) {
+            return (float) $avg;
+        }
+
         $pembelian = \App\Models\Pembelian::where('supplier_id', $supplierId)
             ->whereHas('penerimaanPembelian')
             ->with('penerimaanPembelian')
@@ -315,6 +324,15 @@ class RekomendasiSupplierController extends Controller
 
     private function getTempoPembayaran($supplierId)
     {
+        $avg = RiwayatPenilaianSupplier::where('supplier_id', $supplierId)
+            ->whereHas('kriteria', function ($q) {
+                $q->where('kode_kriteria', 'K6');
+            })->avg('nilai');
+
+        if ($avg) {
+            return (float) $avg;
+        }
+
         $pembelian = \App\Models\Pembelian::where('supplier_id', $supplierId)
             ->whereNotNull('tanggal_jatuh_tempo')
             ->get();
@@ -398,6 +416,132 @@ class RekomendasiSupplierController extends Controller
                     }
                 }
             }
+
+            $bobotRata = 1.0 / count($kriteriaList);
+            foreach ($matriksKeputusan as $supId => $nilaiKriteria) {
+                $skorHybrid = 0.0;
+                $skorSawMurni = 0.0;
+                $perkalianDetail = [];
+
+                foreach ($kriteriaList as $k) {
+                    $kode = $k->kode_kriteria;
+                    $r = $matriksNormalisasi[$supId][$kode];
+                    $wAhp = $bobotAHP[$kode] ?? $bobotRata;
+
+                    $kali = $r * $wAhp;
+                    $skorHybrid += $kali;
+                    $skorSawMurni += ($r * $bobotRata);
+                    $perkalianDetail[$kode] = [
+                        'r' => $r,
+                        'w' => $wAhp,
+                        'kali' => $kali
+                    ];
+                }
+
+                $dataItem = [
+                    'supplier_id'       => $supId,
+                    'supplier'          => $alternatif[$supId],
+                    'nilai_keputusan'   => $nilaiKriteria,
+                    'nilai_normalisasi' => $matriksNormalisasi[$supId],
+                    'perkalian_detail'  => $perkalianDetail,
+                ];
+
+                $ranking[]         = array_merge($dataItem, ['skor_preferensi' => round($skorHybrid, 4)]);
+                $rankingSawMurni[] = array_merge($dataItem, ['skor_preferensi' => round($skorSawMurni, 4)]);
+            }
+
+            usort($ranking, fn($a, $b) => $b['skor_preferensi'] <=> $a['skor_preferensi']);
+            usort($rankingSawMurni, fn($a, $b) => $b['skor_preferensi'] <=> $a['skor_preferensi']);
+
+            $ahpLocalScores = [];
+            foreach ($kriteriaList as $k) {
+                $kode = $k->kode_kriteria;
+                $colSum = 0.0;
+                foreach ($supplierList as $sup) {
+                    $rawVal = (float) $matriksKeputusan[$sup->id][$kode];
+                    $val = ($k->jenis_kriteria === 'cost') ? (1.0 / ($rawVal > 0 ? $rawVal : 1.0)) : $rawVal;
+                    $colSum += $val;
+                }
+                foreach ($supplierList as $sup) {
+                    $rawVal = (float) $matriksKeputusan[$sup->id][$kode];
+                    $val = ($k->jenis_kriteria === 'cost') ? (1.0 / ($rawVal > 0 ? $rawVal : 1.0)) : $rawVal;
+                    $ahpLocalScores[$sup->id][$kode] = $colSum > 0 ? ($val / $colSum) : 0;
+                }
+            }
+
+            foreach ($supplierList as $sup) {
+                $skorAhp = 0.0;
+                foreach ($kriteriaList as $k) {
+                    $kode = $k->kode_kriteria;
+                    $wAhp = $bobotAHP[$kode] ?? (1.0 / count($kriteriaList));
+                    $skorAhp += ($ahpLocalScores[$sup->id][$kode] * $wAhp);
+                }
+                $rankingAhpMurni[] = [
+                    'supplier'        => $sup,
+                    'skor_preferensi' => round($skorAhp, 4),
+                ];
+            }
+            usort($rankingAhpMurni, fn($a, $b) => $b['skor_preferensi'] <=> $a['skor_preferensi']);
+        }
+
+        $ahpDetail = null;
+        if ($sesiDipilih) {
+            $n = count($kriteriaList);
+            $kriteriaIds = $kriteriaList->pluck('id')->toArray();
+            $matrixValues = [];
+            foreach ($sesiDipilih->perbandingan as $p) {
+                $matrixValues[$p->kriteria_a_id][$p->kriteria_b_id] = (float) $p->nilai_perbandingan;
+            }
+
+            $ahpMatrix = [];
+            for ($i = 0; $i < $n; $i++) {
+                $idA = $kriteriaIds[$i];
+                for ($j = 0; $j < $n; $j++) {
+                    $idB = $kriteriaIds[$j];
+                    $ahpMatrix[$i][$j] = $matrixValues[$idA][$idB] ?? ($i == $j ? 1.0 : 1.0);
+                }
+            }
+
+            $ahpColSums = array_fill(0, $n, 0.0);
+            for ($j = 0; $j < $n; $j++) {
+                for ($i = 0; $i < $n; $i++) {
+                    $ahpColSums[$j] += $ahpMatrix[$i][$j];
+                }
+            }
+
+            $ahpNormalized = [];
+            $ahpEigenVector = array_fill(0, $n, 0.0);
+            for ($i = 0; $i < $n; $i++) {
+                $ahpNormalized[$i] = [];
+                for ($j = 0; $j < $n; $j++) {
+                    $norm = ($ahpColSums[$j] > 0) ? ($ahpMatrix[$i][$j] / $ahpColSums[$j]) : 0;
+                    $ahpNormalized[$i][$j] = $norm;
+                    $ahpEigenVector[$i] += $norm;
+                }
+                $ahpEigenVector[$i] /= $n;
+            }
+
+            $ahpLambdaMax = 0.0;
+            for ($i = 0; $i < $n; $i++) {
+                $ahpLambdaMax += $ahpColSums[$i] * $ahpEigenVector[$i];
+            }
+
+            $ahpCI = ($ahpLambdaMax - $n) / ($n - 1);
+            $riTable = [1 => 0.0, 2 => 0.0, 3 => 0.58, 4 => 0.90, 5 => 1.12, 6 => 1.24, 7 => 1.32, 8 => 1.41, 9 => 1.45, 10 => 1.49];
+            $ahpRI = $riTable[$n] ?? 1.24;
+            $ahpCR = $ahpRI > 0 ? ($ahpCI / $ahpRI) : 0.0;
+
+            $ahpDetail = [
+                'matrix' => $ahpMatrix,
+                'colSums' => $ahpColSums,
+                'normalized' => $ahpNormalized,
+                'eigenVector' => $ahpEigenVector,
+                'lambdaMax' => $ahpLambdaMax,
+                'ci' => $ahpCI,
+                'ri' => $ahpRI,
+                'cr' => $ahpCR,
+                'isConsistent' => ($ahpCR <= 0.1)
+            ];
         }
 
         return view('admin.rekomendasi_supplier.show', compact(
@@ -409,7 +553,11 @@ class RekomendasiSupplierController extends Controller
             'matriksKeputusan',
             'matriksNormalisasi',
             'alternatif',
-            'minMax'
+            'minMax',
+            'ahpDetail',
+            'ranking',
+            'rankingSawMurni',
+            'rankingAhpMurni'
         ));
     }
 }

@@ -1,7 +1,7 @@
 ﻿@extends('layouts.adminlte')
 
 @section('title', 'Riwayat Stok Opname')
-@section('page_title', 'Stok Opname (Penyesuaian Fisik Gudang)')
+@section('page_title', 'Stok Opname (Penyesuaian Stok Barang)')
 
 @section('content')
     <div class="container-fluid">
@@ -22,7 +22,7 @@
                             <tr>
                                 <th style="width: 50px;" class="text-center">No</th>
                                 <th>Tanggal Opname</th>
-                                <th>Petugas / User</th>
+                                <th>Petugas</th>
                                 <th>Jumlah Item Diperiksa</th>
                                 <th>Status</th>
                                 <th>Catatan</th>

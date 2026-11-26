@@ -40,6 +40,12 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::get('penjualan-pengiriman', [App\Http\Controllers\PengirimanPenjualanController::class, 'index'])->name('penjualan.pengiriman.index');
     Route::get('penjualan-pengiriman/{id}', [App\Http\Controllers\PengirimanPenjualanController::class, 'show'])->name('penjualan.pengiriman.show');
 
+    Route::prefix('laporan')->name('laporan.')->group(function () {
+        Route::get('pembelian', [App\Http\Controllers\PembelianController::class, 'laporan'])->name('pembelian');
+        Route::get('penjualan', [App\Http\Controllers\PenjualanController::class, 'laporan'])->name('penjualan');
+        Route::get('penilaian', [App\Http\Controllers\SupplierController::class, 'laporanPenilaian'])->name('penilaian');
+    });
+
     Route::get('piutang-customer', [App\Http\Controllers\PembayaranPiutangController::class, 'index'])->name('piutang-customer.index');
     Route::post('piutang-customer', [App\Http\Controllers\PembayaranPiutangController::class, 'store'])->name('piutang-customer.store');
     Route::resource('stok-opname', App\Http\Controllers\StokOpnameController::class);

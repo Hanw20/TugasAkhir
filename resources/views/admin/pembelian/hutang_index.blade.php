@@ -1,30 +1,27 @@
 ﻿@extends('layouts.adminlte')
 
 @section('title', 'Pembayaran Hutang Supplier')
-@section('page_title', 'Manajemen Hutang Usaha & Tempo Supplier')
+@section('page_title', 'Pembayaran Hutang Usaha (Tempo Supplier)')
 
 @section('content')
     <div class="row">
-        <!-- Tabel Tagihan Hutang yang Belum Lunas -->
         <div class="col-12 mb-4">
             <div class="card">
                 <div class="card-header text-white" style="background-color: #264653;">
-                    <h5 class="card-title mb-0 fw-bold"><i class="bi bi-exclamation-octagon me-2"></i> Daftar Tagihan Faktur
-                        Belum
-                        Lunas (Tempo)</h5>
+                    <h5 class="card-title mb-0 fw-bold"><i class="bi bi-exclamation-octagon me-2"></i> Daftar Tagihan Faktur Belum Lunas (Tempo)</h5>
                 </div>
                 <div class="card-body table-responsive">
                     <table class="table table-bordered table-striped align-middle">
                         <thead class="table-light">
                             <tr>
-                                <th width="5%">No</th>
+                                <th>No</th>
                                 <th>No Faktur</th>
                                 <th>Supplier</th>
                                 <th>Jatuh Tempo</th>
                                 <th>Total Tagihan</th>
                                 <th>Sudah Dibayar</th>
                                 <th>Sisa Hutang</th>
-                                <th width="12%" class="text-center">Aksi</th>
+                                <th>Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -71,19 +68,17 @@
             </div>
         </div>
 
-        <!-- Tabel Riwayat Pembayaran Hutang -->
         <div class="col-12">
             <div class="card">
                 <div class="card-header text-white" style="background-color: #264653;">
-                    <h5 class="card-title mb-0 fw-bold"><i class="bi bi-clock-history me-2"></i> Riwayat Cicilan /
-                        Pembayaran Hutang
+                    <h5 class="card-title mb-0 fw-bold"><i class="bi bi-clock-history me-2"></i> Riwayat Pembayaran Hutang
                     </h5>
                 </div>
                 <div class="card-body table-responsive">
                     <table class="table table-bordered table-striped align-middle">
                         <thead class="table-light">
                             <tr>
-                                <th width="5%">No</th>
+                                <th>No</th>
                                 <th>No Faktur</th>
                                 <th>Supplier</th>
                                 <th>Tanggal Bayar</th>
@@ -100,7 +95,7 @@
                                     <td><strong>{{ $rb->pembelian->supplier->nama_supplier ?? '-' }}</strong></td>
                                     <td>{{ $rb->tanggal_bayar ? $rb->tanggal_bayar->format('d/m/Y H:i') : '-' }}</td>
                                     <td class="text-success fw-bold">Rp {{ number_format($rb->jumlah_bayar, 0, ',', '.') }}</td>
-                                    <td>{{ $rb->user->name ?? '-' }}</td>
+                                    <td>{{ $rb->user->nama ?? $rb->user->name ?? '-' }}</td>
                                     <td>{{ $rb->catatan ?? '-' }}</td>
                                 </tr>
                             @empty
@@ -117,7 +112,6 @@
         </div>
     </div>
 
-    <!-- Modal Bayar Hutang -->
     <div class="modal fade" id="modalBayarHutang" tabindex="-1">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -149,7 +143,7 @@
                                 required min="1">
                         </div>
                         <div class="mb-3">
-                            <label class="form-label fw-bold">Catatan / Bukti Transfer</label>
+                            <label class="form-label fw-bold">Catatan</label>
                             <input type="text" name="catatan" class="form-control"
                                 placeholder="Contoh: Transfer via BCA / Tunai kas toko">
                         </div>

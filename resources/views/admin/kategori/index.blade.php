@@ -16,9 +16,9 @@
                     <table class="table table-bordered table-striped align-middle" id="tabel-kategori">
                         <thead>
                             <tr>
-                                <th width="5%" class="text-center">No</th>
+                                <th>No</th>
                                 <th>Nama Kategori</th>
-                                <th width="180px">Aksi</th>
+                                <th>Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -54,7 +54,6 @@
         </div>
     </div>
 
-    <!-- ================= BOOTSTRAP 5 MODAL KATEGORI ================= -->
     <div class="modal fade" id="modal-form" tabindex="-1" aria-labelledby="modal-title" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content border-0">
@@ -97,7 +96,6 @@
     </div>
 @endsection
 
-<!-- ================= JAVASCRIPT AJAX ================= -->
 @push('scripts')
     <script>
         $.ajaxSetup({
@@ -106,7 +104,7 @@
 
         $(document).ready(function () {
             $('#tabel-kategori').DataTable({
-                columnDefs: [{ targets: [2], orderable: false }]
+                columnDefs: [{ targets: [2], orderable: false, searchable: false }]
             });
         });
 

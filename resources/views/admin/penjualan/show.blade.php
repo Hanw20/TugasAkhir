@@ -40,7 +40,7 @@
                                     <td>: {{ $penjualan->tanggal ? $penjualan->tanggal->format('d F Y - H:i') : '-' }}</td>
                                 </tr>
                                 <tr>
-                                    <th>Kasir / Petugas</th>
+                                    <th>Petugas</th>
                                     <td>: {{ $penjualan->user->name ?? '-' }}</td>
                                 </tr>
                             </table>

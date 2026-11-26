@@ -8,8 +8,7 @@
         <div class="card">
             <div class="card-header py-2 text-white d-flex justify-content-between align-items-center"
                 style="background-color: #264653; border-top-left-radius: 10px; border-top-right-radius: 10px;">
-                <h6 class="card-title fw-bold m-0 text-white"><i class="bi bi-arrow-repeat me-2"></i>Daftar Riwayat Konversi
-                    Kemasan</h6>
+                <h6 class="card-title fw-bold m-0 text-white"><i class="bi bi-arrow-repeat me-2"></i>Daftar Riwayat Konversi</h6>
                 <a href="{{ route('admin.konversi-produk.create') }}" class="btn btn-sm text-white"
                     style="background-color: #2A9D8F;">
                     <i class="bi bi-plus-circle me-1"></i> Konversi Produk Baru

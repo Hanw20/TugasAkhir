@@ -61,12 +61,22 @@ class ProdukController extends Controller
     public function update(Request $request, string $id)
     {
         $request->validate([
+            'nama_produk' => 'required|string|max:100',
+            'kategori_produk_id' => 'required|exists:kategori_produk,id',
+            'merek_id' => 'required|exists:merek_produk,id',
+            'satuan_dasar_id' => 'required|exists:satuan_produk,id',
+            'metode_jual' => 'required|in:satuan,nominal_timbang',
             'harga_jual' => 'required|numeric|min:0',
             'stok_minimum' => 'required|numeric|min:0'
         ]);
 
         $produk = Produk::findOrFail($id);
         $produk->update([
+            'nama_produk' => $request->nama_produk,
+            'kategori_produk_id' => $request->kategori_produk_id,
+            'merek_id' => $request->merek_id,
+            'satuan_dasar_id' => $request->satuan_dasar_id,
+            'metode_jual' => $request->metode_jual,
             'harga_jual' => $request->harga_jual,
             'stok_minimum' => $request->stok_minimum,
         ]);

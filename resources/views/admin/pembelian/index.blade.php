@@ -1,7 +1,7 @@
 ﻿@extends('layouts.adminlte')
 
 @section('title', 'Riwayat Pembelian')
-@section('page_title', 'Transaksi Pembelian (Barang Masuk)')
+@section('page_title', 'Transaksi Pembelian')
 
 @section('content')
     <div class="row">
@@ -19,7 +19,6 @@
                     <i class="bi bi-plus-circle me-1"></i> Transaksi Pembelian Baru
                 </a>
 
-                <!-- Form Filter Periode Bulan -->
                 <form method="GET" action="{{ route('admin.pembelian.index') }}" class="d-flex align-items-center gap-2">
                     <label class="mb-0 fw-semibold text-muted me-1">Filter:</label>
                     <select name="bulan" class="form-select form-select-sm" style="width: 140px;">
@@ -43,8 +42,7 @@
             <div class="card">
                 <div class="card-header py-2 text-white d-flex justify-content-between align-items-center"
                     style="background-color: #264653; border-top-left-radius: 10px; border-top-right-radius: 10px;">
-                    <h6 class="card-title fw-bold m-0 text-white"><i class="bi bi-receipt me-2"></i> Riwayat Faktur
-                        Pembelian</h6>
+                    <h6 class="card-title fw-bold m-0 text-white"><i class="bi bi-receipt me-2"></i> Riwayat Faktur Pembelian</h6>
                     <span class="badge bg-light text-dark">Periode:
                         {{ DateTime::createFromFormat('!m', (int) $bulan)->format('F') }} {{ $tahun }}</span>
                 </div>
@@ -52,14 +50,14 @@
                     <table class="table table-bordered table-striped align-middle">
                         <thead class="table-light">
                             <tr>
-                                <th width="5%" class="text-center">No</th>
+                                <th>No</th>
                                 <th>No Faktur</th>
                                 <th>Tanggal</th>
                                 <th>Supplier</th>
-                                <th>Petugas / User</th>
+                                <th>Petugas</th>
                                 <th class="text-end">Total Pembelian</th>
                                 <th class="text-center">Status</th>
-                                <th width="12%" class="text-center">Aksi</th>
+                                <th>Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -69,13 +67,12 @@
                                     <td><span class="badge bg-secondary">{{ $row->no_faktur }}</span></td>
                                     <td>{{ $row->tanggal ? $row->tanggal->format('d/m/Y') : '-' }}</td>
                                     <td><strong>{{ $row->supplier->nama_supplier ?? '-' }}</strong></td>
-                                    <td>{{ $row->user->name ?? '-' }}</td>
+                                    <td>{{ $row->user->nama ?? $row->user->name ?? '-' }}</td>
                                     <td class="text-end fw-bold">Rp {{ number_format($row->total, 0, ',', '.') }}</td>
                                     <td class="text-center">
                                         @if($row->status === 'batal')
                                             <span class="badge bg-danger"><i class="bi bi-x-circle me-1"></i> Dibatalkan</span>
                                         @else
-                                            <!-- Status Penerimaan Barang Fisik -->
                                             @if($row->status_penerimaan === 'terima_penuh')
                                                 <span class="badge bg-success"><i class="bi bi-box-seam me-1"></i> Diterima Penuh</span>
                                             @elseif($row->status_penerimaan === 'sebagian')
@@ -87,7 +84,6 @@
 
                                             <br>
 
-                                            <!-- Status Pembayaran Hutang -->
                                             @if($row->status_pembayaran === 'lunas')
                                                 <span
                                                     class="badge bg-success-subtle text-success border border-success mt-1">Lunas</span>
@@ -116,7 +112,6 @@
                                 </tr>
                             @endforelse
                         </tbody>
-                        <!-- Baris Total Akumulasi -->
                         <tfoot class="table-light fw-bold">
                             <tr>
                                 <td colspan="5" class="text-end text-uppercase">Total Pembelian Periode Ini:</td>

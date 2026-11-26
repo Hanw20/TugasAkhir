@@ -11,7 +11,6 @@
                 Tambah Rumus Konversi
             </button>
 
-            <!-- Kotak Bantuan / Petunjuk -->
             <div class="alert border-0" style="background-color: #EBF5F3; color: #264653;">
                 <i class="bi bi-info-circle me-1" style="color: #2A9D8F;"></i> <strong>Cara Membaca Rumus:</strong> 1
                 [Satuan Asal] = [Nilai Konversi]
@@ -41,7 +40,7 @@
                                     <td>{{ $row->satuanTujuan->nama_satuan ?? '-' }}</td>
                                     <td>{{ (float) $row->nilai_konversi }}</td>
                                     <td>
-                                        <!-- Menampilkan cara baca rumus secara visual -->
+
                                         <span class="badge"
                                             style="background-color: #F1F5F9; color: #475569; font-size: 0.85rem;">
                                             1 {{ $row->satuanAsal->nama_satuan ?? '' }} = {{ (float) $row->nilai_konversi }}
@@ -50,16 +49,13 @@
                                     </td>
                                     <td>
                                         <div class="d-flex gap-1">
+                                            <button onclick="editData({{ $row->id }})" class="btn btn-sm"
+                                                style="background-color: #FEF3C7; color: #B45309; font-weight: 500; font-size: 0.8rem; padding: 4px 10px;">Edit</button>
                                             @if(($row->konversi_count ?? 0) > 0)
-                                                <button type="button" class="btn btn-sm" disabled
-                                                    style="background-color: #E2E8F0; color: #94A3B8; font-weight: 500; font-size: 0.8rem; padding: 4px 10px; cursor: not-allowed;"
-                                                    title="Terkunci: sudah digunakan oleh {{ $row->konversi_count }} transaksi konversi produk aktif">Edit</button>
                                                 <button type="button" class="btn btn-sm" disabled
                                                     style="background-color: #E2E8F0; color: #94A3B8; font-weight: 500; font-size: 0.8rem; padding: 4px 10px; cursor: not-allowed;"
                                                     title="Terkunci: sudah digunakan oleh {{ $row->konversi_count }} transaksi konversi produk aktif">Hapus</button>
                                             @else
-                                                <button onclick="editData({{ $row->id }})" class="btn btn-sm"
-                                                    style="background-color: #FEF3C7; color: #B45309; font-weight: 500; font-size: 0.8rem; padding: 4px 10px;">Edit</button>
                                                 <button onclick="deleteData({{ $row->id }})" class="btn btn-sm"
                                                     style="background-color: #FEE2E2; color: #B91C1C; font-weight: 500; font-size: 0.8rem; padding: 4px 10px;">Hapus</button>
                                             @endif
@@ -74,7 +70,6 @@
         </div>
     </div>
 
-    <!-- ================= BOOTSTRAP 5 MODAL MASTER KONVERSI ================= -->
     <div class="modal fade" id="modal-form" tabindex="-1" aria-labelledby="modal-title" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content border-0">
@@ -93,6 +88,9 @@
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body px-4 pt-1 pb-3">
+                        <div id="konversi-edit-info" class="alert alert-info py-2 px-3 small mb-3 d-none">
+                            <i class="bi bi-info-circle me-1"></i> Rumus ini telah digunakan dalam transaksi. Hanya nilai konversi yang dapat disesuaikan.
+                        </div>
                         <div class="mb-3">
                             <label for="satuan_asal_id" class="form-label fw-semibold">1 Satuan Asal (Kemasan Besar) <span
                                     class="text-danger">*</span></label>
@@ -139,7 +137,6 @@
     </div>
 @endsection
 
-<!-- ================= JAVASCRIPT AJAX ================= -->
 @push('scripts')
     <script>
         $.ajaxSetup({
@@ -149,8 +146,7 @@
         $(document).ready(function () {
             $('#tabel-konversi').DataTable({
                 columnDefs: [
-                    { targets: [0, 3, 4, 5], searchable: false },
-                    { targets: [5], orderable: false }
+                    { targets: [5], orderable: false, searchable: false }
                 ]
             });
         });
@@ -159,6 +155,9 @@
             $('#form-konversi')[0].reset();
             $('#method').val('POST');
             $('#modal-title').text('Tambah Rumus Konversi');
+            $('#konversi-edit-info').addClass('d-none');
+            $('#satuan_asal_id, #satuan_tujuan_id').prop('disabled', false).removeClass('bg-disabled');
+            $('#nilai_konversi').prop('readonly', false).removeClass('bg-disabled');
             $('#modal-form').modal('show');
         }
 
@@ -172,6 +171,15 @@
                 $('#satuan_tujuan_id').val(data.satuan_tujuan_id);
                 $('#nilai_konversi').val(parseFloat(data.nilai_konversi));
 
+                if (data.is_used) {
+                    $('#konversi-edit-info').removeClass('d-none');
+                    $('#satuan_asal_id, #satuan_tujuan_id').prop('disabled', true).addClass('bg-disabled');
+                } else {
+                    $('#konversi-edit-info').addClass('d-none');
+                    $('#satuan_asal_id, #satuan_tujuan_id').prop('disabled', false).removeClass('bg-disabled');
+                }
+
+                $('#nilai_konversi').prop('readonly', false).removeClass('bg-disabled');
                 $('#modal-form').modal('show');
             });
         }

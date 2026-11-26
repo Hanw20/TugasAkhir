@@ -23,7 +23,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <!-- Menggunakan forelse agar jika kosong ada pesan khusus -->
+
                             @forelse($kategori->produk as $index => $prod)
                                 <tr>
                                     <td>{{ $index + 1 }}</td>

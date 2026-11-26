@@ -5,7 +5,7 @@
 
 @section('content')
     <div class="row">
-        <!-- 1. CARD INFORMASI LENGKAP PRODUK (FULL WIDTH DI ATAS) -->
+
         <div class="col-12 mb-4">
             <div class="card">
                 <div class="card-header text-white" style="background-color: #264653;">
@@ -118,7 +118,6 @@
             </div>
         </div>
 
-        <!-- 2. CARD TRACKING RIWAYAT PEMBELIAN (FULL WIDTH DI BAWAH) -->
         <div class="col-12">
             <div class="card">
                 <div class="card-header text-white" style="background-color: #264653;">

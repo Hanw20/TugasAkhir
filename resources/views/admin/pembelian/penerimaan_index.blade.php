@@ -1,27 +1,26 @@
 ﻿@extends('layouts.adminlte')
 
 @section('title', 'Riwayat Penerimaan Barang')
-@section('page_title', 'Riwayat Penerimaan Fisik Barang (Gudang)')
+@section('page_title', 'Riwayat Penerimaan Barang')
 
 @section('content')
     <div class="row">
         <div class="col-12">
             <div class="card">
                 <div class="card-header text-white" style="background-color: #264653;">
-                    <h5 class="card-title mb-0 fw-bold"><i class="bi bi-box-seam me-2"></i> Daftar Log Kedatangan Barang
-                        Gudang</h5>
+                    <h5 class="card-title mb-0 fw-bold"><i class="bi bi-box-seam me-2"></i> Daftar Riwayat Kedatangan Barang</h5>
                 </div>
                 <div class="card-body table-responsive">
                     <table class="table table-bordered table-striped align-middle">
                         <thead class="table-light">
                             <tr>
-                                <th width="5%">No</th>
+                                <th>No</th>
                                 <th>No Faktur Pembelian</th>
                                 <th>Tanggal & Waktu Masuk Fisik</th>
                                 <th>Supplier</th>
-                                <th>Petugas Gudang</th>
-                                <th>Catatan Supir / Fisik</th>
-                                <th width="14%" class="text-center">Aksi</th>
+                                <th>Petugas</th>
+                                <th>Catatan </th>
+                                <th>Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -36,7 +35,7 @@
                                     <td>{{ $row->user->name ?? '-' }}</td>
                                     <td>{{ $row->catatan ?? '-' }}</td>
                                     <td class="text-center">
-                                        <!-- Mengarah ke Bukti Penerimaan Fisik, BUKAN faktur -->
+
                                         <a href="{{ route('admin.pembelian.penerimaan.show', $row->id) }}"
                                             class="btn btn-sm text-decoration-none"
                                             style="background-color: #E0F2FE; color: #0369A1; font-weight: 500;">

@@ -22,12 +22,12 @@
                     <table class="table table-bordered table-striped align-middle" id="tabel-supplier">
                         <thead>
                             <tr>
-                                <th width="5%" class="text-center">No</th>
+                                <th>No</th>
                                 <th>Kode</th>
                                 <th>Nama Supplier</th>
                                 <th>No. Telepon</th>
                                 <th>Alamat</th>
-                                <th width="180px">Aksi</th>
+                                <th>Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -58,7 +58,6 @@
         </div>
     </div>
 
-    <!-- ================= BOOTSTRAP 5 MODAL SUPPLIER ================= -->
     <div class="modal fade" id="modal-form" tabindex="-1" aria-labelledby="modal-title" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content border-0">
@@ -78,7 +77,7 @@
                     </div>
                     <div class="modal-body px-4 pt-1 pb-3">
                         <div id="edit-info-alert" class="alert alert-info py-2 px-3 small mb-3 d-none">
-                            <i class="bi bi-info-circle me-1"></i> Pada mode edit, identitas <strong>Kode Supplier</strong> dan <strong>Nama Supplier</strong> dikunci untuk menjaga integritas transaksi. Hanya <strong>Nomor Telepon</strong> dan <strong>Alamat</strong> yang dapat diubah.
+                            <i class="bi bi-info-circle me-1"></i> Pada mode edit, identitas <strong>Kode Supplier</strong> dikunci untuk menjaga integritas transaksi. <strong>Nama Supplier</strong>, <strong>Nomor Telepon</strong>, dan <strong>Alamat</strong> dapat diubah.
                         </div>
 
                         <div class="mb-3">
@@ -115,7 +114,6 @@
     </div>
 @endsection
 
-<!-- ================= JAVASCRIPT AJAX ================= -->
 @push('scripts')
     <script>
         $.ajaxSetup({
@@ -125,8 +123,7 @@
         $(document).ready(function () {
             $('#tabel-supplier').DataTable({
                 columnDefs: [
-                    { targets: [0, 3, 4, 5], searchable: false },
-                    { targets: [5], orderable: false }
+                    { targets: [5], orderable: false, searchable: false }
                 ]
             });
         });
@@ -137,7 +134,7 @@
             $('#supplier_id').val('');
             $('#modal-title').text('Tambah Supplier');
             $('#edit-info-alert').addClass('d-none');
-            
+
             $('#kode_supplier, #nama_supplier, #nomor_telepon, #alamat').prop('readonly', false).removeClass('bg-disabled');
             $('#modal-form').modal('show');
         }
@@ -149,12 +146,8 @@
                 $('#supplier_id').val(id);
 
                 $('#edit-info-alert').removeClass('d-none');
-                
-                // Kunci kode dan nama dengan standar abu-abu disabled
                 $('#kode_supplier').val(data.kode_supplier).prop('readonly', true).addClass('bg-disabled');
-                $('#nama_supplier').val(data.nama_supplier).prop('readonly', true).addClass('bg-disabled');
-
-                // Telepon dan Alamat tetap putih normal
+                $('#nama_supplier').val(data.nama_supplier).prop('readonly', false).removeClass('bg-disabled');
                 $('#nomor_telepon').val(data.nomor_telepon).prop('readonly', false).removeClass('bg-disabled');
                 $('#alamat').val(data.alamat).prop('readonly', false).removeClass('bg-disabled');
 

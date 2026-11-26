@@ -10,9 +10,14 @@ class User extends Authenticatable
 {
     use HasApiTokens, Notifiable;
 
-    protected $fillable = ['name', 'email', 'password', 'role'];
+    protected $fillable = ['nama', 'name', 'email', 'password', 'role'];
 
     protected $hidden = ['password'];
+
+    public function getNameAttribute()
+    {
+        return $this->attributes['nama'] ?? $this->attributes['name'] ?? '';
+    }
 
     
 

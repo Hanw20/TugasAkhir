@@ -7,12 +7,11 @@
 
     <title>Login — Toko Bahan Bangunan "X"</title>
 
-    <!-- Bootstrap 5 -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
     <style>
-        /* Menghilangkan ikon mata default dari browser Microsoft Edge & Chrome */
+
         input::-ms-reveal,
         input::-ms-clear {
             display: none !important;
@@ -114,7 +113,7 @@
 <body>
 
     <div class="login-box">
-        <!-- Header -->
+
         <div class="text-center">
             <div class="brand-icon">
                 <i class="bi bi-shop"></i>
@@ -122,11 +121,9 @@
             <h1 class="brand-title">Toko "X"</h1>
         </div>
 
-        <!-- Form Login -->
         <form method="POST" action="{{ route('login') }}">
             @csrf
 
-            <!-- Email -->
             <div class="mb-3">
                 <label for="email" class="form-label">Alamat Email</label>
                 <input id="email" type="email" class="form-control @error('email') is-invalid @enderror" 
@@ -138,7 +135,6 @@
                 @enderror
             </div>
 
-            <!-- Password (Standar Sederhana & Bersih) -->
             <div class="mb-3">
                 <label for="password" class="form-label">Kata Sandi</label>
                 <input id="password" type="password" class="form-control @error('password') is-invalid @enderror" 
@@ -150,7 +146,6 @@
                 @enderror
             </div>
 
-            <!-- Tombol Masuk -->
             <button type="submit" class="btn-submit">
                 Masuk
             </button>

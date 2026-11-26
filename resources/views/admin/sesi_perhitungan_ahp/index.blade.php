@@ -6,14 +6,12 @@
 @section('content')
     <div class="container-fluid">
 
-        <!-- CARD 1: DAFTAR RIWAYAT SESI AHP YANG TERSIMPAN -->
         <div class="card mb-4">
             <div class="card-header d-flex justify-content-between align-items-center text-white"
                 style="background-color: #264653;">
-                <h5 class="card-title fw-bold m-0"><i class="bi bi-folder2-open me-2"></i>Daftar Sesi Pembobotan AHP
-                    Tersimpan</h5>
+                <h5 class="card-title fw-bold m-0"><i class="bi bi-folder2-open me-2"></i>Daftar Sesi Pembobotan AHP</h5>
                 <span class="badge" style="background-color: #2A9D8F; color: #ffffff;">{{ $daftarSesi->count() }} Sesi
-                    Tersimpan</span>
+                    AHP</span>
             </div>
             <div class="card-body p-0">
                 <div class="table-responsive">
@@ -82,7 +80,7 @@
         </div>
 
         @if(isset($hasilAhp) && $hasilAhp)
-            <!-- HASIL PERHITUNGAN BOBOT SESI TERPILIH -->
+
             <div class="card card-outline {{ $hasilAhp['isConsistent'] ? 'card-success' : 'card-danger' }} mb-4">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h5 class="card-title fw-bold m-0">
@@ -129,7 +127,6 @@
                         </div>
                     </div>
 
-                    <!-- MATRIKS PERBANDINGAN BERPASANGAN SESI INI -->
                     <h6 class="fw-bold mt-4 mb-2"><i class="bi bi-grid-3x3 me-1 text-primary"></i> Matriks Perbandingan Berpasangan (A) Sesi Ini</h6>
                     <div class="table-responsive mb-4">
                         <table class="table table-bordered table-sm text-center align-middle mb-0">
@@ -197,7 +194,6 @@
             </div>
         @endif
 
-        <!-- FORM MATRIKS PERBANDINGAN BERPASANGAN -->
         <div class="card mb-4">
             <div class="card-header text-white" style="background-color: #264653;">
                 <h5 class="card-title fw-bold m-0">
@@ -221,7 +217,6 @@
                             nanti.</small>
                     </div>
 
-                    <!-- FORM GRID MATRIKS PERBANDINGAN BERPASANGAN (HANYA ISI SEGITIGA ATAS) -->
                     <div class="alert alert-info py-2 px-3 small mb-3">
                         <i class="bi bi-info-circle me-1"></i> <strong>Panduan Pengisian:</strong> Cukup isi sel pada <strong>Segitiga Atas (kotak pilihan dropdown)</strong>. Sel diagonal bernilai <strong>1</strong>, dan sel segitiga bawah otomatis terisi nilai kebalikannya (1/x) secara real-time.
                     </div>
@@ -230,7 +225,7 @@
                         <table class="table table-bordered align-middle text-center mb-0" id="tabel-matriks-input">
                             <thead>
                                 <tr class="text-white" style="background-color: #264653;">
-                                    <th style="width: 18%;" class="text-start">Kriteria (Baris \ Kolom)</th>
+                                    <th style="width: 18%;" class="text-start">Kriteria</th>
                                     @foreach($kriteria as $k)
                                         <th>
                                             <span class="badge bg-light text-dark font-monospace mb-1">{{ $k->kode_kriteria }}</span><br>
@@ -322,7 +317,7 @@
             const selectEl = document.getElementById(`input-${row}-${col}`);
             const val = parseFloat(selectEl.value) || 1.0;
             const recipVal = 1.0 / val;
-            
+
             const recipCell = document.getElementById(`cell-${col}-${row}`);
             if (recipCell) {
                 recipCell.innerText = recipVal.toFixed(4);

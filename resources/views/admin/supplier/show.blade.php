@@ -5,7 +5,7 @@
 
 @section('content')
  <div class="row">
- <!-- CARD INFORMASI SUPPLIER (FULL WIDTH) -->
+
  <div class="col-12 mb-4">
  <div class="card" >
  <div class="card-header text-white d-flex justify-content-between align-items-center" style="background-color: #264653;">
@@ -38,26 +38,26 @@
  <tr>
  <th class="ps-3">Kecepatan Respon (K3)</th>
  <td>
- @if($terakhirRespon)
+ @if(($countRespon ?? 0) > 0)
  <span class="badge" style="background-color: #E0F2FE; color: #0369A1; font-weight: 600;">
- Skala {{ $terakhirRespon->nilai }} / 5
+ Rata-rata: {{ number_format($avgRespon, 2) }} / 5
  </span>
- <small class="text-muted ms-2">(Diperbarui: {{ \Carbon\Carbon::parse($terakhirRespon->tanggal_penilaian)->format('d M Y') }})</small>
+ <small class="text-muted ms-2">({{ $countRespon }}x evaluasi, Terakhir: {{ $terakhirRespon ? \Carbon\Carbon::parse($terakhirRespon->tanggal_penilaian)->format('d M Y') : '-' }})</small>
  @else
- <span class="badge bg-secondary">Supplier Baru (Data Awal: 3)</span>
+ <span class="badge bg-secondary">Supplier Baru (Data Awal: 3.00)</span>
  @endif
  </td>
  </tr>
  <tr>
  <th class="ps-3">Garansi (K4)</th>
  <td>
- @if($terakhirGaransi)
+ @if(($countGaransi ?? 0) > 0)
  <span class="badge" style="background-color: #DCFCE7; color: #166534; font-weight: 600;">
- Skala {{ $terakhirGaransi->nilai }} / 5
+ Rata-rata: {{ number_format($avgGaransi, 2) }} / 5
  </span>
- <small class="text-muted ms-2">(Diperbarui: {{ \Carbon\Carbon::parse($terakhirGaransi->tanggal_penilaian)->format('d M Y') }})</small>
+ <small class="text-muted ms-2">({{ $countGaransi }}x evaluasi, Terakhir: {{ $terakhirGaransi ? \Carbon\Carbon::parse($terakhirGaransi->tanggal_penilaian)->format('d M Y') : '-' }})</small>
  @else
- <span class="badge bg-secondary">Supplier Baru (Data Awal: 3)</span>
+ <span class="badge bg-secondary">Supplier Baru (Data Awal: 3.00)</span>
  @endif
  </td>
  </tr>
@@ -77,7 +77,6 @@
  </div>
  </div>
 
- <!-- CARD DAFTAR PRODUK YANG DIPASOK (FULL WIDTH) -->
  <div class="col-12">
  <div class="card" >
  <div class="card-header d-flex justify-content-between align-items-center text-white" style="background-color: #264653;">
@@ -137,7 +136,6 @@
  </div>
  </div>
 
- <!-- MODAL HUBUNGKAN PRODUK -->
  <div class="modal fade" id="modalTambahProdukSupplier" tabindex="-1">
  <div class="modal-dialog modal-dialog-centered">
  <div class="modal-content border-0" >
@@ -174,7 +172,6 @@
  </div>
  </div>
 
- <!-- MODAL EVALUASI KINERJA SUPPLIER (K3 & K4) -->
  <div class="modal fade" id="modalBeriNilai" tabindex="-1">
  <div class="modal-dialog modal-dialog-centered">
  <div class="modal-content border-0" >
@@ -213,7 +210,6 @@
  <input type="date" name="tanggal_penilaian" class="form-control" value="{{ date('Y-m-d') }}" required>
  </div>
 
- <!-- 1. Kecepatan Respon (K3) -->
  <div class="mb-3">
  <label class="form-label fw-bold small text-dark mb-1">
  <i class="bi bi-chat-dots me-1"></i> Kecepatan Respon (K3)
@@ -227,7 +223,6 @@
  </select>
  </div>
 
- <!-- 2. Kebijakan Garansi & Klaim (K4) -->
  <div class="mb-3">
  <label class="form-label fw-bold small text-dark mb-1">
  <i class="bi bi-shield-check me-1"></i> Garansi (K4)

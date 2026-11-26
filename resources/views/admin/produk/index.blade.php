@@ -1,7 +1,7 @@
 @extends('layouts.adminlte')
 
 @section('title', 'Data Produk')
-@section('page_title', 'Kelola Katalog Produk')
+@section('page_title', 'Kelola Data Produk')
 
 @section('content')
     <div class="row">
@@ -16,14 +16,14 @@
                     <table class="table table-bordered table-striped align-middle" id="tabel-produk">
                         <thead>
                             <tr>
-                                <th width="5%" class="text-center">No</th>
+                                <th>No</th>
                                 <th>Kode</th>
                                 <th>Nama Produk</th>
                                 <th>Kategori</th>
                                 <th>Merek</th>
                                 <th>Harga Jual</th>
                                 <th>Stok</th>
-                                <th width="180px">Aksi</th>
+                                <th>Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -34,7 +34,7 @@
                                     <td>{{ $row->nama_produk }}</td>
                                     <td>{{ $row->kategori->nama_kategori ?? '-' }}</td>
                                     <td>{{ $row->merek->nama_merek ?? '-' }}</td>
-                                    <!-- Format Uang Rupiah Otomatis -->
+
                                     <td>Rp {{ number_format($row->harga_jual, 0, ',', '.') }}</td>
                                     <td>
                                         <strong>{{ (float) $row->stok }}</strong> {{ $row->satuanDasar->nama_satuan ?? '' }}
@@ -105,7 +105,7 @@
                     </div>
                     <div class="modal-body px-4 pt-1 pb-3">
                         <div id="edit-info-alert" class="alert alert-info py-2 px-3 small mb-3 d-none">
-                            <i class="bi bi-info-circle me-1"></i> Pada mode edit, identitas produk dan stok dikunci untuk menjaga integritas transaksi. Hanya <strong>Harga Jual</strong> dan <strong>Stok Minimum</strong> yang dapat diubah.
+                            <i class="bi bi-info-circle me-1"></i> Pada mode edit, identitas <strong>Kode Produk</strong>, <strong>Harga Beli (Modal)</strong>, dan <strong>Stok Awal</strong> dikunci untuk menjaga integritas transaksi. Field lainnya dapat diubah.
                         </div>
                         <div class="row g-3 mb-3">
                             <div class="col-md-6">
@@ -216,7 +216,6 @@
     </div>
 @endsection
 
-<!-- ================= JAVASCRIPT AJAX ================= -->
 @push('scripts')
     <script>
         $.ajaxSetup({
@@ -226,8 +225,7 @@
         $(document).ready(function () {
             $('#tabel-produk').DataTable({
                 columnDefs: [
-                    { targets: [0, 3, 4, 5, 6, 7], searchable: false },
-                    { targets: [7], orderable: false }
+                    { targets: [7], orderable: false, searchable: false }
                 ]
             });
         });
@@ -237,8 +235,6 @@
             $('#method').val('POST');
             $('#modal-title').text('Tambah Produk');
             $('#edit-info-alert').addClass('d-none');
-
-            // Buka semua kunci input untuk input baru
             const allInputs = ['#kode_produk', '#nama_produk', '#kategori_produk_id', '#merek_id', '#satuan_dasar_id', '#metode_jual', '#harga_beli', '#stok', '#harga_jual', '#stok_minimum'];
             allInputs.forEach(sel => {
                 $(sel).prop('readonly', false).prop('disabled', false).removeClass('bg-disabled');
@@ -255,11 +251,12 @@
                 $('#produk_id').val(id);
                 $('#edit-info-alert').removeClass('d-none');
 
-                // Kunci field identitas dan stok fisik saat edit (Standar Abu-abu Disabled)
-                const lockedFields = ['#kode_produk', '#nama_produk', '#kategori_produk_id', '#merek_id', '#satuan_dasar_id', '#metode_jual', '#harga_beli', '#stok'];
+                $('#nama_produk, #kategori_produk_id, #merek_id, #satuan_dasar_id, #metode_jual, #harga_jual, #stok_minimum')
+                    .prop('readonly', false).prop('disabled', false).removeClass('bg-disabled');
+
+                const lockedFields = ['#kode_produk', '#harga_beli', '#stok'];
                 lockedFields.forEach(sel => {
                     $(sel).prop('readonly', true).addClass('bg-disabled');
-                    if ($(sel).is('select')) $(sel).prop('disabled', true);
                 });
                 $('#harga_beli_rp').addClass('bg-disabled');
 
@@ -271,10 +268,8 @@
                 $('#metode_jual').val(data.metode_jual);
                 $('#harga_beli').val(Math.floor(data.harga_beli));
                 $('#stok').val(Math.floor(data.stok));
-
-                // Hanya Harga Jual dan Stok Minimum yang boleh diedit (Normal Putih)
-                $('#harga_jual').val(Math.floor(data.harga_jual)).prop('readonly', false).removeClass('bg-disabled');
-                $('#stok_minimum').val(Math.floor(data.stok_minimum)).prop('readonly', false).removeClass('bg-disabled');
+                $('#harga_jual').val(Math.floor(data.harga_jual));
+                $('#stok_minimum').val(Math.floor(data.stok_minimum));
 
                 $('#modal-form').modal('show');
             });

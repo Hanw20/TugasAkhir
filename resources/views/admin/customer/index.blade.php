@@ -23,11 +23,11 @@
                     <table class="table table-bordered table-striped align-middle" id="tabel-customer">
                         <thead>
                             <tr>
-                                <th width="5%" class="text-center">No</th>
+                                <th>No</th>
                                 <th>Nama Customer</th>
                                 <th>No. Telepon</th>
                                 <th>Alamat</th>
-                                <th width="180px">Aksi</th>
+                                <th>Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -60,7 +60,6 @@
         </div>
     </div>
 
-    <!-- ================= BOOTSTRAP 5 MODAL ================= -->
     <div class="modal fade" id="modal-form" tabindex="-1" aria-labelledby="modal-title" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content border-0">
@@ -121,7 +120,6 @@
     </div>
 @endsection
 
-<!-- ================= JAVASCRIPT AJAX ================= -->
 @push('scripts')
     <script>
         $.ajaxSetup({
@@ -131,8 +129,7 @@
         $(document).ready(function () {
             $('#tabel-customer').DataTable({
                 columnDefs: [
-                    { targets: [0, 2, 3, 4], searchable: false },
-                    { targets: [4], orderable: false }
+                    { targets: [4], orderable: false, searchable: false }
                 ]
             });
         });
@@ -143,7 +140,7 @@
             $('#customer_id').val('');
             $('#modal-title').text('Tambah Customer');
             $('#edit-info-alert').addClass('d-none');
-            
+
             $('#nama_customer, #no_telepon, #alamat').prop('readonly', false).removeClass('bg-disabled');
             $('#modal-form').modal('show');
         }
@@ -155,11 +152,7 @@
                 $('#customer_id').val(id);
 
                 $('#edit-info-alert').removeClass('d-none');
-                
-                // Kunci nama customer dengan warna abu-abu disabled
                 $('#nama_customer').val(data.nama_customer).prop('readonly', true).addClass('bg-disabled');
-
-                // Telepon dan Alamat tetap putih normal
                 $('#no_telepon').val(data.no_telepon).prop('readonly', false).removeClass('bg-disabled');
                 $('#alamat').val(data.alamat).prop('readonly', false).removeClass('bg-disabled');
 

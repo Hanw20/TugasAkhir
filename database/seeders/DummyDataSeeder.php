@@ -34,9 +34,9 @@ class DummyDataSeeder extends Seeder
 
         // ── 1. USERS ──────────────────────────────────────────────────────────
         $users = [
-            ['id' => 1, 'name' => 'Pemilik Toko (Admin)', 'email' => 'admin@tbb.com', 'password' => Hash::make('admin123'), 'role' => 'admin', 'created_at' => $now, 'updated_at' => $now],
-            ['id' => 2, 'name' => 'Budi Santoso (Kasir Shift 1)', 'email' => 'kasir1@tbb.com', 'password' => Hash::make('kasir123'), 'role' => 'kasir', 'created_at' => $now, 'updated_at' => $now],
-            ['id' => 3, 'name' => 'Siti Aminah (Kasir Shift 2)', 'email' => 'kasir2@tbb.com', 'password' => Hash::make('kasir123'), 'role' => 'kasir', 'created_at' => $now, 'updated_at' => $now],
+            ['id' => 1, 'nama' => 'Pemilik Toko (Admin)', 'email' => 'admin@tbb.com', 'password' => Hash::make('admin123'), 'role' => 'admin', 'created_at' => $now, 'updated_at' => $now],
+            ['id' => 2, 'nama' => 'Budi Santoso (Kasir Shift 1)', 'email' => 'kasir1@tbb.com', 'password' => Hash::make('kasir123'), 'role' => 'kasir', 'created_at' => $now, 'updated_at' => $now],
+            ['id' => 3, 'nama' => 'Siti Aminah (Kasir Shift 2)', 'email' => 'kasir2@tbb.com', 'password' => Hash::make('kasir123'), 'role' => 'kasir', 'created_at' => $now, 'updated_at' => $now],
         ];
         DB::table('users')->insert($users);
 
@@ -101,7 +101,7 @@ class DummyDataSeeder extends Seeder
             ['id' => 1, 'kode_kriteria' => 'K1', 'nama_kriteria' => 'Harga Beli',          'jenis_kriteria' => 'cost',    'created_at' => $now, 'updated_at' => $now],
             ['id' => 2, 'kode_kriteria' => 'K2', 'nama_kriteria' => 'Kualitas Produk',     'jenis_kriteria' => 'benefit', 'created_at' => $now, 'updated_at' => $now],
             ['id' => 3, 'kode_kriteria' => 'K3', 'nama_kriteria' => 'Kecepatan Respon',   'jenis_kriteria' => 'benefit', 'created_at' => $now, 'updated_at' => $now],
-            ['id' => 4, 'kode_kriteria' => 'K4', 'nama_kriteria' => 'Garansi & Klaim',     'jenis_kriteria' => 'benefit', 'created_at' => $now, 'updated_at' => $now],
+            ['id' => 4, 'kode_kriteria' => 'K4', 'nama_kriteria' => 'Garansi',     'jenis_kriteria' => 'benefit', 'created_at' => $now, 'updated_at' => $now],
             ['id' => 5, 'kode_kriteria' => 'K5', 'nama_kriteria' => 'Waktu Pengiriman',   'jenis_kriteria' => 'cost',    'created_at' => $now, 'updated_at' => $now],
             ['id' => 6, 'kode_kriteria' => 'K6', 'nama_kriteria' => 'Tempo Pembayaran',   'jenis_kriteria' => 'benefit', 'created_at' => $now, 'updated_at' => $now],
         ];

@@ -13,7 +13,6 @@
             <form action="{{ route('admin.pembelian.terima.store', $pembelian->id) }}" method="POST">
                 @csrf
 
-                <!-- Card Informasi Faktur & Penerimaan -->
                 <div class="card mb-3">
                     <div class="card-header text-white" style="background-color: #264653;">
                         <h5 class="card-title mb-0 fw-bold"><i class="bi bi-box-arrow-in-down me-2"></i> Konfirmasi Barang
@@ -38,7 +37,7 @@
                             </div>
 
                             <div class="col-12">
-                                <label class="form-label fw-bold">Catatan Petugas Gudang (Opsional)</label>
+                                <label class="form-label fw-bold">Catatan Petugas</label>
                                 <input type="text" name="catatan" class="form-control"
                                     placeholder="Contoh: Barang tiba kondisi mulus, supir Pak Anto, bongkar muat selesai jam 15:00">
                             </div>
@@ -46,10 +45,9 @@
                     </div>
                 </div>
 
-                <!-- Card Tabel Checklist Barang Fisik & Penilaian Kualitas Per Produk -->
                 <div class="card mb-3">
                     <div class="card-header text-white" style="background-color: #264653;">
-                        <h5 class="card-title mb-0 fw-bold"><i class="bi bi-check2-square me-2"></i> Ceklist Kuantitas & Kualitas Fisik Per Produk</h5>
+                        <h5 class="card-title mb-0 fw-bold"><i class="bi bi-check2-square me-2"></i> Checklist Jumlah & Penilaian Kualitas Per Produk</h5>
                     </div>
                     <div class="card-body table-responsive p-0">
                         <table class="table table-bordered mb-0 align-middle">
@@ -91,7 +89,7 @@
                                                     class="input-group-text small">{{ $detail->produk->satuanDasar->nama_satuan ?? '' }}</span>
                                             </div>
                                         </td>
-                                        <!-- PENILAIAN KUALITAS KHUSUS PER ITEM PRODUK -->
+
                                         <td>
                                             <select name="nilai_kualitas[]" class="form-select form-select-sm">
                                                 <option value="5" selected>⭐ 5 - Sangat Baik (Mulus)</option>

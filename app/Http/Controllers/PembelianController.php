@@ -7,6 +7,9 @@ use App\Models\Pembelian;
 use App\Models\DetailPembelian;
 use App\Models\Supplier;
 use App\Models\Produk;
+use App\Models\RiwayatPenilaianSupplier;
+use App\Models\KriteriaSupplier;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 
@@ -97,6 +100,33 @@ class PembelianController extends Controller
                         'harga_beli_terakhir' => $harga
                     ]);
                     $produk->increment('stok_onorder_supplier', $qty);
+
+                    $k1 = KriteriaSupplier::where('kode_kriteria', 'K1')->first();
+                    if ($k1) {
+                        RiwayatPenilaianSupplier::create([
+                            'supplier_id' => $pembelian->supplier_id,
+                            'kriteria_supplier_id' => $k1->id,
+                            'nilai' => $harga,
+                            'tanggal_penilaian' => $pembelian->tanggal,
+                            'keterangan' => 'Harga beli ' . $produk->nama_produk . ' pada faktur #' . $pembelian->no_faktur . ' (Qty: ' . $qty . ')',
+                        ]);
+                    }
+                }
+            }
+
+            if ($pembelian->tanggal_jatuh_tempo) {
+                $k6 = KriteriaSupplier::where('kode_kriteria', 'K6')->first();
+                if ($k6) {
+                    $tglPo = Carbon::parse($pembelian->tanggal);
+                    $tglTempo = Carbon::parse($pembelian->tanggal_jatuh_tempo);
+                    $hariTempo = $tglPo->diffInDays($tglTempo);
+                    RiwayatPenilaianSupplier::create([
+                        'supplier_id' => $pembelian->supplier_id,
+                        'kriteria_supplier_id' => $k6->id,
+                        'nilai' => $hariTempo,
+                        'tanggal_penilaian' => $pembelian->tanggal,
+                        'keterangan' => 'Tempo pembayaran faktur #' . $pembelian->no_faktur . ' (' . $hariTempo . ' hari)',
+                    ]);
                 }
             }
 
@@ -160,5 +190,39 @@ class PembelianController extends Controller
             DB::rollBack();
             return back()->with('error', 'Gagal membatalkan faktur: ' . $e->getMessage());
         }
+    }
+
+    public function laporan(Request $request)
+    {
+        $bulan = $request->get('bulan', date('m'));
+        $tahun = $request->get('tahun', date('Y'));
+        $supplierId = $request->get('supplier_id');
+        $statusBayar = $request->get('status_pembayaran');
+
+        $query = Pembelian::with(['supplier', 'detailPembelian.produk', 'user'])
+            ->whereMonth('tanggal', $bulan)
+            ->whereYear('tanggal', $tahun);
+
+        if ($supplierId) {
+            $query->where('supplier_id', $supplierId);
+        }
+
+        if ($statusBayar) {
+            $query->where('status_pembayaran', $statusBayar);
+        }
+
+        $pembelian = $query->orderBy('tanggal', 'desc')->get();
+
+        $totalTransaksi = $pembelian->count();
+        $totalNominal = $pembelian->where('status', '!=', 'batal')->sum('total');
+        $totalLunas = $pembelian->where('status_pembayaran', 'lunas')->where('status', '!=', 'batal')->sum('total');
+        $totalHutang = $pembelian->where('status_pembayaran', '!=', 'lunas')->where('status', '!=', 'batal')->sum('total');
+
+        $suppliers = Supplier::orderBy('nama_supplier')->get();
+
+        return view('admin.laporan.pembelian', compact(
+            'pembelian', 'totalTransaksi', 'totalNominal', 'totalLunas', 'totalHutang',
+            'bulan', 'tahun', 'supplierId', 'statusBayar', 'suppliers'
+        ));
     }
 }

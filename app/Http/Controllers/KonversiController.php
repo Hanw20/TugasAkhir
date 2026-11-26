@@ -51,10 +51,15 @@ class KonversiController extends Controller
         $konversi = MasterKonversi::findOrFail($id);
 
         if ($konversi->konversi()->exists()) {
-            return response()->json([
-                'status'  => 'error',
-                'message' => 'Rumus konversi ini tidak dapat diubah karena sudah digunakan oleh transaksi konversi produk aktif!'
-            ], 422);
+            $request->validate([
+                'nilai_konversi' => 'required|numeric|min:0.01'
+            ]);
+
+            $konversi->update([
+                'nilai_konversi' => $request->nilai_konversi
+            ]);
+
+            return response()->json(['message' => 'Nilai rumus konversi berhasil diubah!']);
         }
 
         $request->validate([

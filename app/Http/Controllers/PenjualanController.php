@@ -215,4 +215,31 @@ class PenjualanController extends Controller
             return back()->with('error', 'Gagal membatalkan nota: ' . $e->getMessage());
         }
     }
+
+    public function laporan(Request $request)
+    {
+        $bulan = $request->get('bulan', date('m'));
+        $tahun = $request->get('tahun', date('Y'));
+        $statusBayar = $request->get('status_pembayaran');
+
+        $query = Penjualan::with(['customer', 'detailPenjualan.produk', 'user'])
+            ->whereMonth('tanggal', $bulan)
+            ->whereYear('tanggal', $tahun);
+
+        if ($statusBayar) {
+            $query->where('status_pembayaran', $statusBayar);
+        }
+
+        $penjualan = $query->orderBy('tanggal', 'desc')->get();
+
+        $totalTransaksi = $penjualan->count();
+        $totalNominal = $penjualan->where('status', '!=', 'batal')->sum('total');
+        $totalLunas = $penjualan->where('status_pembayaran', 'lunas')->where('status', '!=', 'batal')->sum('total');
+        $totalPiutang = $penjualan->where('status_pembayaran', '!=', 'lunas')->where('status', '!=', 'batal')->sum('total');
+
+        return view('admin.laporan.penjualan', compact(
+            'penjualan', 'totalTransaksi', 'totalNominal', 'totalLunas', 'totalPiutang',
+            'bulan', 'tahun', 'statusBayar'
+        ));
+    }
 }

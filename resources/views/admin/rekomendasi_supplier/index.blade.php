@@ -5,7 +5,7 @@
 
 @section('content')
     <div class="container-fluid px-3">
-        <!-- Judul Halaman -->
+
         <div class="d-flex justify-content-between align-items-center mb-3">
             <div>
                 <p class="text-muted small mb-0">Penentuan supplier optimal menggunakan integrasi pembobotan AHP dan
@@ -19,11 +19,10 @@
             @endif
         </div>
 
-        <!-- 1. CARD PARAMETER REKOMENDASI SUPPLIER -->
         <div class="card mb-4">
             <div class="card-header py-2 text-white"
                 style="background-color: #264653; border-top-left-radius: 8px; border-top-right-radius: 8px;">
-                <h6 class="mb-0 fw-semibold"><i class="bi bi-sliders me-2"></i>Parameter Rekomendasi Supplier</h6>
+                <h6 class="mb-0 fw-semibold"><i class="bi bi-sliders me-2"></i>Data Rekomendasi Supplier</h6>
             </div>
             <div class="card-body p-3">
                 <form method="GET" action="{{ route('admin.rekomendasi-supplier.index') }}">
@@ -67,9 +66,9 @@
 
         @if ($selectedProduk)
             @if (count($ranking) > 0)
-                <!-- 2. BARIS TENGAH: PRODUK DIANALISIS & DAFTAR REKOMENDASI UTAMA -->
+
                 <div class="row g-3 mb-4">
-                    <!-- Kolom Kiri: Produk yang Dianalisis -->
+
                     <div class="col-md-5">
                         <div class="card h-100">
                             <div class="card-header py-2 text-white"
@@ -97,7 +96,6 @@
                         </div>
                     </div>
 
-                    <!-- Kolom Kanan: Daftar Rekomendasi Supplier Utama -->
                     <div class="col-md-7">
                         <div class="card h-100">
                             <div class="card-header py-2 text-white d-flex justify-content-between align-items-center"
@@ -149,11 +147,10 @@
                     </div>
                 </div>
 
-                <!-- 3. BAGIAN BAWAH: TABEL KOMPARASI 3 METODE BERDAMPINGAN -->
                 <div class="card mb-4">
                     <div class="card-header py-2 text-white"
                         style="background-color: #264653; border-top-left-radius: 8px; border-top-right-radius: 8px;">
-                        <h6 class="mb-0 fw-semibold"><i class="bi bi-arrow-left-right me-2"></i>Komparasi Hasil Rekomendasi Antar
+                        <h6 class="mb-0 fw-semibold"><i class="bi bi-arrow-left-right me-2"></i>Perbandingan Hasil Rekomendasi Antara
                             Metode SPK</h6>
                     </div>
                     <div class="table-responsive">
@@ -165,10 +162,10 @@
                                         AHP-SAW (Metode Utama)
                                     </th>
                                     <th style="background-color: #E3F2FD; color: #1565C0;">
-                                        SAW (Tunggal / Equal Weight)
+                                        SAW 
                                     </th>
                                     <th style="background-color: #FFF3E0; color: #E65100;">
-                                        AHP (Tunggal)
+                                        AHP (
                                     </th>
                                 </tr>
                             </thead>
@@ -183,7 +180,7 @@
                                                 <i class="bi bi-trophy-fill me-1"></i>#{{ $i + 1 }}
                                             </span>
                                         </td>
-                                        <!-- AHP-SAW -->
+
                                         <td class="text-start" style="background-color: #F9FFF9;">
                                             @if (isset($ranking[$i]))
                                                 <div class="fw-bold text-dark">{{ $ranking[$i]['supplier']->nama_supplier }}</div>
@@ -195,7 +192,7 @@
                                                 <span class="text-muted">-</span>
                                             @endif
                                         </td>
-                                        <!-- SAW TUNGGAL -->
+
                                         <td class="text-start" style="background-color: #F8FBFF;">
                                             @if (isset($rankingSawMurni[$i]))
                                                 <div class="fw-bold text-dark">{{ $rankingSawMurni[$i]['supplier']->nama_supplier }}</div>
@@ -207,7 +204,7 @@
                                                 <span class="text-muted">-</span>
                                             @endif
                                         </td>
-                                        <!-- AHP TUNGGAL -->
+
                                         <td class="text-start" style="background-color: #FFFAF5;">
                                             @if (isset($rankingAhpMurni[$i]))
                                                 <div class="fw-bold text-dark">{{ $rankingAhpMurni[$i]['supplier']->nama_supplier }}</div>

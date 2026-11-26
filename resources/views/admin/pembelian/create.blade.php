@@ -13,14 +13,13 @@
       <form action="{{ route('admin.pembelian.store') }}" method="POST" id="form-pembelian">
         @csrf
 
-        <!-- Card Informasi Faktur -->
         <div class="card mb-3">
           <div class="card-header text-white d-flex justify-content-between align-items-center"
             style="background-color: #264653;">
-            <h5 class="card-title mb-0 fw-bold"><i class="bi bi-file-earmark-text me-2"></i> Data Faktur Pembelian</h5>
+            <h5 class="card-title mb-0 fw-bold"><i class="bi bi-file-earmark-text me-2"></i> Data Nota Faktur Pembelian</h5>
             <a href="{{ route('admin.rekomendasi-supplier.index') }}"
               class="btn btn-sm btn-light fw-semibold shadow-sm">
-              <i class="bi bi-stars me-1 text-primary"></i> Lihat Rekomendasi Supplier (SPK)
+              <i class="nav-icon bi bi-trophy"></i> Lihat Rekomendasi Supplier (SPK)
             </a>
           </div>
           <div class="card-body">
@@ -53,30 +52,28 @@
           </div>
         </div>
 
-        <!-- Card Daftar Item Barang -->
         <div class="card mb-3">
           <div class="card-header text-white d-flex justify-content-between align-items-center"
             style="background-color: #264653;">
-            <h5 class="card-title mb-0"><i class="bi bi-cart-plus me-2"></i> Daftar Barang Dipesan (Purchase
+            <h5 class="card-title mb-0"><i class="bi bi-cart-plus me-2"></i> Daftar Barang Pembelian (Purchase
               Order)</h5>
             <button type="button" class="btn btn-sm btn-light" onclick="tambahBarisItem()">
-              <i class="bi bi-plus-circle"></i> + Tambah Item Barang
+              <i class="bi bi-plus-circle"></i>  Tambah Item Barang
             </button>
           </div>
           <div class="card-body table-responsive p-0">
             <table class="table table-bordered mb-0 align-middle" id="tabel-item">
               <thead class="table-light">
                 <tr>
-                  <th width="35%">Produk</th>
-                  <th width="15%">Satuan</th>
-                  <th width="15%">Harga Beli (Rp)</th>
-                  <th width="12%">Qty Pesan</th>
-                  <th width="18%">Subtotal (Rp)</th>
-                  <th width="5%" class="text-center">Aksi</th>
+                  <th>Produk</th>
+                  <th>Satuan</th>
+                  <th>Harga Beli (Rp)</th>
+                  <th>Qty Pesan</th>
+                  <th>Subtotal (Rp)</th>
+                  <th>Aksi</th>
                 </tr>
               </thead>
               <tbody id="baris-item-container">
-                <!-- Baris pertama default -->
                 <tr class="item-row">
                   <td>
                     <select name="produk_id[]" class="form-select select-produk" required onchange="pilihProduk(this)">
@@ -135,7 +132,6 @@
 
 @push('scripts')
   <script>
-    // Data list produk untuk baris baru
     const optionsProduk = `
    <option value="">-- Pilih Produk --</option>
    @foreach($produks as $p)

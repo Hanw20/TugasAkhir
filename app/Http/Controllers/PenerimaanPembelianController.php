@@ -101,7 +101,7 @@ class PenerimaanPembelianController extends Controller
                                 'kriteria_supplier_id' => $kriteriaKualitas->id,
                                 'nilai' => $request->nilai_kualitas[$index] ?? 5,
                                 'tanggal_penilaian' => $request->tanggal_terima,
-                                'keterangan' => 'Penilaian fisik produk pada faktur #' . $pembelian->no_faktur,
+                                'keterangan' => 'Penilaian fisik ' . $produk->nama_produk . ' pada faktur #' . $pembelian->no_faktur,
                             ]);
                         }
 
@@ -144,6 +144,21 @@ class PenerimaanPembelianController extends Controller
                     'status_penerimaan' => 'terima_penuh',
                     'status' => 'selesai'
                 ]);
+
+                $kriteriaPengiriman = \App\Models\KriteriaSupplier::where('kode_kriteria', 'K5')->first();
+                if ($kriteriaPengiriman) {
+                    $tglPo = \Carbon\Carbon::parse($pembelian->tanggal);
+                    $tglTerima = \Carbon\Carbon::parse($request->tanggal_terima);
+                    $diff = $tglPo->diffInDays($tglTerima);
+                    $hariKirim = $diff > 0 ? $diff : 1;
+                    \App\Models\RiwayatPenilaianSupplier::create([
+                        'supplier_id' => $pembelian->supplier_id,
+                        'kriteria_supplier_id' => $kriteriaPengiriman->id,
+                        'nilai' => $hariKirim,
+                        'tanggal_penilaian' => $request->tanggal_terima,
+                        'keterangan' => 'Waktu pengiriman pesanan faktur #' . $pembelian->no_faktur . ' (' . $hariKirim . ' hari)',
+                    ]);
+                }
             } elseif ($adaYangDiterima) {
                 $pembelian->update([
                     'status_penerimaan' => 'sebagian',

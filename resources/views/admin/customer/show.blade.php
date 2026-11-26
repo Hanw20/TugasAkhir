@@ -5,7 +5,6 @@
 
 @section('content')
     <div class="row">
-        <!-- 1. CARD PROFIL CUSTOMER (FULL WIDTH DI ATAS) -->
         <div class="col-12 mb-4">
             <div class="card">
                 <div class="card-header text-white" style="background-color: #264653;">
@@ -49,7 +48,6 @@
             </div>
         </div>
 
-        <!-- 2. CARD RIWAYAT TRANSAKSI BELANJA (FULL WIDTH DI BAWAH) -->
         <div class="col-12">
             <div class="card">
                 <div class="card-header text-white" style="background-color: #264653;">
@@ -61,29 +59,26 @@
                         <table class="table table-hover table-striped align-middle m-0">
                             <thead class="table-light">
                                 <tr>
-                                    <th width="5%" class="text-center">No</th>
+                                    <th class="text-center">No</th>
                                     <th>No Nota</th>
                                     <th>Tanggal Transaksi</th>
                                     <th class="text-end">Total Belanja</th>
                                     <th class="text-center">Status</th>
-                                    <th width="10%" class="text-center">Aksi</th>
+                                    <th class="text-center">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @forelse($customer->penjualan as $index => $pj)
                                     <tr>
                                         <td class="text-center">{{ $index + 1 }}</td>
-                                        <!-- FIX no_nota: sebelumnya salah no_faktur -->
                                         <td><span class="badge"
                                                 style="background-color: #F1F5F9; color: #475569; font-family: monospace;">{{ $pj->no_nota }}</span>
                                         </td>
                                         <td>{{ $pj->tanggal ? $pj->tanggal->format('d/m/Y') : '-' }}</td>
-                                        <!-- FIX total: sebelumnya salah total_akhir -->
                                         <td class="text-end fw-bold text-dark fs-6">Rp
                                             {{ number_format($pj->total, 0, ',', '.') }}
                                         </td>
                                         <td class="text-center">
-                                            <!-- Status Pengiriman Barang -->
                                             @if($pj->status_pengiriman === 'seluruh')
                                                 <span class="badge" style="background-color: #E0F2FE; color: #0369A1;">Terkirim /
                                                     Ambil</span>
@@ -97,7 +92,6 @@
 
                                             <br>
 
-                                            <!-- Status Pembayaran -->
                                             @if($pj->status_pembayaran === 'lunas')
                                                 <span class="badge mt-1"
                                                     style="background-color: #D1FAE5; color: #065F46;">Lunas</span>

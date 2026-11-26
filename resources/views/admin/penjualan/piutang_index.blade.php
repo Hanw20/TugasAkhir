@@ -1,11 +1,10 @@
 ﻿@extends('layouts.adminlte')
 
 @section('title', 'Piutang Pelanggan')
-@section('page_title', 'Manajemen Piutang Pelanggan & Tempo Proyek')
+@section('page_title', 'Penyaran Piutang Pelanggan')
 
 @section('content')
     <div class="row">
-        <!-- Tabel Tagihan Piutang yang Belum Lunas -->
         <div class="col-12 mb-4">
             <div class="card">
                 <div class="card-header text-white" style="background-color: #264653;">
@@ -16,14 +15,14 @@
                     <table class="table table-bordered table-striped align-middle">
                         <thead class="table-light">
                             <tr>
-                                <th width="5%" class="text-center">No</th>
+                                <th>No</th>
                                 <th>No Nota</th>
-                                <th>Customer / Pelanggan</th>
+                                <th>Customer</th>
                                 <th>Tanggal Transaksi</th>
                                 <th>Total Belanja</th>
                                 <th>Sudah Dibayar</th>
                                 <th>Sisa Piutang</th>
-                                <th width="12%" class="text-center">Aksi</th>
+                                <th>Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -61,23 +60,21 @@
             </div>
         </div>
 
-        <!-- Tabel Riwayat Pembayaran Piutang -->
         <div class="col-12">
             <div class="card">
                 <div class="card-header text-white" style="background-color: #264653;">
-                    <h5 class="card-title mb-0 fw-bold"><i class="bi bi-clock-history me-2"></i> Riwayat Penerimaan Cicilan
-                        Piutang Customer</h5>
+                    <h5 class="card-title mb-0 fw-bold"><i class="bi bi-clock-history me-2"></i> Riwayat Pembayaran Piutang Customer</h5>
                 </div>
                 <div class="card-body table-responsive">
                     <table class="table table-bordered table-striped align-middle">
                         <thead class="table-light">
                             <tr>
-                                <th width="5%" class="text-center">No</th>
+                                <th>No</th>
                                 <th>No Nota</th>
                                 <th>Customer</th>
                                 <th>Tanggal Bayar</th>
                                 <th>Jumlah Bayar</th>
-                                <th>Kasir / Petugas</th>
+                                <th>Petugas</th>
                                 <th>Catatan</th>
                             </tr>
                         </thead>
@@ -89,7 +86,7 @@
                                     <td><strong>{{ $rb->penjualan->customer->nama_customer ?? '-' }}</strong></td>
                                     <td>{{ $rb->tanggal_bayar ? $rb->tanggal_bayar->format('d/m/Y H:i') : '-' }}</td>
                                     <td class="text-success fw-bold">Rp {{ number_format($rb->jumlah_bayar, 0, ',', '.') }}</td>
-                                    <td>{{ $rb->user->name ?? '-' }}</td>
+                                    <td>{{ $rb->user->nama ?? $rb->user->name ?? '-' }}</td>
                                     <td>{{ $rb->catatan ?? '-' }}</td>
                                 </tr>
                             @empty
@@ -106,7 +103,6 @@
         </div>
     </div>
 
-    <!-- Modal Terima Bayar Piutang Customer -->
     <div class="modal fade" id="modalBayarPiutang" tabindex="-1">
         <div class="modal-dialog">
             <div class="modal-content">

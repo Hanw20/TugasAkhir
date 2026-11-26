@@ -13,7 +13,6 @@
             <form action="{{ route('admin.penjualan.store') }}" method="POST">
                 @csrf
 
-                <!-- Header Nota -->
                 <div class="card mb-3">
                     <div class="card-header text-white" style="background-color: #264653;">
                         <h5 class="card-title mb-0 fw-bold"><i class="bi bi-file-earmark-text me-2"></i> Data Nota Penjualan
@@ -60,7 +59,6 @@
                     </div>
                 </div>
 
-                <!-- Daftar Barang Belanja -->
                 <div class="card mb-3">
                     <div class="card-header text-white d-flex justify-content-between align-items-center"
                         style="background-color: #264653;">
@@ -73,12 +71,12 @@
                         <table class="table table-bordered mb-0 align-middle">
                             <thead class="table-light">
                                 <tr>
-                                    <th width="35%">Nama Produk</th>
-                                    <th width="15%">Satuan</th>
-                                    <th width="15%">Harga Jual (Rp)</th>
-                                    <th width="12%">Qty</th>
-                                    <th width="18%">Subtotal (Rp)</th>
-                                    <th width="5%" class="text-center">Aksi</th>
+                                    <th>Nama Produk</th>
+                                    <th>Satuan</th>
+                                    <th>Harga Jual (Rp)</th>
+                                    <th>Qty</th>
+                                    <th>Subtotal (Rp)</th>
+                                    <th>Aksi</th>
                                 </tr>
                             </thead>
                             <tbody id="baris-penjualan-container">

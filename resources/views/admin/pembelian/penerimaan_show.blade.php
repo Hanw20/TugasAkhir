@@ -1,7 +1,7 @@
 ﻿@extends('layouts.adminlte')
 
 @section('title', 'Bukti Penerimaan Barang')
-@section('page_title', 'Bukti Penerimaan Fisik Barang #' . ($penerimaan->pembelian->no_faktur ?? ''))
+@section('page_title', 'Bukti Penerimaan Barang #' . ($penerimaan->pembelian->no_faktur ?? ''))
 
 @section('content')
     <div class="row">
@@ -10,7 +10,7 @@
                 <div class="card-header text-white d-flex justify-content-between align-items-center"
                     style="background-color: #264653;">
                     <h5 class="card-title mb-0 fw-bold">
-                        <i class="bi bi-clipboard-check me-2"></i> Bukti Penerimaan Barang Fisik (Surat Jalan Gudang)
+                        <i class="bi bi-clipboard-check me-2"></i> Bukti Penerimaan Barang (Surat Jalan Gudang)
                     </h5>
                     <span class="badge"
                         style="background-color: #D1FAE5; color: #065F46; font-weight: 600; padding: 6px 12px;">Barang Masuk
@@ -33,11 +33,11 @@
                                             WIB</strong></td>
                                 </tr>
                                 <tr>
-                                    <th>Petugas Penerima (Gudang)</th>
+                                    <th>Petugas</th>
                                     <td>: {{ $penerimaan->user->name ?? '-' }}</td>
                                 </tr>
                                 <tr>
-                                    <th>Catatan Supir / Gudang</th>
+                                    <th>Catatan</th>
                                     <td>: <em>{{ $penerimaan->catatan ?? '-' }}</em></td>
                                 </tr>
                             </table>
@@ -69,7 +69,7 @@
                                     <th width="5%" class="text-center">No</th>
                                     <th width="15%">Kode Produk</th>
                                     <th>Nama Produk</th>
-                                    <th width="20%" class="text-center">Kuantitas Riil Diterima</th>
+                                    <th width="20%" class="text-center">Jumlah Asli yang Diterima</th>
                                 </tr>
                             </thead>
                             <tbody>

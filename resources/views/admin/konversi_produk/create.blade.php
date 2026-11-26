@@ -36,7 +36,7 @@
                     </div>
 
                     <div class="row g-3 align-items-center mb-4">
-                        <!-- Produk Asal -->
+
                         <div class="col-md-5">
                             <div class="p-3 border rounded"
                                 style="background-color: #FEF2F2; border-color: #FECACA !important;">
@@ -64,13 +64,11 @@
                             </div>
                         </div>
 
-                        <!-- Tanda Panah -->
                         <div class="col-md-2 text-center">
                             <i class="bi bi-arrow-right fs-1 d-none d-md-inline" style="color: #2A9D8F;"></i>
                             <div class="small fw-bold text-muted mt-1" id="labelFaktor">Faktor: -</div>
                         </div>
 
-                        <!-- Produk Tujuan -->
                         <div class="col-md-5">
                             <div class="p-3 border rounded"
                                 style="background-color: #F0FDF4; border-color: #BBF7D0 !important;">

@@ -48,7 +48,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <!-- Baris pertama default -->
+
                                 <tr>
                                     <td>
                                         <select name="items[0][produk_id]" class="form-select select-produk" required

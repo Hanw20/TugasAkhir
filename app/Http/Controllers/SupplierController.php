@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Supplier;
+use App\Models\Produk;
+use App\Models\KriteriaSupplier;
+use App\Models\RiwayatPenilaianSupplier;
 
 class SupplierController extends Controller
 {
@@ -45,12 +48,28 @@ class SupplierController extends Controller
             ->latest('tanggal_penilaian')
             ->first();
 
+        $avgRespon = $supplier->riwayatPenilaianSupplier()
+            ->where('kriteria_supplier_id', $k3->id ?? 0)
+            ->avg('nilai');
+
+        $countRespon = $supplier->riwayatPenilaianSupplier()
+            ->where('kriteria_supplier_id', $k3->id ?? 0)
+            ->count();
+
         $terakhirGaransi = $supplier->riwayatPenilaianSupplier()
             ->where('kriteria_supplier_id', $k4->id ?? 0)
             ->latest('tanggal_penilaian')
             ->first();
 
-        return view('admin.supplier.show', compact('supplier', 'semuaProduk', 'terakhirRespon', 'terakhirGaransi'));
+        $avgGaransi = $supplier->riwayatPenilaianSupplier()
+            ->where('kriteria_supplier_id', $k4->id ?? 0)
+            ->avg('nilai');
+
+        $countGaransi = $supplier->riwayatPenilaianSupplier()
+            ->where('kriteria_supplier_id', $k4->id ?? 0)
+            ->count();
+
+        return view('admin.supplier.show', compact('supplier', 'semuaProduk', 'terakhirRespon', 'avgRespon', 'countRespon', 'terakhirGaransi', 'avgGaransi', 'countGaransi'));
     }
 
     public function edit(string $id)
@@ -64,12 +83,14 @@ class SupplierController extends Controller
         $supplier = Supplier::findOrFail($id);
 
         $request->validate([
+            'nama_supplier' => 'required|string|max:100',
             'alamat' => 'required|string',
             'nomor_telepon' => 'required|string|max:20',
             'email' => 'nullable|email|max:100'
         ]);
 
         $supplier->update([
+            'nama_supplier' => $request->nama_supplier,
             'nomor_telepon' => $request->nomor_telepon,
             'email' => $request->email,
             'alamat' => $request->alamat,
@@ -120,7 +141,7 @@ class SupplierController extends Controller
                 'kriteria_supplier_id' => $k3->id,
                 'nilai' => $request->nilai_respon,
                 'tanggal_penilaian' => $request->tanggal_penilaian,
-                'keterangan' => 'Evaluasi Kecepatan Respon: ' . ($request->keterangan ?? '-'),
+                'keterangan' => 'Evaluasi Kecepatan Respon' . ($request->keterangan ? ': ' . $request->keterangan : ' berkala'),
             ]);
         }
 
@@ -130,7 +151,7 @@ class SupplierController extends Controller
                 'kriteria_supplier_id' => $k4->id,
                 'nilai' => $request->nilai_garansi,
                 'tanggal_penilaian' => $request->tanggal_penilaian,
-                'keterangan' => 'Evaluasi Kebijakan Garansi: ' . ($request->keterangan ?? '-'),
+                'keterangan' => 'Evaluasi Garansi' . ($request->keterangan ? ': ' . $request->keterangan : ' berkala'),
             ]);
         }
 
@@ -156,5 +177,50 @@ class SupplierController extends Controller
         $supplier->produk()->detach($produk_id);
 
         return back()->with('success', 'Produk berhasil dihapus dari daftar pasokan supplier ini!');
+    }
+
+    public function laporanPenilaian(Request $request)
+    {
+        $bulan = $request->get('bulan', date('m'));
+        $tahun = $request->get('tahun', date('Y'));
+        $supplierId = $request->get('supplier_id');
+        $kriteriaId = $request->get('kriteria_supplier_id');
+        $produkId = $request->get('produk_id');
+
+        $query = RiwayatPenilaianSupplier::with(['supplier', 'kriteria', 'detailPenerimaanPembelian.detailPembelian.produk'])
+            ->whereMonth('tanggal_penilaian', $bulan)
+            ->whereYear('tanggal_penilaian', $tahun);
+
+        if ($supplierId) {
+            $query->where('supplier_id', $supplierId);
+        }
+
+        if ($kriteriaId) {
+            $query->where('kriteria_supplier_id', $kriteriaId);
+        }
+
+        if ($produkId) {
+            $selectedProduk = Produk::find($produkId);
+            $namaSelected = $selectedProduk ? $selectedProduk->nama_produk : '';
+            $query->where(function ($q) use ($produkId, $namaSelected) {
+                $q->whereHas('detailPenerimaanPembelian.detailPembelian', function ($sq) use ($produkId) {
+                    $sq->where('produk_id', $produkId);
+                });
+                if ($namaSelected) {
+                    $q->orWhere('keterangan', 'LIKE', '%' . $namaSelected . '%');
+                }
+            });
+        }
+
+        $riwayat = $query->orderBy('tanggal_penilaian', 'desc')->get();
+
+        $suppliers = Supplier::orderBy('nama_supplier')->get();
+        $produks = Produk::orderBy('nama_produk')->get();
+        $kriteriaList = KriteriaSupplier::orderBy('kode_kriteria')->get();
+
+        return view('admin.laporan.penilaian', compact(
+            'riwayat', 'suppliers', 'produks', 'kriteriaList',
+            'bulan', 'tahun', 'supplierId', 'kriteriaId', 'produkId'
+        ));
     }
 }
